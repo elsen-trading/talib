@@ -1,1 +1,5 @@
-# talib
+talib
+-----
+
+Elsen bindings to Talib.
+
