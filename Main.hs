@@ -1,5 +1,7 @@
 module Main where
 
+import FFI
+
 -- Sum type ( enum )
 data Color = Red | Blue | Green
   deriving (Show, Ord, Eq, Read)
