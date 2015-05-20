@@ -3,9 +3,8 @@
 module FFI where
 
 import Foreign.C.Types
+import Foreign.Ptr
 
-foreign import ccall unsafe "myfunction"
-  myfunction :: Int -> IO (Ptr Int)
+foreign import ccall safe "myfunction"
+  myfunction :: CInt -> CInt -> CInt
 
-foo :: IO (Ptr Int)
-foo = myfunction 3
