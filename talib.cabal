@@ -23,3 +23,6 @@ executable talib
   build-depends:       base >=4.7 && <4.8
   -- hs-source-dirs:      
   default-language:    Haskell2010
+
+  c-sources:
+    cbits/mylib.c
