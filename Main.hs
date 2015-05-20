@@ -115,5 +115,11 @@ myMap' :: (a -> b) -> [a] -> [b]
 myMap' _ [] = []
 myMap' f (x:xs) = (f x) : (myMap' f xs)
 
+myFilter :: (a -> Bool) -> List a -> List a
+myFilter _ Nil = Nil
+myFilter f (Cons a rest)
+    | f a       = Cons a (myFilter f rest)
+    | otherwise = myFilter f rest
+
 main :: IO ()
 main = putStrLn "Elsen!"
