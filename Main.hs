@@ -107,9 +107,9 @@ foobar' = return 3 >>= \x -> print x
 -- forall a. mappend a mempty = a
 -- forall a. mappend (mappend a b) c = mappend a (mappend b c)
 
--- myMap :: (a -> b) -> List a -> List b
--- myMap _ Nil = Nil
--- myMap f _   = Cons (f (head a)
+myMap :: (a -> b) -> List a -> List b
+myMap _ Nil = Nil
+myMap f (Cons a rest) = Cons (f a) (myMap f rest)
 
 myMap' :: (a -> b) -> [a] -> [b]
 myMap' _ [] = []
