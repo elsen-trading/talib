@@ -16,13 +16,40 @@ build-type:          Simple
 extra-source-files:  README.md
 cabal-version:       >=1.10
 
+library
+    hs-source-dirs: src
+    exposed-modules:
+      Data.TALib.Timeseries
+      Data.TALib.MovingAverage              
+    default-language: Haskell2010
+    build-depends: base >= 4.7 && < 4.9,
+                   contravariant,
+                   errors,
+                   vector
+                    
 executable talib
   main-is:             Main.hs
   -- other-modules:       
   -- other-extensions:    
-  build-depends:       base >=4.7 && <4.8
+  build-depends:       base >=4.7 && <4.9
   -- hs-source-dirs:      
   default-language:    Haskell2010
 
   c-sources:
     cbits/mylib.c
+
+test-suite testsuite
+  hs-source-dirs: src tests
+  type: exitcode-stdio-1.0
+  main-is: Tests.hs
+  build-depends:
+    base,
+    contravariant,
+    errors,
+    HUnit,
+    QuickCheck >= 2.8 && < 2.9,
+    tasty,
+    tasty-quickcheck,
+    tasty-hunit,
+    talib,
+    vector    
