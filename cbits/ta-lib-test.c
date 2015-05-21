@@ -94,6 +94,7 @@ int main() {
     printf("length: %d\n", len);
     printf("outBeg: %d\n", outBeg);
     printf("outNbElement: %d\n", outNbElement);
+    printf("TA_INTEGER_DEFAULT: %d\n", TA_INTEGER_DEFAULT);
 
     printf("\n");
 
