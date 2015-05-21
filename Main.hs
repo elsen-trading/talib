@@ -20,6 +20,7 @@ data MaOpts = MaOpts { -- data MaOpts = MaOpts Int
 
 main :: IO ()
 main = do
+	c_ta_init
 	putStrLn (show (c_ta_atr_lookback 87))
 	putStrLn "Elsen!"
 	
