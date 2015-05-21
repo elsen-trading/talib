@@ -5,7 +5,13 @@
 #include <ta-lib/ta_func.h>
 #include <ta-lib/ta_abstract.h>
 
+void printFuncInfo(const TA_FuncInfo *funcInfo, void *opaqueData) {
+    printf("%22s (%s)\n", funcInfo->name, funcInfo->group);
+}
+
 int main() {
+    TA_Initialize();
+
     double inReal[] = {91.500000, 94.815000, 94.375000, 95.095000,
             93.780000, 94.625000, 92.530000, 92.750000, 90.315000,
             92.470000, 96.125000, 97.250000, 98.500000, 89.875000,
@@ -104,40 +110,7 @@ int main() {
 
     printf("\n");
 
-    char *taGroups[] = {"Math Operators",
-                       "Math Transform",
-                       "Overlap Studies",
-                       "Volatility Indicators",
-                       "Momentum Indicators",
-                       "Cycle Indicators",
-                       "Volume Indicators",
-                       "Pattern Recognition",
-                       "Statistic Functions",
-                       "Price Transform"};
-
-    for( int i = 0; i < sizeof(taGroups) / sizeof(taGroups[0]); i++) {
-        // documentation in the ta-lib header says you can use NULL as first to TA_FuncTableAlloc,
-        // to get all functions. But you can't.
-
-        char *group = taGroups[i];
-        printf("*** %s ***\n\n", group);
-        TA_StringTable *table;
-        TA_RetCode retCode = TA_FuncTableAlloc(group, &table);
-
-        if (retCode == TA_SUCCESS) {
-            for (int i=0; i < table->size; i++) {
-                const char *taFunc = table->string[i];
-
-                printf("%s\n", taFunc);
-
-            }
-
-            TA_FuncTableFree( table );
-        } else {
-            printf("ERROR\n");
-        }
-        printf("\n");
-    }
+    TA_ForEachFunc(printFuncInfo, NULL);
 
     return EXIT_SUCCESS;
 }

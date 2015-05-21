@@ -35,11 +35,15 @@ executable talib
   -- hs-source-dirs:      
   default-language:    Haskell2010
 
+  extra-libraries:
+    ta_lib
+
   c-sources:
     cbits/mylib.c
 
 test-suite testsuite
   hs-source-dirs: src tests
+  default-language: Haskell2010
   type: exitcode-stdio-1.0
   main-is: Tests.hs
   build-depends:
