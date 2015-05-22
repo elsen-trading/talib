@@ -38,7 +38,7 @@ foo' _ = 3
 -- Singly-Linked list
 data List a = Cons a (List a) | Nil
   deriving Show
-
+           
 -- Parameterized type
 myList :: List String
 myList = Cons "String" (Cons "foo" Nil)
