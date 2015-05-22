@@ -1,5 +1,6 @@
 module Tests.MovingAverage where
 
+import Control.Applicative ((<$>))
 import Test.Tasty
 import Test.Tasty.QuickCheck
 import Test.Tasty.HUnit

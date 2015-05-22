@@ -2,6 +2,7 @@
 
 module Data.TALib.MovingAverage where
 
+import           Control.Applicative ((<$>))
 import           Data.List
 import qualified Data.Vector.Storable as Vec
 
