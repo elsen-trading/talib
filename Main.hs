@@ -9,74 +9,113 @@ import qualified Data.Vector as V
 
 -- TODO: C functions return an enum, not a CInt
 
+-- TA1IntInt1 means that there is 1 input array, an Int option, another Int option, and 1 output array
+type TA1IntInt1 = CInt        -- startIdx
+               -> CInt        -- endIdx
+               -> Ptr CDouble -- input array
+               -> CInt        -- option
+               -> CInt        -- option
+               -> Ptr CInt    -- outBegIdx
+               -> Ptr CInt    -- outNBElement
+               -> Ptr CDouble -- output array
+               -> IO CInt
+
+-- TA2_1 - 2 input arrays, no options, and 1 output array
+type TA2_1 = CInt        -- startIdx
+          -> CInt        -- endIdx
+          -> Ptr CDouble -- input array
+          -> Ptr CDouble -- input array
+          -> Ptr CInt    -- outBegIdx
+          -> Ptr CInt    -- outNBElement
+          -> Ptr CDouble -- output array
+          -> IO CInt
+
+-- type TA4IntInt1 - 4 input arrays, an Int option, another Int option, and 1 output array
+type TA4IntInt1 = CInt        -- startIdx
+               -> CInt        -- endIdx
+               -> Ptr CDouble -- input array
+               -> Ptr CDouble -- input array
+               -> Ptr CDouble -- input array
+               -> Ptr CDouble -- input array
+               -> CInt        -- option
+               -> CInt        -- option
+               -> Ptr CInt    -- outBegIdx
+               -> Ptr CInt    -- outNBElement
+               -> Ptr CDouble -- output array
+               -> IO CInt
+
+-- type TA2Int2 - 2 input arrays, an Int option, and 2 output arrays
+type TA2Int2 = CInt        -- startIdx
+            -> CInt        -- endIdx
+            -> Ptr CDouble -- input array
+            -> Ptr CDouble -- input array
+            -> CInt        -- option
+            -> Ptr CInt    -- outBegIdx
+            -> Ptr CInt    -- outNBElement
+            -> Ptr CDouble -- output array
+            -> Ptr CDouble -- output array
+            -> IO CInt
+
+-- type TA4Int1 - 4 input arrays, an Int option, and 1 output array
+type TA4Int1 = CInt        -- startIdx
+            -> CInt        -- endIdx
+            -> Ptr CDouble -- input array
+            -> Ptr CDouble -- input array
+            -> Ptr CDouble -- input array
+            -> Ptr CDouble -- input array
+            -> CInt        -- option
+            -> Ptr CInt    -- outBegIdx
+            -> Ptr CInt    -- outNBElement
+            -> Ptr CDouble -- output array
+            -> IO CInt
+
 foreign import ccall unsafe "ta_common.h TA_Initialize"
   c_ta_init :: IO ()
 
--- TA_RetCode TA_MA( int          startIdx,
---                   int          endIdx,
---                   const double inReal[],
---                   int          optInTimePeriod,
---                   int          optInMAType,
---                   int         *outBegIdx,
---                   int         *outNbElement,
---                   double       outReal[] );
+-- input: inReal[]; options: int optInTimePeriod, int optInMAType; output: outReal[]
 foreign import ccall unsafe "ta_func.h TA_MA"
-  c_ta_ma :: CInt -> CInt -> Ptr CDouble -> CInt -> CInt ->
-             Ptr CInt -> Ptr CInt -> Ptr CDouble -> IO CInt
+  c_ta_ma :: TA1IntInt1
 
--- TA_RetCode TA_MEDPRICE( int    startIdx,
---                         int    endIdx,
---                         const double inHigh[],
---                         const double inLow[],
---                         int          *outBegIdx,
---                         int          *outNBElement,
---                         double        outReal[] );
+-- input: inHigh[], inLow[]; options: none; output: outReal[]
 foreign import ccall unsafe "ta_func.h TA_MEDPRICE"
-  c_ta_medprice :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> 
-                   Ptr CInt -> Ptr CInt -> Ptr CDouble -> IO CInt
+  c_ta_medprice :: TA2_1
 
--- TA_RetCode TA_ADOSC( int    startIdx,
---                      int    endIdx,
---                      const double inHigh[],
---                      const double inLow[],
---                      const double inClose[],
---                      const double inVolume[],
---                      int           optInFastPeriod, /* From 2 to 100000 */
---                      int           optInSlowPeriod, /* From 2 to 100000 */
---                      int          *outBegIdx,
---                      int          *outNBElement,
---                      double        outReal[] );
+-- input:   inHigh[], inLow[], inClose[], inVolume[];
+-- options: int optInFastPeriod (2-100000), int optInSlowPeriod (2-100000);
+-- output:  outReal[]
 foreign import ccall unsafe "ta_func.h TA_ADOSC"
-  c_ta_adosc :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble ->
-                Ptr CDouble -> Ptr CDouble -> CInt -> CInt ->
-                Ptr CInt -> Ptr CInt -> Ptr CDouble -> IO CInt
+  c_ta_adosc :: TA4IntInt1
 
--- TA_RetCode TA_AROON( int    startIdx,
---                      int    endIdx,
---                      const double inHigh[],
---                      const double inLow[],
---                      int           optInTimePeriod, /* From 2 to 100000 */
---                      int          *outBegIdx,
---                      int          *outNBElement,
---                      double        outAroonDown[],
---                      double        outAroonUp[] );
+-- input:   inHigh[], inLow[];
+-- options: int optInTimePeriod (2-100000);
+-- output:  outAroonDown[], outAroonUp[]
 foreign import ccall unsafe "ta_func.h TA_AROON"
-  c_ta_aroon :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> CInt ->
-                Ptr CInt -> Ptr CInt -> Ptr CDouble -> Ptr CDouble -> IO CInt
+  c_ta_aroon :: TA2Int2
+
+-- input: inHigh[], inLow[], inClose[], inVolume[];
+-- options: int optInTimePeriod (2-100000);
+-- output: outReal[]
+foreign import ccall unsafe "ta_func.h TA_MFI"
+  c_ta_mfi :: TA4Int1
                    
 -- TaInput is a list of [Double]s, where each [Double] corresponds to e.g., inReal, inHigh, inLow,
 -- inClose, etc., depending on the TA function
 data TaInput = TaInput [[Double]]
 
+-- TaOutput includes the same output information provided by ta-lib:
+--   outBegIdx
+--   outNBElement
+--   one or more lists of doubles in out, corresponding to e.g., outReal[], outAroonDown[], etc.)x
 data TaOutput = TaOutput { outBegIdx :: Int
                          , outNBElement :: Int
                          , out :: [[Double]]
                          } deriving (Show)
 
-data TSFun = MovingAverage Int Int -- optInTimePeriod, optInMAType
+data TSFun = MovingAverage Int Int       -- optInTimePeriod, optInMAType
            | MedianPrice
            | ChaikinAdOscillator Int Int -- optInFastPeriod, optInSlowPeriod
-           | Aroon Int -- optInTimePeriod
+           | Aroon Int                   -- optInTimePeriod
+           | MoneyFlowIndex Int          -- optInTimePeriod
            deriving (Show)
                         
 taIntDefault = fromIntegral (minBound :: CInt)
@@ -104,6 +143,9 @@ ta_lib tsfun (TaInput seriess)
           Aroon timePeriod                -> c_ta_aroon startIdx endIdx cInReal (getInArrPtr 1)
                                              (fromIntegral timePeriod) cOutBegIdx cOutNbElement
                                              cOutReal (getOutArrPtr 1)
+          MoneyFlowIndex timePeriod       -> c_ta_mfi startIdx endIdx cInReal (getInArrPtr 1)
+                                             (getInArrPtr 2) (getInArrPtr 3) (fromIntegral timePeriod)
+                                             cOutBegIdx cOutNbElement cOutReal
         case rc of
           0 -> do
                outReal <- peekArray (len * outputs) cOutReal
@@ -143,6 +185,8 @@ main = do
         terpri
         
         let open = map (1 +) close
+            
+        -- TODO: pass real data into some of these, rather than passing the same series multiple times
         
         let movAvg = MovingAverage 5 taIntDefault
         print movAvg
@@ -161,4 +205,16 @@ main = do
         result <- ta_lib aroon (TaInput [open, close])
         print result
         terpri
+        
+        let chaikin = ChaikinAdOscillator 6 7
+        print chaikin
+        result <- ta_lib chaikin (TaInput [open, close, open, close])
+        print result
+        terpri
 	
+        let mfi = MoneyFlowIndex 7
+        print mfi
+        result <- ta_lib mfi (TaInput [open, close, open, close])
+        print result
+        terpri
+            
