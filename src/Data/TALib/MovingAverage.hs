@@ -30,7 +30,7 @@ neighborhood len xs = case len of
   0 -> map (const []) xs
   1 -> map (: [])     xs
   n -> let buff = replicate n (head xs)
-       in  tail . scanl' (\neigs x -> tail neigs ++ [x]) buff $ xs
+       in  tail . scanl (\neigs x -> tail neigs ++ [x]) buff $ xs
 
 t :: Timeseries Double
 t = Timeseries $ Vec.fromList [0,0,0,0,1,0,0,0.0]
