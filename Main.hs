@@ -59,15 +59,15 @@ data TaOutput = TaOutput { outBegIdx :: Int
                          , out :: [[Double]]
                          } deriving (Show)
 
-data Indicator = MovingAverage Int Int -- optInTimePeriod, optInMAType
-               | MedianPrice
-               | ChaikinAdOscillator Int Int -- optInFastPeriod, optInSlowPeriod
-               deriving (Show)
+data TSFun = MovingAverage Int Int -- optInTimePeriod, optInMAType
+           | MedianPrice
+           | ChaikinAdOscillator Int Int -- optInFastPeriod, optInSlowPeriod
+           deriving (Show)
                         
 taIntDefault = fromIntegral (minBound :: CInt)
 
-ta_lib :: Indicator -> TaInput -> IO (Either Int TaOutput)
-ta_lib indicator (TaInput seriess)
+ta_lib :: TSFun -> TaInput -> IO (Either Int TaOutput)
+ta_lib tsfun (TaInput seriess)
     = withArray inReal $ \cInReal ->
       alloca           $ \cOutBegIdx ->
       alloca           $ \cOutNbElement ->
@@ -75,7 +75,7 @@ ta_lib indicator (TaInput seriess)
       -- given consecutive arrays with `n' elements, starting at Ptr `start', get the pointer to the i^th array
       let getArrPtr i = plusPtr cInReal (i * (sizeOf cInReal) * len)
       in do
-        rc <- case indicator of
+        rc <- case tsfun of
           MovingAverage window maType   -> c_ta_ma startIdx endIdx cInReal (fromIntegral window)
                                            (fromIntegral maType) cOutBegIdx cOutNbElement cOutReal
           MedianPrice                   -> c_ta_medprice startIdx endIdx cInReal (getArrPtr 1)
