@@ -4,6 +4,7 @@ import Foreign.Marshal.Array
 import Foreign.Marshal.Alloc
 import Foreign.Storable
 import System.IO.Unsafe
+import Data.List.Split
 import qualified Data.Vector as V
 
 -- TODO: C functions return an enum, not a CInt
@@ -49,6 +50,19 @@ foreign import ccall unsafe "ta_func.h TA_ADOSC"
   c_ta_adosc :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble ->
                 Ptr CDouble -> Ptr CDouble -> CInt -> CInt ->
                 Ptr CInt -> Ptr CInt -> Ptr CDouble -> IO CInt
+
+-- TA_RetCode TA_AROON( int    startIdx,
+--                      int    endIdx,
+--                      const double inHigh[],
+--                      const double inLow[],
+--                      int           optInTimePeriod, /* From 2 to 100000 */
+--                      int          *outBegIdx,
+--                      int          *outNBElement,
+--                      double        outAroonDown[],
+--                      double        outAroonUp[] );
+foreign import ccall unsafe "ta_func.h TA_AROON"
+  c_ta_aroon :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> CInt ->
+                Ptr CInt -> Ptr CInt -> Ptr CDouble -> Ptr CDouble -> IO CInt
                    
 -- TaInput is a list of [Double]s, where each [Double] corresponds to e.g., inReal, inHigh, inLow,
 -- inClose, etc., depending on the TA function
@@ -62,43 +76,51 @@ data TaOutput = TaOutput { outBegIdx :: Int
 data TSFun = MovingAverage Int Int -- optInTimePeriod, optInMAType
            | MedianPrice
            | ChaikinAdOscillator Int Int -- optInFastPeriod, optInSlowPeriod
+           | Aroon Int -- optInTimePeriod
            deriving (Show)
                         
 taIntDefault = fromIntegral (minBound :: CInt)
 
 ta_lib :: TSFun -> TaInput -> IO (Either Int TaOutput)
 ta_lib tsfun (TaInput seriess)
-    = withArray inReal $ \cInReal ->
-      alloca           $ \cOutBegIdx ->
-      alloca           $ \cOutNbElement ->
-      allocaArray len  $ \cOutReal ->
+    = withArray inReal            $ \cInReal ->
+      alloca                      $ \cOutBegIdx ->
+      alloca                      $ \cOutNbElement ->
+      allocaArray (len * outputs) $ \cOutReal ->
       -- given consecutive arrays with `n' elements, starting at Ptr `start', get the pointer to the i^th array
-      let getArrPtr i = plusPtr cInReal (i * (sizeOf cInReal) * len)
+      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
+          getInArrPtr i   = getArrPtr i cInReal
+          getOutArrPtr i  = getArrPtr i cOutReal
       in do
         rc <- case tsfun of
-          MovingAverage window maType   -> c_ta_ma startIdx endIdx cInReal (fromIntegral window)
-                                           (fromIntegral maType) cOutBegIdx cOutNbElement cOutReal
-          MedianPrice                   -> c_ta_medprice startIdx endIdx cInReal (getArrPtr 1)
-                                           cOutBegIdx cOutNbElement cOutReal
-          ChaikinAdOscillator fast slow -> c_ta_adosc startIdx endIdx cInReal (getArrPtr 1)
-                                           (getArrPtr 2) (getArrPtr 3) (fromIntegral fast)
-                                           (fromIntegral slow)
-                                           cOutBegIdx cOutNbElement cOutReal
-          
+          MovingAverage timePeriod maType -> c_ta_ma startIdx endIdx cInReal (fromIntegral timePeriod)
+                                             (fromIntegral maType) cOutBegIdx cOutNbElement cOutReal
+          MedianPrice                     -> c_ta_medprice startIdx endIdx cInReal (getInArrPtr 1)
+                                             cOutBegIdx cOutNbElement cOutReal
+          ChaikinAdOscillator fast slow   -> c_ta_adosc startIdx endIdx cInReal (getInArrPtr 1)
+                                             (getInArrPtr 2) (getInArrPtr 3) (fromIntegral fast)
+                                             (fromIntegral slow)
+                                             cOutBegIdx cOutNbElement cOutReal
+          Aroon timePeriod                -> c_ta_aroon startIdx endIdx cInReal (getInArrPtr 1)
+                                             (fromIntegral timePeriod) cOutBegIdx cOutNbElement
+                                             cOutReal (getOutArrPtr 1)
         case rc of
           0 -> do
-               outReal <- peekArray len cOutReal
+               outReal <- peekArray (len * outputs) cOutReal
                outBegIdx <- peek cOutBegIdx
                outNbElement <- peek cOutNbElement
                return $ Right $ TaOutput { outBegIdx=(fromIntegral outBegIdx),
                                            outNBElement=(fromIntegral outNbElement),
-                                           out=[map realToFrac outReal]
+                                           out=chunksOf len (map realToFrac outReal)
                                          }
           _ -> return $ Left $ fromIntegral rc
     where inReal = map realToFrac $ concat seriess
           len = fromIntegral $ length (head seriess)
           startIdx = 0
           endIdx = fromIntegral $ len - 1
+          outputs = case tsfun of
+            Aroon _ -> 2
+            _       -> 1
           
 terpri :: IO ()
 terpri = putStrLn ""
@@ -134,4 +156,9 @@ main = do
         print result
         terpri
         
+        let aroon = Aroon 5
+        print aroon
+        result <- ta_lib aroon (TaInput [open, close])
+        print result
+        terpri
 	
