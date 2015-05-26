@@ -270,6 +270,15 @@ foreign import ccall unsafe "ta_func.h TA_ATR"
 taAverageTrueRange :: TS3Int
 taAverageTrueRange inHigh inLow inClose optInTimePeriod
     = ta_lib (TA3Int1 c_ta_atr inHigh inLow inClose optInTimePeriod)
+      
+-- input: inHigh[], inLow[], inClose[];
+-- options: int optInTimePeriod (2-100000)
+-- output: outReal[]
+foreign import ccall unsafe "ta_func.h TA_ADX"
+  c_ta_adx :: CTA3Int1
+
+taAverageDirectionalMovementIndex inHigh inLow inClose optInTimePeriod
+    = ta_lib (TA3Int1 c_ta_adx inHigh inLow inClose optInTimePeriod)
 
 terpri :: IO ()
 terpri = putStrLn ""
