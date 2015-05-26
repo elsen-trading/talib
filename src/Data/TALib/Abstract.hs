@@ -3,7 +3,7 @@
 
 {-# LANGUAGE NoMonomorphismRestriction #-}
 
-module TALib.Abstract (
+module Data.TALib.Abstract (
   call,
   example,
 ) where
