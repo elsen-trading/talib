@@ -19,6 +19,10 @@ import qualified Data.Vector.Storable.Mutable as VM
 import Foreign.ForeignPtr
 import Control.Applicative
 
+-------------------------------------------------------------------------------
+-- Types
+-------------------------------------------------------------------------------
+
 data Signature = Signature
   { itypes :: [Type]
   , otypes :: [Type]
@@ -36,6 +40,10 @@ data Val
   | VDouble CDouble
   | VPtr IntPtr
   deriving (Eq, Ord, Show)
+
+-------------------------------------------------------------------------------
+-- FFI
+-------------------------------------------------------------------------------
 
 retty :: RetType (Ptr ())
 retty = retPtr retVoid
@@ -71,9 +79,6 @@ fromType (VPtr n)    = argPtr (intPtrToPtr n)
 
 -- Example of calling function pointers with runtime type information and
 -- signatures generated dynamically as runtime values.
-
-vecPtr :: VM.MVector s CInt -> ForeignPtr CInt
-vecPtr = fst . VM.unsafeToForeignPtr0
 
 ma_sig :: Signature
 ma_sig = Signature
