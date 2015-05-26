@@ -19,13 +19,14 @@ cabal-version:       >=1.10
 library
     hs-source-dirs: src
     exposed-modules:
+      Data.TALib.Abstract              
       Data.TALib.Timeseries
       Data.TALib.MovingAverage              
     default-language: Haskell2010
     build-depends: base >= 4.7 && < 4.9,
                    contravariant,
                    errors,
-                   vector
+                   vector 
                     
 executable talib
   main-is:             Main.hs
@@ -33,7 +34,9 @@ executable talib
   -- other-extensions:    
   build-depends:       base   >=4.7  && <4.9,
                        vector >=0.10 && <0.11,
-                       split  >=0.2  && <0.3
+                       split  >=0.2  && <0.3,
+                       libffi == 0.1,
+                       unix
   -- hs-source-dirs:      
   default-language:    Haskell2010
 
