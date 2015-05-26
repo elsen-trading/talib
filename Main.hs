@@ -83,6 +83,18 @@ type CTA3Int1 = CInt        -- startIdx
              -> Ptr CDouble -- output array
              -> IO CInt
 
+-- CTA4_1 - 4 input arrays, no options, and 1 output array
+type CTA4_1 = CInt        -- startIdx
+           -> CInt        -- endIdx
+           -> Ptr CDouble -- input array
+           -> Ptr CDouble -- input array
+           -> Ptr CDouble -- input array
+           -> Ptr CDouble -- input array
+           -> Ptr CInt    -- outBegIdx
+           -> Ptr CInt    -- outNBElement
+           -> Ptr CDouble -- output array
+           -> IO CInt
+
 -- type signatures for this library's interface start with TS (for time-series)
 -- some of these differ in naming from the TA signatures above, since the output is always the same
 -- (so the suffix in type signature names above do not appear below)
@@ -124,6 +136,12 @@ type TS3Int = [Double]
            -> Int
            -> TSOutput
 
+type TS4_ = [Double]
+         -> [Double]
+         -> [Double]
+         -> [Double]
+         -> TSOutput
+
 -- A TSFun is a C ta-lib function, and the corresponding inputs (input data and options)
 data TSFun = TA1IntInt1 CTA1IntInt1 [Double] Int Int
            | TA2_1 CTA2_1 [Double] [Double]
@@ -131,6 +149,7 @@ data TSFun = TA1IntInt1 CTA1IntInt1 [Double] Int Int
            | TA2Int2 CTA2Int2 [Double] [Double] Int
            | TA4Int1 CTA4Int1 [Double] [Double] [Double] [Double] Int
            | TA3Int1 CTA3Int1 [Double] [Double] [Double] Int
+           | TA4_1 CTA4_1 [Double] [Double] [Double] [Double]
 
 -- TaOutput includes the same output information provided by ta-lib:
 --   outBegIdx
@@ -169,6 +188,8 @@ ta_lib tsfun
                                              (fromIntegral arg1) cOutBegIdx cOutNbElement cOutReal
           TA3Int1 fn _ _ _ arg1           -> fn startIdx endIdx cInReal (getInArrPtr 1) (getInArrPtr 2)
                                              (fromIntegral arg1) cOutBegIdx cOutNbElement cOutReal
+          TA4_1 fn _ _ _ _                -> fn startIdx endIdx cInReal (getInArrPtr 1) (getInArrPtr 2) (getInArrPtr 3)
+                                             cOutBegIdx cOutNbElement cOutReal
         case rc of
           0 -> do
                outReal <- peekArray (len * outputs) cOutReal
@@ -187,6 +208,7 @@ ta_lib tsfun
             TA2Int2 _ in1 in2 _              -> in1 ++ in2
             TA4Int1 _ in1 in2 in3 in4 _      -> in1 ++ in2 ++ in3 ++ in4
             TA3Int1 _ in1 in2 in3 _          -> in1 ++ in2 ++ in3
+            TA4_1 _ in1 in2 in3 in4          -> in1 ++ in2 ++ in3 ++ in4
           len = fromIntegral $ length $ case tsfun of
             TA1IntInt1 _ in1 _ _       -> in1
             TA2_1 _ in1 _              -> in1
@@ -194,6 +216,7 @@ ta_lib tsfun
             TA2Int2 _ in1 _ _          -> in1
             TA4Int1 _ in1 _ _ _ _      -> in1
             TA3Int1 _ in1 _ _ _        -> in1
+            TA4_1 _ in1 _ _ _          -> in1
           startIdx = 0
           endIdx = fromIntegral $ len - 1
           outputs = case tsfun of
@@ -203,6 +226,7 @@ ta_lib tsfun
             TA2Int2 {}    -> 2
             TA4Int1 {}    -> 1
             TA3Int1 {}    -> 1
+            TA4_1 {}      -> 1
 
 foreign import ccall unsafe "ta_common.h TA_Initialize"
   c_ta_init :: IO ()
@@ -280,6 +304,13 @@ foreign import ccall unsafe "ta_func.h TA_ADX"
 taAverageDirectionalMovementIndex inHigh inLow inClose optInTimePeriod
     = ta_lib (TA3Int1 c_ta_adx inHigh inLow inClose optInTimePeriod)
 
+foreign import ccall unsafe "ta_func.h TA_AD"
+  c_ta_ad :: CTA4_1
+
+taChaikinAdLine :: TS4_
+taChaikinAdLine inHigh inLow inClose inVolume
+    = ta_lib (TA4_1 c_ta_ad inHigh inLow inClose inVolume)
+
 terpri :: IO ()
 terpri = putStrLn ""
 
@@ -328,4 +359,5 @@ main = do
         result <- taMoneyFlowIndex open close open close 7
         print result
         terpri
-                
+        
+        
