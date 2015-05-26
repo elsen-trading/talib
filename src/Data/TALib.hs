@@ -1,3 +1,5 @@
+module Data.TALib where
+
 import Foreign.C.Types
 import Foreign.Ptr
 import Foreign.Marshal.Array
