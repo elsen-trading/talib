@@ -26,7 +26,7 @@ library
                    contravariant,
                    errors,
                    vector
-                   
+
 test-suite testsuite
   hs-source-dirs: src tests
   default-language: Haskell2010
