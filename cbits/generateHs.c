@@ -325,7 +325,55 @@ void forEach(const TA_FuncInfo *funcInfo, void *opaqueData) {
 
     printf("ta_%s :: %s\n", hsParams.funcNameLower, tsSig);
     printf("ta_%s %s\n", hsParams.funcNameLower, args);
-    printf("    = ta_lib (%s c_ta_%s %s)\n", taSig, hsParams.funcNameLower, args);
+    printf("    = withArray _inReal            $ \\cInReal ->\n");
+    printf("      alloca                       $ \\cOutBegIdx ->\n");
+    printf("      alloca                       $ \\cOutNbElement ->\n");
+    printf("      allocaArray (len * outputs)  $ \\cOutReal ->\n");
+    printf("      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)\n");
+    printf("          getInArrPtr i   = getArrPtr i cInReal\n");
+    printf("          getOutArrPtr i  = getArrPtr i cOutReal\n");
+    printf("      in do\n");
+//        -- TODO: this stuff has to be auto-generated (getInArrPtr 1) (getInArrPtr 2), ... (fromIntegral arg2) (from... arg3)
+//        -- c function name also has to be auto-generated
+//        rc <- c_ta_rsi startIdx endIdx (getInArrPtr 0) (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement (getOutArrPtr 0)
+
+    printf("        rc <- c_ta_%s startIdx endIdx", hsParams.funcNameLower);
+    for (int i = 0; i < hsParams.inputs; i++) {
+        printf(" (getInArrPtr %d)", i);
+    }
+    for (int i = 0; i < hsParams.optInputs; i++) {
+        char *fn = (hsParams.optInputTypes[i] == INT) ? "fromIntegral" : "realToFrac";
+        printf(" (%s %s)", fn, hsParams.optInputNames[i]);
+    }
+    printf(" cOutBegIdx cOutNbElement");
+    for (int i = 0; i < hsParams.outputs; i++) {
+        printf(" (getOutArrPtr %d)", i);
+    }
+    printf("\n");
+
+    printf("        case rc of\n");
+    printf("          0 -> do\n");
+    printf("               outReal <- peekArray (len * outputs) cOutReal\n");
+    printf("               outBegIdx <- peek cOutBegIdx\n");
+    printf("               outNbElement <- peek cOutNbElement\n");
+    printf("               return $ Right $ TaOutput { outBegIdx = fromIntegral outBegIdx,\n");
+    printf("                                           outNBElement = fromIntegral outNbElement,\n");
+    printf("                                           outCount = outputs,\n");
+    printf("                                           out = chunksOf len outReal\n");
+    printf("                                         }\n");
+    printf("          _ -> return $ Left $ fromIntegral rc\n");
+//    where _inReal = inReal -- TODO: inReal should be auto-gen
+
+    printf("    where _inReal = %s", hsParams.inputNames[0]);
+    for (int i = 1; i < hsParams.inputs; i++) {
+        printf(" ++ %s", hsParams.inputNames[i]);
+    }
+    printf("\n");
+
+    printf("          len = fromIntegral $ length %s\n", hsParams.inputNames[0]);
+    printf("          startIdx = 0\n");
+    printf("          endIdx = fromIntegral $ len - 1\n");
+    printf("          outputs = %d\n", hsParams.outputs);
 
     terpri();
 
