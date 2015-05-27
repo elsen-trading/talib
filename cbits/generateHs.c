@@ -265,12 +265,57 @@ void forEach(const TA_FuncInfo *funcInfo, void *opaqueData) {
         }
     }
 
-    char ctaSig[200];            // "CTA2Int2"
-    char tsSig[200];             // "TS2Int"
-    char taSig[200];             // "TA2Int2"
+    char ctaSig[200] = "";            // "CTA2Int2"
+    char tsSig[200] = "";             // "TS2Int"
+    char taSig[200] = "";             // "TA2Int2"
 
-    sprintf(ctaSig, "CTA%d%s%d", hsParams.inputs, optTypesMerged, hsParams.outputs);
-    sprintf(tsSig, "TS%d%s", hsParams.inputs, optTypesMerged);
+
+    /*
+
+    type CTA1IntInt1 = CInt        -- startIdx
+                -> CInt        -- endIdx
+                -> Ptr CDouble -- input array
+                -> CInt        -- option
+                -> CInt        -- option
+                -> Ptr CInt    -- outBegIdx
+                -> Ptr CInt    -- outNBElement
+                -> Ptr CDouble -- output array
+                -> IO CInt
+
+     */
+
+    strcat(ctaSig, "CInt -> CInt -> ");
+
+    for (int i = 0; i < hsParams.inputs; i++) {
+        if (i > 0) {
+            strcat(tsSig, " -> ");
+            strcat(ctaSig, " -> ");
+        }
+        strcat(tsSig, "[Double]");
+        strcat(ctaSig, "Ptr CDouble");
+    }
+
+    for (int i = 0; i < hsParams.optInputs; i++) {
+        strcat(tsSig, " -> ");
+        strcat(ctaSig, " -> ");
+
+        char *hsOptType = hsParams.optInputTypes[i] == INT ? "Int" : "Double";
+        strcat(tsSig, hsOptType);
+
+        char *cHsOptType = hsParams.optInputTypes[i] == INT ? "CInt" : "CDouble";
+        strcat(ctaSig, cHsOptType);
+    }
+
+    strcat(ctaSig, " -> Ptr CInt -> Ptr CInt");
+    for (int i = 0; i < hsParams.outputs; i++) {
+        strcat(ctaSig, " -> ");
+        char *cHsOutputType = hsParams.outputTypes[i] == INTARRAY ? "Ptr CInt" : "Ptr CDouble";
+        strcat(ctaSig, cHsOutputType);
+    }
+
+    strcat(tsSig, " -> IO (Either Int TaOutput)");
+    strcat(ctaSig, " -> IO CInt");
+
     sprintf(taSig, "TA%d%s%d", hsParams.inputs, optTypesMerged, hsParams.outputs);
 
     printf("foreign import ccall unsafe \"ta_func.h TA_%s\"\n", hsParams.funcNameUpper);
