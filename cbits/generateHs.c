@@ -195,7 +195,8 @@ void terpri() {
     printf("\n");
 }
 
-void printHsParam(HS_Params hsParams) {
+void printHsParam(const TA_FuncInfo *funcInfo, void *opaqueData) {
+    HS_Params hsParams = getHsParams(funcInfo);
     printf("%s\n", hsParams.funcNameLower);
     printf("%s\n", hsParams.funcNameUpper);
     terpri();
@@ -218,16 +219,12 @@ void printHsParam(HS_Params hsParams) {
     }
 }
 
-void forEach(const TA_FuncInfo *funcInfo, void *opaqueData) {
+void printHsCode(const TA_FuncInfo *funcInfo, void *opaqueData) {
+    HS_Params hsParams = getHsParams(funcInfo);
     const char *name = funcInfo->name; // e.g., AROON
-
     // e.g., -- AVGPRICE             Average Price
     printf("-- %-20s %s\n", name, funcInfo->hint);
     terpri();
-
-    HS_Params hsParams = getHsParams(funcInfo);
-    //printHsParam(hsParams);
-
     // currently we only support ta-lib functions that return one or more double[],
     // not int[].
 
@@ -265,24 +262,9 @@ void forEach(const TA_FuncInfo *funcInfo, void *opaqueData) {
         }
     }
 
-    char ctaSig[200] = "";            // "CTA2Int2"
-    char tsSig[200] = "";             // "TS2Int"
-    char taSig[200] = "";             // "TA2Int2"
-
-
-    /*
-
-    type CTA1IntInt1 = CInt        -- startIdx
-                -> CInt        -- endIdx
-                -> Ptr CDouble -- input array
-                -> CInt        -- option
-                -> CInt        -- option
-                -> Ptr CInt    -- outBegIdx
-                -> Ptr CInt    -- outNBElement
-                -> Ptr CDouble -- output array
-                -> IO CInt
-
-     */
+    char ctaSig[200] = "";
+    char tsSig[200] = "";
+    char taSig[200] = "";
 
     strcat(ctaSig, "CInt -> CInt -> ");
 
@@ -333,10 +315,6 @@ void forEach(const TA_FuncInfo *funcInfo, void *opaqueData) {
     printf("          getInArrPtr i   = getArrPtr i cInReal\n");
     printf("          getOutArrPtr i  = getArrPtr i cOutReal\n");
     printf("      in do\n");
-//        -- TODO: this stuff has to be auto-generated (getInArrPtr 1) (getInArrPtr 2), ... (fromIntegral arg2) (from... arg3)
-//        -- c function name also has to be auto-generated
-//        rc <- c_ta_rsi startIdx endIdx (getInArrPtr 0) (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-
     printf("        rc <- c_ta_%s startIdx endIdx", hsParams.funcNameLower);
     for (int i = 0; i < hsParams.inputs; i++) {
         printf(" (getInArrPtr %d)", i);
@@ -350,7 +328,6 @@ void forEach(const TA_FuncInfo *funcInfo, void *opaqueData) {
         printf(" (getOutArrPtr %d)", i);
     }
     printf("\n");
-
     printf("        case rc of\n");
     printf("          0 -> do\n");
     printf("               outReal <- peekArray (len * outputs) cOutReal\n");
@@ -362,8 +339,6 @@ void forEach(const TA_FuncInfo *funcInfo, void *opaqueData) {
     printf("                                           out = chunksOf len outReal\n");
     printf("                                         }\n");
     printf("          _ -> return $ Left $ fromIntegral rc\n");
-//    where _inReal = inReal -- TODO: inReal should be auto-gen
-
     printf("    where _inReal = %s", hsParams.inputNames[0]);
     for (int i = 1; i < hsParams.inputs; i++) {
         printf(" ++ %s", hsParams.inputNames[i]);
@@ -376,13 +351,12 @@ void forEach(const TA_FuncInfo *funcInfo, void *opaqueData) {
     printf("          outputs = %d\n", hsParams.outputs);
 
     terpri();
-
 }
 
 int main() {
     TA_Initialize();
 
-    TA_ForEachFunc(forEach, NULL);
+    TA_ForEachFunc(printHsCode, NULL);
 
     return EXIT_SUCCESS;
 }
