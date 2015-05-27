@@ -1,3 +1,4 @@
+{- NOTE: Not a real implementation of movingAverage. Just for testing -}
 {-# LANGUAGE ForeignFunctionInterface #-}
 
 module Data.TALib.MovingAverage where
@@ -9,9 +10,10 @@ import qualified Data.Vector.Storable as Vec
 import Data.TALib.Timeseries
 
 data MAOpt = MAOpt {
-  maWindowLength :: Int
+  maWindowNSamps :: Int
   } deriving (Eq, Show)
 
+{- NOTE: Not a real implementation of movingAverage. Just for testing -}
 movingAverage :: MAOpt -> Timeseries Double -> Timeseries Double
 movingAverage (MAOpt len) vec
   | Vec.null (unTS vec) = vec

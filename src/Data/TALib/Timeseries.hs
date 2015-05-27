@@ -10,10 +10,26 @@
 
 module Data.TALib.Timeseries where
 
-import qualified Data.Vector.Storable as Vec
+import           Data.Vector.Storable as Vec
 
 data Timeseries a = Timeseries {
-    unTS     :: Vec.Vector a
-  -- , t0       :: UTCTime
-  -- , sampRate :: (Somewhere Stephen has a sum type for stock sampling intervals..)
+    samples    :: Vec.Vector a
+  , t0         :: UTCTime
+  , sampRateHz :: Frequency
+  } deriving (Eq, Show)
+
+hz :: Double -> Frequency
+hz = Frequency
+
+perMinute :: Double -> Frequency
+perMinute n = Frequency . (/60)
+
+perHour :: Double -> Frequency
+perHour n = Frequency . (/ 3600)
+
+perDay :: Double -> Frequency
+perDay = Frequency . (/ 3600 * 24)
+
+newtype Frequency = Frequency {
+  unFrequency :: Double
   } deriving (Eq, Show)
