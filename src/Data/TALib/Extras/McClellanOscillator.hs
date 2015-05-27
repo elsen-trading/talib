@@ -2,11 +2,11 @@ module Data.TALib.Extras.McClellanOscillator where
 
 import Data.Default
 import Data.Vector.Storable.Mutable
-import Data.Vector.TALib.Timeseries
+import Data.TALib.Timeseries
 
-import Data.Vector.TALib.Extras.ExponentialMovingAverage
+import Data.TALib.Extras.ExponentialMovingAverage
 
-data McClellanOpts = MCOpts {
+data McClellanOpts = McClellanOpts {
     mcFastTau :: Double
   , mcSlowTau :: Double
   }
@@ -14,8 +14,8 @@ data McClellanOpts = MCOpts {
 instance Default McClellanOpts where
   def = McClellanOpts 19 23
 
-mcClellan :: Timeseries -> Timeseries
+mcClellan :: Timeseries Double -> Timeseries Double
 mcClellan = mcClellan' def
 
-mcClellan' :: McClellanOpts -> Timeseries -> Timeseries
+mcClellan' :: McClellanOpts -> Timeseries Double -> Timeseries Double
 mcClellan' = undefined
