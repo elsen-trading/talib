@@ -353,10 +353,25 @@ void printHsCode(const TA_FuncInfo *funcInfo, void *opaqueData) {
     terpri();
 }
 
+// a check to see if functions that return multiple outputs ever return outputs
+// of varying type. That is never the case. If a function returns one int[], it returns all int[]s.
+// if a fuction returns one double[], it returns all double[]s
+void printOutputTypes(const TA_FuncInfo *funcInfo, void *opaqueData) {
+    HS_Params hsParams = getHsParams(funcInfo);
+    const char *name = funcInfo->name; // e.g., AROON
+    if (hsParams.outputs <= 1)
+        return;
+    printf("-- %-20s %s\n", name, funcInfo->hint);
+    for (int i = 0; i < hsParams.outputs; i++) {
+        printf("%s - %d\n", hsParams.outputNames[i], hsParams.outputTypes[i]);
+    }
+    terpri();
+}
+
 int main() {
     TA_Initialize();
 
-    TA_ForEachFunc(printHsCode, NULL);
+    TA_ForEachFunc(printOutputTypes, NULL);
 
     return EXIT_SUCCESS;
 }
