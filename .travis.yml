@@ -8,6 +8,8 @@ before_install:
    - sudo apt-get install build-essential
    - chmod 755 ubuntuBuildDeps.sh
    - sudo ./ubuntuBuildDeps.sh 
+   - sudo apt-get install libblas-dev
+   - sudo apt-get install liblapack-dev
    - sudo add-apt-repository -y ppa:hvr/ghc
    - sudo apt-get update
    - sudo apt-get install cabal-install-1.22 ghc-$GHCVER alex happy
