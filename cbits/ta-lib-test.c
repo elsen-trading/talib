@@ -9,7 +9,7 @@ void printFuncInfo(const TA_FuncInfo *funcInfo, void *opaqueData) {
     printf("%22s (%s)\n", funcInfo->name, funcInfo->group);
 }
 
-int main() {
+int myLibTest() {
     TA_Initialize();
 
     double inReal[] = {91.500000, 94.815000, 94.375000, 95.095000,
