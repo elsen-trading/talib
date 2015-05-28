@@ -46,5 +46,6 @@ test-suite testsuite
     tasty,
     tasty-quickcheck,
     tasty-hunit,
+    time,
     talib,
     vector    
