@@ -25,9 +25,6 @@ typedef struct HS_Params {
    char outputNames[20][200];   // ["outAroonDown", "outAroonUp"]
    datatype outputTypes[20];   // [DOUBLEARRAY, DOUBLEARRAY]
    int outputs;                 // 2
-
-   // true if all return vals are double[]
-   bool returnsDoubles;        // true
 } HS_Params;
 
 int popcount(int i) {
@@ -165,7 +162,6 @@ HS_Params getHsParams(const TA_FuncInfo *taFuncInfo) {
     }
 
     params.outputs = taFuncInfo->nbOutput;
-    params.returnsDoubles = true;
     for (int i = 0; i < params.outputs; i++) {
         TA_OutputParameterInfo outputParam;
         const TA_OutputParameterInfo *pointer = &outputParam;
@@ -181,10 +177,9 @@ HS_Params getHsParams(const TA_FuncInfo *taFuncInfo) {
         TA_OutputParameterType type = pointer->type;
 
         if (type > 0) {
-            params.returnsDoubles = false;
-            params.outputTypes[i] = DOUBLEARRAY;
-        } else {
             params.outputTypes[i] = INTARRAY;
+        } else {
+            params.outputTypes[i] = DOUBLEARRAY;
         }
     }
 
@@ -222,17 +217,11 @@ void printHsParam(const TA_FuncInfo *funcInfo, void *opaqueData) {
 void printHsCode(const TA_FuncInfo *funcInfo, void *opaqueData) {
     HS_Params hsParams = getHsParams(funcInfo);
     const char *name = funcInfo->name; // e.g., AROON
+    printf("--\n");
     // e.g., -- AVGPRICE             Average Price
     printf("-- %-20s %s\n", name, funcInfo->hint);
+    printf("--\n");
     terpri();
-    // currently we only support ta-lib functions that return one or more double[],
-    // not int[].
-
-    if (!hsParams.returnsDoubles) {
-        printf("-- Currently Unsupported\n");
-        terpri();
-        return;
-    }
 
     char args[2000];
     args[0] = '\0';
@@ -264,7 +253,6 @@ void printHsCode(const TA_FuncInfo *funcInfo, void *opaqueData) {
 
     char ctaSig[200] = "";
     char tsSig[200] = "";
-    char taSig[200] = "";
 
     strcat(ctaSig, "CInt -> CInt -> ");
 
@@ -295,25 +283,64 @@ void printHsCode(const TA_FuncInfo *funcInfo, void *opaqueData) {
         strcat(ctaSig, cHsOutputType);
     }
 
-    strcat(tsSig, " -> IO (Either Int TaOutput)");
-    strcat(ctaSig, " -> IO CInt");
+    strcat(tsSig, " -> IO (Either Int (Int, Int");
+    for (int i = 0; i < hsParams.outputs; i++) {
+        strcat(tsSig, hsParams.outputTypes[i] == INTARRAY ? ", [Int]" : ", [Double]");
+    }
+    strcat(tsSig, "))");
 
-    sprintf(taSig, "TA%d%s%d", hsParams.inputs, optTypesMerged, hsParams.outputs);
+    strcat(ctaSig, " -> IO CInt");
 
     printf("foreign import ccall unsafe \"ta_func.h TA_%s\"\n", hsParams.funcNameUpper);
     printf("  c_ta_%s :: %s\n", hsParams.funcNameLower, ctaSig);
 
     terpri();
+    printf("-- inputs");
+    for (int i = 0; i < hsParams.inputs; i++) {
+        printf("\n--   %s", hsParams.inputNames[i]);
+    }
+    printf("\n");
+    printf("-- arguments");
+    for (int i = 0; i < hsParams.optInputs; i++) {
+        printf("\n--   %s (%s)", hsParams.optInputNames[i], hsParams.optInputTypes[i] == INT ? "int" : "double");
+    }
+    printf("\n");
+    printf("-- outputs");
+    for (int i = 0; i < hsParams.outputs; i++) {
+        printf("\n--   %s (%s)", hsParams.outputNames[i], hsParams.outputTypes[i] == INTARRAY ? "int[]" : "double[]");
+    }
+    printf("\n");
+    terpri();
+
+    // The haskell code we generate assumes all returned arrays are of the same type.
+    // This is fair to assume, since it's always the case for ta-lib functions.
+    // All functions that have multiple returns have the same type (double[] or int[]) for all return arrays.
+    // The following return multiple double[]s (number in parens = number of outputs):
+    // AROON (2),
+    // BBANDS (3),
+    // HT_PHASOR (2),
+    // HT_SINE (2),
+    // MACD (3),
+    // MACDEXT (3),
+    // MACDFIX (3),
+    // MAMA (2),
+    // MINMAX (2),
+    // STOCH (2),
+    // STOCHF (2),
+    // STOCHRSI (2)
+    //
+    // The following return multiple int[]s:
+    // MINMAXINDEX (2)
 
     printf("ta_%s :: %s\n", hsParams.funcNameLower, tsSig);
     printf("ta_%s %s\n", hsParams.funcNameLower, args);
     printf("    = withArray _inReal            $ \\cInReal ->\n");
     printf("      alloca                       $ \\cOutBegIdx ->\n");
     printf("      alloca                       $ \\cOutNbElement ->\n");
-    printf("      allocaArray (len * outputs)  $ \\cOutReal ->\n");
+    printf("      allocaArray (len * outputs)  $ \\cOut ->\n");
     printf("      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)\n");
     printf("          getInArrPtr i   = getArrPtr i cInReal\n");
-    printf("          getOutArrPtr i  = getArrPtr i cOutReal\n");
+    printf("          getOutArrPtr i  = getArrPtr i cOut\n");
     printf("      in do\n");
     printf("        rc <- c_ta_%s startIdx endIdx", hsParams.funcNameLower);
     for (int i = 0; i < hsParams.inputs; i++) {
@@ -330,14 +357,22 @@ void printHsCode(const TA_FuncInfo *funcInfo, void *opaqueData) {
     printf("\n");
     printf("        case rc of\n");
     printf("          0 -> do\n");
-    printf("               outReal <- peekArray (len * outputs) cOutReal\n");
+    printf("               _out <- peekArray (len * outputs) cOut\n");
     printf("               outBegIdx <- peek cOutBegIdx\n");
     printf("               outNbElement <- peek cOutNbElement\n");
-    printf("               return $ Right $ TaOutput { outBegIdx = fromIntegral outBegIdx,\n");
-    printf("                                           outNBElement = fromIntegral outNbElement,\n");
-    printf("                                           outCount = outputs,\n");
-    printf("                                           out = chunksOf len outReal\n");
-    printf("                                         }\n");
+
+
+    printf("               let chunks = (chunksOf len _out)\n");
+    printf("               return $ Right $ (fromIntegral outBegIdx,\n");
+    printf("                                 fromIntegral outNbElement");
+
+    for (int i = 0; i < hsParams.outputs; i++) {
+        printf(",\n");
+        printf("                                 chunks !! %d", i);
+    }
+    printf("\n");
+    printf("                                )\n");
+
     printf("          _ -> return $ Left $ fromIntegral rc\n");
     printf("    where _inReal = %s", hsParams.inputNames[0]);
     for (int i = 1; i < hsParams.inputs; i++) {
@@ -371,7 +406,7 @@ void printOutputTypes(const TA_FuncInfo *funcInfo, void *opaqueData) {
 int main() {
     TA_Initialize();
 
-    TA_ForEachFunc(printOutputTypes, NULL);
+    TA_ForEachFunc(printHsCode, NULL);
 
     return EXIT_SUCCESS;
 }
