@@ -43,14 +43,14 @@ foreign import ccall unsafe "ta_func.h TA_ACOS"
 
 ta_acos :: V.Vector Double -> IO (Either Int (Int, Int, V.Vector Double))
 ta_acos inReal = do
-    _inReal <- V.thaw inReal
+    _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
     withForeignPtr (vecPtr _inReal) $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
           withForeignPtr (vecPtr _outReal) $ \c_outReal ->
             do rc <- c_ta_acos 0 (fromIntegral $ len - 1) c_inReal cOutBegIdx cOutNbElement c_outReal
-               out_outReal <- V.freeze _outReal
+               out_outReal <- V.unsafeFreeze _outReal
                case rc of
                  0 -> do outBegIdx <- peek cOutBegIdx
                          outNbElement <- peek cOutNbElement
@@ -79,10 +79,10 @@ foreign import ccall unsafe "ta_func.h TA_AD"
 
 ta_ad :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Double))
 ta_ad inHigh inLow inClose inVolume = do
-    _inHigh <- V.thaw inHigh
-    _inLow <- V.thaw inLow
-    _inClose <- V.thaw inClose
-    _inVolume <- V.thaw inVolume
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
+    _inVolume <- V.unsafeThaw inVolume
     _outReal <- VM.new len
     withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
       withForeignPtr (vecPtr _inLow) $ \c_inLow ->
@@ -92,7 +92,7 @@ ta_ad inHigh inLow inClose inVolume = do
               alloca $ \cOutNbElement ->
                 withForeignPtr (vecPtr _outReal) $ \c_outReal ->
                   do rc <- c_ta_ad 0 (fromIntegral $ len - 1) c_inHigh c_inLow c_inClose c_inVolume cOutBegIdx cOutNbElement c_outReal
-                     out_outReal <- V.freeze _outReal
+                     out_outReal <- V.unsafeFreeze _outReal
                      case rc of
                        0 -> do outBegIdx <- peek cOutBegIdx
                                outNbElement <- peek cOutNbElement
@@ -119,8 +119,8 @@ foreign import ccall unsafe "ta_func.h TA_ADD"
 
 ta_add :: V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Double))
 ta_add inReal0 inReal1 = do
-    _inReal0 <- V.thaw inReal0
-    _inReal1 <- V.thaw inReal1
+    _inReal0 <- V.unsafeThaw inReal0
+    _inReal1 <- V.unsafeThaw inReal1
     _outReal <- VM.new len
     withForeignPtr (vecPtr _inReal0) $ \c_inReal0 ->
       withForeignPtr (vecPtr _inReal1) $ \c_inReal1 ->
@@ -128,7 +128,7 @@ ta_add inReal0 inReal1 = do
           alloca $ \cOutNbElement ->
             withForeignPtr (vecPtr _outReal) $ \c_outReal ->
               do rc <- c_ta_add 0 (fromIntegral $ len - 1) c_inReal0 c_inReal1 cOutBegIdx cOutNbElement c_outReal
-                 out_outReal <- V.freeze _outReal
+                 out_outReal <- V.unsafeFreeze _outReal
                  case rc of
                    0 -> do outBegIdx <- peek cOutBegIdx
                            outNbElement <- peek cOutNbElement
@@ -159,10 +159,10 @@ foreign import ccall unsafe "ta_func.h TA_ADOSC"
 
 ta_adosc :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> Int -> Int -> IO (Either Int (Int, Int, V.Vector Double))
 ta_adosc inHigh inLow inClose inVolume optInFastPeriod optInSlowPeriod = do
-    _inHigh <- V.thaw inHigh
-    _inLow <- V.thaw inLow
-    _inClose <- V.thaw inClose
-    _inVolume <- V.thaw inVolume
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
+    _inVolume <- V.unsafeThaw inVolume
     _outReal <- VM.new len
     withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
       withForeignPtr (vecPtr _inLow) $ \c_inLow ->
@@ -172,7 +172,7 @@ ta_adosc inHigh inLow inClose inVolume optInFastPeriod optInSlowPeriod = do
               alloca $ \cOutNbElement ->
                 withForeignPtr (vecPtr _outReal) $ \c_outReal ->
                   do rc <- c_ta_adosc 0 (fromIntegral $ len - 1) c_inHigh c_inLow c_inClose c_inVolume (fromIntegral optInFastPeriod) (fromIntegral optInSlowPeriod) cOutBegIdx cOutNbElement c_outReal
-                     out_outReal <- V.freeze _outReal
+                     out_outReal <- V.unsafeFreeze _outReal
                      case rc of
                        0 -> do outBegIdx <- peek cOutBegIdx
                                outNbElement <- peek cOutNbElement
@@ -201,9 +201,9 @@ foreign import ccall unsafe "ta_func.h TA_ADX"
 
 ta_adx :: V.Vector Double -> V.Vector Double -> V.Vector Double -> Int -> IO (Either Int (Int, Int, V.Vector Double))
 ta_adx inHigh inLow inClose optInTimePeriod = do
-    _inHigh <- V.thaw inHigh
-    _inLow <- V.thaw inLow
-    _inClose <- V.thaw inClose
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
     _outReal <- VM.new len
     withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
       withForeignPtr (vecPtr _inLow) $ \c_inLow ->
@@ -212,7 +212,7 @@ ta_adx inHigh inLow inClose optInTimePeriod = do
             alloca $ \cOutNbElement ->
               withForeignPtr (vecPtr _outReal) $ \c_outReal ->
                 do rc <- c_ta_adx 0 (fromIntegral $ len - 1) c_inHigh c_inLow c_inClose (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
-                   out_outReal <- V.freeze _outReal
+                   out_outReal <- V.unsafeFreeze _outReal
                    case rc of
                      0 -> do outBegIdx <- peek cOutBegIdx
                              outNbElement <- peek cOutNbElement
@@ -241,9 +241,9 @@ foreign import ccall unsafe "ta_func.h TA_ADXR"
 
 ta_adxr :: V.Vector Double -> V.Vector Double -> V.Vector Double -> Int -> IO (Either Int (Int, Int, V.Vector Double))
 ta_adxr inHigh inLow inClose optInTimePeriod = do
-    _inHigh <- V.thaw inHigh
-    _inLow <- V.thaw inLow
-    _inClose <- V.thaw inClose
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
     _outReal <- VM.new len
     withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
       withForeignPtr (vecPtr _inLow) $ \c_inLow ->
@@ -252,7 +252,7 @@ ta_adxr inHigh inLow inClose optInTimePeriod = do
             alloca $ \cOutNbElement ->
               withForeignPtr (vecPtr _outReal) $ \c_outReal ->
                 do rc <- c_ta_adxr 0 (fromIntegral $ len - 1) c_inHigh c_inLow c_inClose (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
-                   out_outReal <- V.freeze _outReal
+                   out_outReal <- V.unsafeFreeze _outReal
                    case rc of
                      0 -> do outBegIdx <- peek cOutBegIdx
                              outNbElement <- peek cOutNbElement
@@ -281,14 +281,14 @@ foreign import ccall unsafe "ta_func.h TA_APO"
 
 ta_apo :: V.Vector Double -> Int -> Int -> Int -> IO (Either Int (Int, Int, V.Vector Double))
 ta_apo inReal optInFastPeriod optInSlowPeriod optInMAType = do
-    _inReal <- V.thaw inReal
+    _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
     withForeignPtr (vecPtr _inReal) $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
           withForeignPtr (vecPtr _outReal) $ \c_outReal ->
             do rc <- c_ta_apo 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInFastPeriod) (fromIntegral optInSlowPeriod) (fromIntegral optInMAType) cOutBegIdx cOutNbElement c_outReal
-               out_outReal <- V.freeze _outReal
+               out_outReal <- V.unsafeFreeze _outReal
                case rc of
                  0 -> do outBegIdx <- peek cOutBegIdx
                          outNbElement <- peek cOutNbElement
@@ -317,8 +317,8 @@ foreign import ccall unsafe "ta_func.h TA_AROON"
 
 ta_aroon :: V.Vector Double -> V.Vector Double -> Int -> IO (Either Int (Int, Int, V.Vector Double, V.Vector Double))
 ta_aroon inHigh inLow optInTimePeriod = do
-    _inHigh <- V.thaw inHigh
-    _inLow <- V.thaw inLow
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
     _outAroonDown <- VM.new len
     _outAroonUp <- VM.new len
     withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
@@ -328,8 +328,8 @@ ta_aroon inHigh inLow optInTimePeriod = do
             withForeignPtr (vecPtr _outAroonDown) $ \c_outAroonDown ->
               withForeignPtr (vecPtr _outAroonUp) $ \c_outAroonUp ->
                 do rc <- c_ta_aroon 0 (fromIntegral $ len - 1) c_inHigh c_inLow (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outAroonDown c_outAroonUp
-                   out_outAroonDown <- V.freeze _outAroonDown
-                   out_outAroonUp <- V.freeze _outAroonUp
+                   out_outAroonDown <- V.unsafeFreeze _outAroonDown
+                   out_outAroonUp <- V.unsafeFreeze _outAroonUp
                    case rc of
                      0 -> do outBegIdx <- peek cOutBegIdx
                              outNbElement <- peek cOutNbElement
@@ -358,8 +358,8 @@ foreign import ccall unsafe "ta_func.h TA_AROONOSC"
 
 ta_aroonosc :: V.Vector Double -> V.Vector Double -> Int -> IO (Either Int (Int, Int, V.Vector Double))
 ta_aroonosc inHigh inLow optInTimePeriod = do
-    _inHigh <- V.thaw inHigh
-    _inLow <- V.thaw inLow
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
     _outReal <- VM.new len
     withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
       withForeignPtr (vecPtr _inLow) $ \c_inLow ->
@@ -367,7 +367,7 @@ ta_aroonosc inHigh inLow optInTimePeriod = do
           alloca $ \cOutNbElement ->
             withForeignPtr (vecPtr _outReal) $ \c_outReal ->
               do rc <- c_ta_aroonosc 0 (fromIntegral $ len - 1) c_inHigh c_inLow (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
-                 out_outReal <- V.freeze _outReal
+                 out_outReal <- V.unsafeFreeze _outReal
                  case rc of
                    0 -> do outBegIdx <- peek cOutBegIdx
                            outNbElement <- peek cOutNbElement
@@ -393,14 +393,14 @@ foreign import ccall unsafe "ta_func.h TA_ASIN"
 
 ta_asin :: V.Vector Double -> IO (Either Int (Int, Int, V.Vector Double))
 ta_asin inReal = do
-    _inReal <- V.thaw inReal
+    _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
     withForeignPtr (vecPtr _inReal) $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
           withForeignPtr (vecPtr _outReal) $ \c_outReal ->
             do rc <- c_ta_asin 0 (fromIntegral $ len - 1) c_inReal cOutBegIdx cOutNbElement c_outReal
-               out_outReal <- V.freeze _outReal
+               out_outReal <- V.unsafeFreeze _outReal
                case rc of
                  0 -> do outBegIdx <- peek cOutBegIdx
                          outNbElement <- peek cOutNbElement
@@ -426,14 +426,14 @@ foreign import ccall unsafe "ta_func.h TA_ATAN"
 
 ta_atan :: V.Vector Double -> IO (Either Int (Int, Int, V.Vector Double))
 ta_atan inReal = do
-    _inReal <- V.thaw inReal
+    _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
     withForeignPtr (vecPtr _inReal) $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
           withForeignPtr (vecPtr _outReal) $ \c_outReal ->
             do rc <- c_ta_atan 0 (fromIntegral $ len - 1) c_inReal cOutBegIdx cOutNbElement c_outReal
-               out_outReal <- V.freeze _outReal
+               out_outReal <- V.unsafeFreeze _outReal
                case rc of
                  0 -> do outBegIdx <- peek cOutBegIdx
                          outNbElement <- peek cOutNbElement
@@ -462,9 +462,9 @@ foreign import ccall unsafe "ta_func.h TA_ATR"
 
 ta_atr :: V.Vector Double -> V.Vector Double -> V.Vector Double -> Int -> IO (Either Int (Int, Int, V.Vector Double))
 ta_atr inHigh inLow inClose optInTimePeriod = do
-    _inHigh <- V.thaw inHigh
-    _inLow <- V.thaw inLow
-    _inClose <- V.thaw inClose
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
     _outReal <- VM.new len
     withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
       withForeignPtr (vecPtr _inLow) $ \c_inLow ->
@@ -473,7 +473,7 @@ ta_atr inHigh inLow inClose optInTimePeriod = do
             alloca $ \cOutNbElement ->
               withForeignPtr (vecPtr _outReal) $ \c_outReal ->
                 do rc <- c_ta_atr 0 (fromIntegral $ len - 1) c_inHigh c_inLow c_inClose (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
-                   out_outReal <- V.freeze _outReal
+                   out_outReal <- V.unsafeFreeze _outReal
                    case rc of
                      0 -> do outBegIdx <- peek cOutBegIdx
                              outNbElement <- peek cOutNbElement
@@ -502,10 +502,10 @@ foreign import ccall unsafe "ta_func.h TA_AVGPRICE"
 
 ta_avgprice :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Double))
 ta_avgprice inOpen inHigh inLow inClose = do
-    _inOpen <- V.thaw inOpen
-    _inHigh <- V.thaw inHigh
-    _inLow <- V.thaw inLow
-    _inClose <- V.thaw inClose
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
     _outReal <- VM.new len
     withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
       withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
@@ -515,7 +515,7 @@ ta_avgprice inOpen inHigh inLow inClose = do
               alloca $ \cOutNbElement ->
                 withForeignPtr (vecPtr _outReal) $ \c_outReal ->
                   do rc <- c_ta_avgprice 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outReal
-                     out_outReal <- V.freeze _outReal
+                     out_outReal <- V.unsafeFreeze _outReal
                      case rc of
                        0 -> do outBegIdx <- peek cOutBegIdx
                                outNbElement <- peek cOutNbElement
@@ -547,7 +547,7 @@ foreign import ccall unsafe "ta_func.h TA_BBANDS"
 
 ta_bbands :: V.Vector Double -> Int -> Double -> Double -> Int -> IO (Either Int (Int, Int, V.Vector Double, V.Vector Double, V.Vector Double))
 ta_bbands inReal optInTimePeriod optInNbDevUp optInNbDevDn optInMAType = do
-    _inReal <- V.thaw inReal
+    _inReal <- V.unsafeThaw inReal
     _outRealUpperBand <- VM.new len
     _outRealMiddleBand <- VM.new len
     _outRealLowerBand <- VM.new len
@@ -558,9 +558,9 @@ ta_bbands inReal optInTimePeriod optInNbDevUp optInNbDevDn optInMAType = do
             withForeignPtr (vecPtr _outRealMiddleBand) $ \c_outRealMiddleBand ->
               withForeignPtr (vecPtr _outRealLowerBand) $ \c_outRealLowerBand ->
                 do rc <- c_ta_bbands 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) (realToFrac optInNbDevUp) (realToFrac optInNbDevDn) (fromIntegral optInMAType) cOutBegIdx cOutNbElement c_outRealUpperBand c_outRealMiddleBand c_outRealLowerBand
-                   out_outRealUpperBand <- V.freeze _outRealUpperBand
-                   out_outRealMiddleBand <- V.freeze _outRealMiddleBand
-                   out_outRealLowerBand <- V.freeze _outRealLowerBand
+                   out_outRealUpperBand <- V.unsafeFreeze _outRealUpperBand
+                   out_outRealMiddleBand <- V.unsafeFreeze _outRealMiddleBand
+                   out_outRealLowerBand <- V.unsafeFreeze _outRealLowerBand
                    case rc of
                      0 -> do outBegIdx <- peek cOutBegIdx
                              outNbElement <- peek cOutNbElement
@@ -590,8 +590,8 @@ foreign import ccall unsafe "ta_func.h TA_BETA"
 
 ta_beta :: V.Vector Double -> V.Vector Double -> Int -> IO (Either Int (Int, Int, V.Vector Double))
 ta_beta inReal0 inReal1 optInTimePeriod = do
-    _inReal0 <- V.thaw inReal0
-    _inReal1 <- V.thaw inReal1
+    _inReal0 <- V.unsafeThaw inReal0
+    _inReal1 <- V.unsafeThaw inReal1
     _outReal <- VM.new len
     withForeignPtr (vecPtr _inReal0) $ \c_inReal0 ->
       withForeignPtr (vecPtr _inReal1) $ \c_inReal1 ->
@@ -599,7 +599,7 @@ ta_beta inReal0 inReal1 optInTimePeriod = do
           alloca $ \cOutNbElement ->
             withForeignPtr (vecPtr _outReal) $ \c_outReal ->
               do rc <- c_ta_beta 0 (fromIntegral $ len - 1) c_inReal0 c_inReal1 (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
-                 out_outReal <- V.freeze _outReal
+                 out_outReal <- V.unsafeFreeze _outReal
                  case rc of
                    0 -> do outBegIdx <- peek cOutBegIdx
                            outNbElement <- peek cOutNbElement
@@ -628,10 +628,10 @@ foreign import ccall unsafe "ta_func.h TA_BOP"
 
 ta_bop :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Double))
 ta_bop inOpen inHigh inLow inClose = do
-    _inOpen <- V.thaw inOpen
-    _inHigh <- V.thaw inHigh
-    _inLow <- V.thaw inLow
-    _inClose <- V.thaw inClose
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
     _outReal <- VM.new len
     withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
       withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
@@ -641,7 +641,7 @@ ta_bop inOpen inHigh inLow inClose = do
               alloca $ \cOutNbElement ->
                 withForeignPtr (vecPtr _outReal) $ \c_outReal ->
                   do rc <- c_ta_bop 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outReal
-                     out_outReal <- V.freeze _outReal
+                     out_outReal <- V.unsafeFreeze _outReal
                      case rc of
                        0 -> do outBegIdx <- peek cOutBegIdx
                                outNbElement <- peek cOutNbElement
@@ -670,9 +670,9 @@ foreign import ccall unsafe "ta_func.h TA_CCI"
 
 ta_cci :: V.Vector Double -> V.Vector Double -> V.Vector Double -> Int -> IO (Either Int (Int, Int, V.Vector Double))
 ta_cci inHigh inLow inClose optInTimePeriod = do
-    _inHigh <- V.thaw inHigh
-    _inLow <- V.thaw inLow
-    _inClose <- V.thaw inClose
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
     _outReal <- VM.new len
     withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
       withForeignPtr (vecPtr _inLow) $ \c_inLow ->
@@ -681,7 +681,7 @@ ta_cci inHigh inLow inClose optInTimePeriod = do
             alloca $ \cOutNbElement ->
               withForeignPtr (vecPtr _outReal) $ \c_outReal ->
                 do rc <- c_ta_cci 0 (fromIntegral $ len - 1) c_inHigh c_inLow c_inClose (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
-                   out_outReal <- V.freeze _outReal
+                   out_outReal <- V.unsafeFreeze _outReal
                    case rc of
                      0 -> do outBegIdx <- peek cOutBegIdx
                              outNbElement <- peek cOutNbElement
@@ -710,10 +710,10 @@ foreign import ccall unsafe "ta_func.h TA_CDL2CROWS"
 
 ta_cdl2crows :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
 ta_cdl2crows inOpen inHigh inLow inClose = do
-    _inOpen <- V.thaw inOpen
-    _inHigh <- V.thaw inHigh
-    _inLow <- V.thaw inLow
-    _inClose <- V.thaw inClose
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
     withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
       withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
@@ -723,7 +723,7 @@ ta_cdl2crows inOpen inHigh inLow inClose = do
               alloca $ \cOutNbElement ->
                 withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
                   do rc <- c_ta_cdl2crows 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
-                     out_outInteger <- V.freeze _outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
                        0 -> do outBegIdx <- peek cOutBegIdx
                                outNbElement <- peek cOutNbElement
@@ -752,10 +752,10 @@ foreign import ccall unsafe "ta_func.h TA_CDL3BLACKCROWS"
 
 ta_cdl3blackcrows :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
 ta_cdl3blackcrows inOpen inHigh inLow inClose = do
-    _inOpen <- V.thaw inOpen
-    _inHigh <- V.thaw inHigh
-    _inLow <- V.thaw inLow
-    _inClose <- V.thaw inClose
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
     withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
       withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
@@ -765,7 +765,7 @@ ta_cdl3blackcrows inOpen inHigh inLow inClose = do
               alloca $ \cOutNbElement ->
                 withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
                   do rc <- c_ta_cdl3blackcrows 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
-                     out_outInteger <- V.freeze _outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
                        0 -> do outBegIdx <- peek cOutBegIdx
                                outNbElement <- peek cOutNbElement
@@ -794,10 +794,10 @@ foreign import ccall unsafe "ta_func.h TA_CDL3INSIDE"
 
 ta_cdl3inside :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
 ta_cdl3inside inOpen inHigh inLow inClose = do
-    _inOpen <- V.thaw inOpen
-    _inHigh <- V.thaw inHigh
-    _inLow <- V.thaw inLow
-    _inClose <- V.thaw inClose
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
     withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
       withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
@@ -807,7 +807,7 @@ ta_cdl3inside inOpen inHigh inLow inClose = do
               alloca $ \cOutNbElement ->
                 withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
                   do rc <- c_ta_cdl3inside 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
-                     out_outInteger <- V.freeze _outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
                        0 -> do outBegIdx <- peek cOutBegIdx
                                outNbElement <- peek cOutNbElement
@@ -836,10 +836,10 @@ foreign import ccall unsafe "ta_func.h TA_CDL3LINESTRIKE"
 
 ta_cdl3linestrike :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
 ta_cdl3linestrike inOpen inHigh inLow inClose = do
-    _inOpen <- V.thaw inOpen
-    _inHigh <- V.thaw inHigh
-    _inLow <- V.thaw inLow
-    _inClose <- V.thaw inClose
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
     withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
       withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
@@ -849,7 +849,7 @@ ta_cdl3linestrike inOpen inHigh inLow inClose = do
               alloca $ \cOutNbElement ->
                 withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
                   do rc <- c_ta_cdl3linestrike 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
-                     out_outInteger <- V.freeze _outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
                        0 -> do outBegIdx <- peek cOutBegIdx
                                outNbElement <- peek cOutNbElement
@@ -878,10 +878,10 @@ foreign import ccall unsafe "ta_func.h TA_CDL3OUTSIDE"
 
 ta_cdl3outside :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
 ta_cdl3outside inOpen inHigh inLow inClose = do
-    _inOpen <- V.thaw inOpen
-    _inHigh <- V.thaw inHigh
-    _inLow <- V.thaw inLow
-    _inClose <- V.thaw inClose
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
     withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
       withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
@@ -891,7 +891,7 @@ ta_cdl3outside inOpen inHigh inLow inClose = do
               alloca $ \cOutNbElement ->
                 withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
                   do rc <- c_ta_cdl3outside 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
-                     out_outInteger <- V.freeze _outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
                        0 -> do outBegIdx <- peek cOutBegIdx
                                outNbElement <- peek cOutNbElement
@@ -920,10 +920,10 @@ foreign import ccall unsafe "ta_func.h TA_CDL3STARSINSOUTH"
 
 ta_cdl3starsinsouth :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
 ta_cdl3starsinsouth inOpen inHigh inLow inClose = do
-    _inOpen <- V.thaw inOpen
-    _inHigh <- V.thaw inHigh
-    _inLow <- V.thaw inLow
-    _inClose <- V.thaw inClose
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
     withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
       withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
@@ -933,7 +933,7 @@ ta_cdl3starsinsouth inOpen inHigh inLow inClose = do
               alloca $ \cOutNbElement ->
                 withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
                   do rc <- c_ta_cdl3starsinsouth 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
-                     out_outInteger <- V.freeze _outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
                        0 -> do outBegIdx <- peek cOutBegIdx
                                outNbElement <- peek cOutNbElement
@@ -962,10 +962,10 @@ foreign import ccall unsafe "ta_func.h TA_CDL3WHITESOLDIERS"
 
 ta_cdl3whitesoldiers :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
 ta_cdl3whitesoldiers inOpen inHigh inLow inClose = do
-    _inOpen <- V.thaw inOpen
-    _inHigh <- V.thaw inHigh
-    _inLow <- V.thaw inLow
-    _inClose <- V.thaw inClose
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
     withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
       withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
@@ -975,7 +975,7 @@ ta_cdl3whitesoldiers inOpen inHigh inLow inClose = do
               alloca $ \cOutNbElement ->
                 withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
                   do rc <- c_ta_cdl3whitesoldiers 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
-                     out_outInteger <- V.freeze _outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
                        0 -> do outBegIdx <- peek cOutBegIdx
                                outNbElement <- peek cOutNbElement
@@ -1005,10 +1005,10 @@ foreign import ccall unsafe "ta_func.h TA_CDLABANDONEDBABY"
 
 ta_cdlabandonedbaby :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> Double -> IO (Either Int (Int, Int, V.Vector Int))
 ta_cdlabandonedbaby inOpen inHigh inLow inClose optInPenetration = do
-    _inOpen <- V.thaw inOpen
-    _inHigh <- V.thaw inHigh
-    _inLow <- V.thaw inLow
-    _inClose <- V.thaw inClose
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
     withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
       withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
@@ -1018,7 +1018,7 @@ ta_cdlabandonedbaby inOpen inHigh inLow inClose optInPenetration = do
               alloca $ \cOutNbElement ->
                 withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
                   do rc <- c_ta_cdlabandonedbaby 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose (realToFrac optInPenetration) cOutBegIdx cOutNbElement c_outInteger
-                     out_outInteger <- V.freeze _outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
                        0 -> do outBegIdx <- peek cOutBegIdx
                                outNbElement <- peek cOutNbElement
@@ -1047,10 +1047,10 @@ foreign import ccall unsafe "ta_func.h TA_CDLADVANCEBLOCK"
 
 ta_cdladvanceblock :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
 ta_cdladvanceblock inOpen inHigh inLow inClose = do
-    _inOpen <- V.thaw inOpen
-    _inHigh <- V.thaw inHigh
-    _inLow <- V.thaw inLow
-    _inClose <- V.thaw inClose
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
     withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
       withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
@@ -1060,7 +1060,7 @@ ta_cdladvanceblock inOpen inHigh inLow inClose = do
               alloca $ \cOutNbElement ->
                 withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
                   do rc <- c_ta_cdladvanceblock 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
-                     out_outInteger <- V.freeze _outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
                        0 -> do outBegIdx <- peek cOutBegIdx
                                outNbElement <- peek cOutNbElement
@@ -1089,10 +1089,10 @@ foreign import ccall unsafe "ta_func.h TA_CDLBELTHOLD"
 
 ta_cdlbelthold :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
 ta_cdlbelthold inOpen inHigh inLow inClose = do
-    _inOpen <- V.thaw inOpen
-    _inHigh <- V.thaw inHigh
-    _inLow <- V.thaw inLow
-    _inClose <- V.thaw inClose
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
     withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
       withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
@@ -1102,7 +1102,7 @@ ta_cdlbelthold inOpen inHigh inLow inClose = do
               alloca $ \cOutNbElement ->
                 withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
                   do rc <- c_ta_cdlbelthold 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
-                     out_outInteger <- V.freeze _outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
                        0 -> do outBegIdx <- peek cOutBegIdx
                                outNbElement <- peek cOutNbElement
@@ -1131,10 +1131,10 @@ foreign import ccall unsafe "ta_func.h TA_CDLBREAKAWAY"
 
 ta_cdlbreakaway :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
 ta_cdlbreakaway inOpen inHigh inLow inClose = do
-    _inOpen <- V.thaw inOpen
-    _inHigh <- V.thaw inHigh
-    _inLow <- V.thaw inLow
-    _inClose <- V.thaw inClose
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
     withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
       withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
@@ -1144,7 +1144,7 @@ ta_cdlbreakaway inOpen inHigh inLow inClose = do
               alloca $ \cOutNbElement ->
                 withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
                   do rc <- c_ta_cdlbreakaway 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
-                     out_outInteger <- V.freeze _outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
                        0 -> do outBegIdx <- peek cOutBegIdx
                                outNbElement <- peek cOutNbElement
@@ -1173,10 +1173,10 @@ foreign import ccall unsafe "ta_func.h TA_CDLCLOSINGMARUBOZU"
 
 ta_cdlclosingmarubozu :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
 ta_cdlclosingmarubozu inOpen inHigh inLow inClose = do
-    _inOpen <- V.thaw inOpen
-    _inHigh <- V.thaw inHigh
-    _inLow <- V.thaw inLow
-    _inClose <- V.thaw inClose
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
     withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
       withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
@@ -1186,7 +1186,7 @@ ta_cdlclosingmarubozu inOpen inHigh inLow inClose = do
               alloca $ \cOutNbElement ->
                 withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
                   do rc <- c_ta_cdlclosingmarubozu 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
-                     out_outInteger <- V.freeze _outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
                        0 -> do outBegIdx <- peek cOutBegIdx
                                outNbElement <- peek cOutNbElement
@@ -1215,10 +1215,10 @@ foreign import ccall unsafe "ta_func.h TA_CDLCONCEALBABYSWALL"
 
 ta_cdlconcealbabyswall :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
 ta_cdlconcealbabyswall inOpen inHigh inLow inClose = do
-    _inOpen <- V.thaw inOpen
-    _inHigh <- V.thaw inHigh
-    _inLow <- V.thaw inLow
-    _inClose <- V.thaw inClose
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
     withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
       withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
@@ -1228,7 +1228,7 @@ ta_cdlconcealbabyswall inOpen inHigh inLow inClose = do
               alloca $ \cOutNbElement ->
                 withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
                   do rc <- c_ta_cdlconcealbabyswall 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
-                     out_outInteger <- V.freeze _outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
                        0 -> do outBegIdx <- peek cOutBegIdx
                                outNbElement <- peek cOutNbElement
@@ -1257,10 +1257,10 @@ foreign import ccall unsafe "ta_func.h TA_CDLCOUNTERATTACK"
 
 ta_cdlcounterattack :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
 ta_cdlcounterattack inOpen inHigh inLow inClose = do
-    _inOpen <- V.thaw inOpen
-    _inHigh <- V.thaw inHigh
-    _inLow <- V.thaw inLow
-    _inClose <- V.thaw inClose
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
     withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
       withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
@@ -1270,7 +1270,7 @@ ta_cdlcounterattack inOpen inHigh inLow inClose = do
               alloca $ \cOutNbElement ->
                 withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
                   do rc <- c_ta_cdlcounterattack 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
-                     out_outInteger <- V.freeze _outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
                        0 -> do outBegIdx <- peek cOutBegIdx
                                outNbElement <- peek cOutNbElement
@@ -1300,10 +1300,10 @@ foreign import ccall unsafe "ta_func.h TA_CDLDARKCLOUDCOVER"
 
 ta_cdldarkcloudcover :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> Double -> IO (Either Int (Int, Int, V.Vector Int))
 ta_cdldarkcloudcover inOpen inHigh inLow inClose optInPenetration = do
-    _inOpen <- V.thaw inOpen
-    _inHigh <- V.thaw inHigh
-    _inLow <- V.thaw inLow
-    _inClose <- V.thaw inClose
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
     withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
       withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
@@ -1313,7 +1313,7 @@ ta_cdldarkcloudcover inOpen inHigh inLow inClose optInPenetration = do
               alloca $ \cOutNbElement ->
                 withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
                   do rc <- c_ta_cdldarkcloudcover 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose (realToFrac optInPenetration) cOutBegIdx cOutNbElement c_outInteger
-                     out_outInteger <- V.freeze _outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
                        0 -> do outBegIdx <- peek cOutBegIdx
                                outNbElement <- peek cOutNbElement
@@ -1342,10 +1342,10 @@ foreign import ccall unsafe "ta_func.h TA_CDLDOJI"
 
 ta_cdldoji :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
 ta_cdldoji inOpen inHigh inLow inClose = do
-    _inOpen <- V.thaw inOpen
-    _inHigh <- V.thaw inHigh
-    _inLow <- V.thaw inLow
-    _inClose <- V.thaw inClose
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
     withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
       withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
@@ -1355,7 +1355,7 @@ ta_cdldoji inOpen inHigh inLow inClose = do
               alloca $ \cOutNbElement ->
                 withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
                   do rc <- c_ta_cdldoji 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
-                     out_outInteger <- V.freeze _outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
                        0 -> do outBegIdx <- peek cOutBegIdx
                                outNbElement <- peek cOutNbElement
@@ -1384,10 +1384,10 @@ foreign import ccall unsafe "ta_func.h TA_CDLDOJISTAR"
 
 ta_cdldojistar :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
 ta_cdldojistar inOpen inHigh inLow inClose = do
-    _inOpen <- V.thaw inOpen
-    _inHigh <- V.thaw inHigh
-    _inLow <- V.thaw inLow
-    _inClose <- V.thaw inClose
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
     withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
       withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
@@ -1397,7 +1397,7 @@ ta_cdldojistar inOpen inHigh inLow inClose = do
               alloca $ \cOutNbElement ->
                 withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
                   do rc <- c_ta_cdldojistar 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
-                     out_outInteger <- V.freeze _outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
                        0 -> do outBegIdx <- peek cOutBegIdx
                                outNbElement <- peek cOutNbElement
@@ -1426,10 +1426,10 @@ foreign import ccall unsafe "ta_func.h TA_CDLDRAGONFLYDOJI"
 
 ta_cdldragonflydoji :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
 ta_cdldragonflydoji inOpen inHigh inLow inClose = do
-    _inOpen <- V.thaw inOpen
-    _inHigh <- V.thaw inHigh
-    _inLow <- V.thaw inLow
-    _inClose <- V.thaw inClose
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
     withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
       withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
@@ -1439,7 +1439,7 @@ ta_cdldragonflydoji inOpen inHigh inLow inClose = do
               alloca $ \cOutNbElement ->
                 withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
                   do rc <- c_ta_cdldragonflydoji 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
-                     out_outInteger <- V.freeze _outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
                        0 -> do outBegIdx <- peek cOutBegIdx
                                outNbElement <- peek cOutNbElement
@@ -1468,10 +1468,10 @@ foreign import ccall unsafe "ta_func.h TA_CDLENGULFING"
 
 ta_cdlengulfing :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
 ta_cdlengulfing inOpen inHigh inLow inClose = do
-    _inOpen <- V.thaw inOpen
-    _inHigh <- V.thaw inHigh
-    _inLow <- V.thaw inLow
-    _inClose <- V.thaw inClose
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
     withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
       withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
@@ -1481,7 +1481,7 @@ ta_cdlengulfing inOpen inHigh inLow inClose = do
               alloca $ \cOutNbElement ->
                 withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
                   do rc <- c_ta_cdlengulfing 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
-                     out_outInteger <- V.freeze _outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
                        0 -> do outBegIdx <- peek cOutBegIdx
                                outNbElement <- peek cOutNbElement
@@ -1511,10 +1511,10 @@ foreign import ccall unsafe "ta_func.h TA_CDLEVENINGDOJISTAR"
 
 ta_cdleveningdojistar :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> Double -> IO (Either Int (Int, Int, V.Vector Int))
 ta_cdleveningdojistar inOpen inHigh inLow inClose optInPenetration = do
-    _inOpen <- V.thaw inOpen
-    _inHigh <- V.thaw inHigh
-    _inLow <- V.thaw inLow
-    _inClose <- V.thaw inClose
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
     withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
       withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
@@ -1524,7 +1524,7 @@ ta_cdleveningdojistar inOpen inHigh inLow inClose optInPenetration = do
               alloca $ \cOutNbElement ->
                 withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
                   do rc <- c_ta_cdleveningdojistar 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose (realToFrac optInPenetration) cOutBegIdx cOutNbElement c_outInteger
-                     out_outInteger <- V.freeze _outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
                        0 -> do outBegIdx <- peek cOutBegIdx
                                outNbElement <- peek cOutNbElement
@@ -1554,10 +1554,10 @@ foreign import ccall unsafe "ta_func.h TA_CDLEVENINGSTAR"
 
 ta_cdleveningstar :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> Double -> IO (Either Int (Int, Int, V.Vector Int))
 ta_cdleveningstar inOpen inHigh inLow inClose optInPenetration = do
-    _inOpen <- V.thaw inOpen
-    _inHigh <- V.thaw inHigh
-    _inLow <- V.thaw inLow
-    _inClose <- V.thaw inClose
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
     withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
       withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
@@ -1567,7 +1567,7 @@ ta_cdleveningstar inOpen inHigh inLow inClose optInPenetration = do
               alloca $ \cOutNbElement ->
                 withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
                   do rc <- c_ta_cdleveningstar 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose (realToFrac optInPenetration) cOutBegIdx cOutNbElement c_outInteger
-                     out_outInteger <- V.freeze _outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
                        0 -> do outBegIdx <- peek cOutBegIdx
                                outNbElement <- peek cOutNbElement
@@ -1596,10 +1596,10 @@ foreign import ccall unsafe "ta_func.h TA_CDLGAPSIDESIDEWHITE"
 
 ta_cdlgapsidesidewhite :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
 ta_cdlgapsidesidewhite inOpen inHigh inLow inClose = do
-    _inOpen <- V.thaw inOpen
-    _inHigh <- V.thaw inHigh
-    _inLow <- V.thaw inLow
-    _inClose <- V.thaw inClose
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
     withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
       withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
@@ -1609,7 +1609,7 @@ ta_cdlgapsidesidewhite inOpen inHigh inLow inClose = do
               alloca $ \cOutNbElement ->
                 withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
                   do rc <- c_ta_cdlgapsidesidewhite 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
-                     out_outInteger <- V.freeze _outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
                        0 -> do outBegIdx <- peek cOutBegIdx
                                outNbElement <- peek cOutNbElement
@@ -1638,10 +1638,10 @@ foreign import ccall unsafe "ta_func.h TA_CDLGRAVESTONEDOJI"
 
 ta_cdlgravestonedoji :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
 ta_cdlgravestonedoji inOpen inHigh inLow inClose = do
-    _inOpen <- V.thaw inOpen
-    _inHigh <- V.thaw inHigh
-    _inLow <- V.thaw inLow
-    _inClose <- V.thaw inClose
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
     withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
       withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
@@ -1651,7 +1651,7 @@ ta_cdlgravestonedoji inOpen inHigh inLow inClose = do
               alloca $ \cOutNbElement ->
                 withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
                   do rc <- c_ta_cdlgravestonedoji 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
-                     out_outInteger <- V.freeze _outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
                        0 -> do outBegIdx <- peek cOutBegIdx
                                outNbElement <- peek cOutNbElement
@@ -1680,10 +1680,10 @@ foreign import ccall unsafe "ta_func.h TA_CDLHAMMER"
 
 ta_cdlhammer :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
 ta_cdlhammer inOpen inHigh inLow inClose = do
-    _inOpen <- V.thaw inOpen
-    _inHigh <- V.thaw inHigh
-    _inLow <- V.thaw inLow
-    _inClose <- V.thaw inClose
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
     withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
       withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
@@ -1693,7 +1693,7 @@ ta_cdlhammer inOpen inHigh inLow inClose = do
               alloca $ \cOutNbElement ->
                 withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
                   do rc <- c_ta_cdlhammer 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
-                     out_outInteger <- V.freeze _outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
                        0 -> do outBegIdx <- peek cOutBegIdx
                                outNbElement <- peek cOutNbElement
@@ -1722,10 +1722,10 @@ foreign import ccall unsafe "ta_func.h TA_CDLHANGINGMAN"
 
 ta_cdlhangingman :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
 ta_cdlhangingman inOpen inHigh inLow inClose = do
-    _inOpen <- V.thaw inOpen
-    _inHigh <- V.thaw inHigh
-    _inLow <- V.thaw inLow
-    _inClose <- V.thaw inClose
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
     withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
       withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
@@ -1735,7 +1735,7 @@ ta_cdlhangingman inOpen inHigh inLow inClose = do
               alloca $ \cOutNbElement ->
                 withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
                   do rc <- c_ta_cdlhangingman 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
-                     out_outInteger <- V.freeze _outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
                        0 -> do outBegIdx <- peek cOutBegIdx
                                outNbElement <- peek cOutNbElement
@@ -1764,10 +1764,10 @@ foreign import ccall unsafe "ta_func.h TA_CDLHARAMI"
 
 ta_cdlharami :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
 ta_cdlharami inOpen inHigh inLow inClose = do
-    _inOpen <- V.thaw inOpen
-    _inHigh <- V.thaw inHigh
-    _inLow <- V.thaw inLow
-    _inClose <- V.thaw inClose
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
     withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
       withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
@@ -1777,7 +1777,7 @@ ta_cdlharami inOpen inHigh inLow inClose = do
               alloca $ \cOutNbElement ->
                 withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
                   do rc <- c_ta_cdlharami 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
-                     out_outInteger <- V.freeze _outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
                        0 -> do outBegIdx <- peek cOutBegIdx
                                outNbElement <- peek cOutNbElement
@@ -1806,10 +1806,10 @@ foreign import ccall unsafe "ta_func.h TA_CDLHARAMICROSS"
 
 ta_cdlharamicross :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
 ta_cdlharamicross inOpen inHigh inLow inClose = do
-    _inOpen <- V.thaw inOpen
-    _inHigh <- V.thaw inHigh
-    _inLow <- V.thaw inLow
-    _inClose <- V.thaw inClose
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
     withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
       withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
@@ -1819,7 +1819,7 @@ ta_cdlharamicross inOpen inHigh inLow inClose = do
               alloca $ \cOutNbElement ->
                 withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
                   do rc <- c_ta_cdlharamicross 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
-                     out_outInteger <- V.freeze _outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
                        0 -> do outBegIdx <- peek cOutBegIdx
                                outNbElement <- peek cOutNbElement
@@ -1848,10 +1848,10 @@ foreign import ccall unsafe "ta_func.h TA_CDLHIGHWAVE"
 
 ta_cdlhighwave :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
 ta_cdlhighwave inOpen inHigh inLow inClose = do
-    _inOpen <- V.thaw inOpen
-    _inHigh <- V.thaw inHigh
-    _inLow <- V.thaw inLow
-    _inClose <- V.thaw inClose
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
     withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
       withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
@@ -1861,7 +1861,7 @@ ta_cdlhighwave inOpen inHigh inLow inClose = do
               alloca $ \cOutNbElement ->
                 withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
                   do rc <- c_ta_cdlhighwave 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
-                     out_outInteger <- V.freeze _outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
                        0 -> do outBegIdx <- peek cOutBegIdx
                                outNbElement <- peek cOutNbElement
@@ -1890,10 +1890,10 @@ foreign import ccall unsafe "ta_func.h TA_CDLHIKKAKE"
 
 ta_cdlhikkake :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
 ta_cdlhikkake inOpen inHigh inLow inClose = do
-    _inOpen <- V.thaw inOpen
-    _inHigh <- V.thaw inHigh
-    _inLow <- V.thaw inLow
-    _inClose <- V.thaw inClose
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
     withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
       withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
@@ -1903,7 +1903,7 @@ ta_cdlhikkake inOpen inHigh inLow inClose = do
               alloca $ \cOutNbElement ->
                 withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
                   do rc <- c_ta_cdlhikkake 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
-                     out_outInteger <- V.freeze _outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
                        0 -> do outBegIdx <- peek cOutBegIdx
                                outNbElement <- peek cOutNbElement
@@ -1932,10 +1932,10 @@ foreign import ccall unsafe "ta_func.h TA_CDLHIKKAKEMOD"
 
 ta_cdlhikkakemod :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
 ta_cdlhikkakemod inOpen inHigh inLow inClose = do
-    _inOpen <- V.thaw inOpen
-    _inHigh <- V.thaw inHigh
-    _inLow <- V.thaw inLow
-    _inClose <- V.thaw inClose
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
     withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
       withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
@@ -1945,7 +1945,7 @@ ta_cdlhikkakemod inOpen inHigh inLow inClose = do
               alloca $ \cOutNbElement ->
                 withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
                   do rc <- c_ta_cdlhikkakemod 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
-                     out_outInteger <- V.freeze _outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
                        0 -> do outBegIdx <- peek cOutBegIdx
                                outNbElement <- peek cOutNbElement
@@ -1974,10 +1974,10 @@ foreign import ccall unsafe "ta_func.h TA_CDLHOMINGPIGEON"
 
 ta_cdlhomingpigeon :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
 ta_cdlhomingpigeon inOpen inHigh inLow inClose = do
-    _inOpen <- V.thaw inOpen
-    _inHigh <- V.thaw inHigh
-    _inLow <- V.thaw inLow
-    _inClose <- V.thaw inClose
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
     withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
       withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
@@ -1987,7 +1987,7 @@ ta_cdlhomingpigeon inOpen inHigh inLow inClose = do
               alloca $ \cOutNbElement ->
                 withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
                   do rc <- c_ta_cdlhomingpigeon 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
-                     out_outInteger <- V.freeze _outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
                        0 -> do outBegIdx <- peek cOutBegIdx
                                outNbElement <- peek cOutNbElement
@@ -2016,10 +2016,10 @@ foreign import ccall unsafe "ta_func.h TA_CDLIDENTICAL3CROWS"
 
 ta_cdlidentical3crows :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
 ta_cdlidentical3crows inOpen inHigh inLow inClose = do
-    _inOpen <- V.thaw inOpen
-    _inHigh <- V.thaw inHigh
-    _inLow <- V.thaw inLow
-    _inClose <- V.thaw inClose
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
     withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
       withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
@@ -2029,7 +2029,7 @@ ta_cdlidentical3crows inOpen inHigh inLow inClose = do
               alloca $ \cOutNbElement ->
                 withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
                   do rc <- c_ta_cdlidentical3crows 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
-                     out_outInteger <- V.freeze _outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
                        0 -> do outBegIdx <- peek cOutBegIdx
                                outNbElement <- peek cOutNbElement
@@ -2058,10 +2058,10 @@ foreign import ccall unsafe "ta_func.h TA_CDLINNECK"
 
 ta_cdlinneck :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
 ta_cdlinneck inOpen inHigh inLow inClose = do
-    _inOpen <- V.thaw inOpen
-    _inHigh <- V.thaw inHigh
-    _inLow <- V.thaw inLow
-    _inClose <- V.thaw inClose
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
     withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
       withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
@@ -2071,7 +2071,7 @@ ta_cdlinneck inOpen inHigh inLow inClose = do
               alloca $ \cOutNbElement ->
                 withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
                   do rc <- c_ta_cdlinneck 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
-                     out_outInteger <- V.freeze _outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
                        0 -> do outBegIdx <- peek cOutBegIdx
                                outNbElement <- peek cOutNbElement
@@ -2100,10 +2100,10 @@ foreign import ccall unsafe "ta_func.h TA_CDLINVERTEDHAMMER"
 
 ta_cdlinvertedhammer :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
 ta_cdlinvertedhammer inOpen inHigh inLow inClose = do
-    _inOpen <- V.thaw inOpen
-    _inHigh <- V.thaw inHigh
-    _inLow <- V.thaw inLow
-    _inClose <- V.thaw inClose
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
     withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
       withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
@@ -2113,7 +2113,7 @@ ta_cdlinvertedhammer inOpen inHigh inLow inClose = do
               alloca $ \cOutNbElement ->
                 withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
                   do rc <- c_ta_cdlinvertedhammer 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
-                     out_outInteger <- V.freeze _outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
                        0 -> do outBegIdx <- peek cOutBegIdx
                                outNbElement <- peek cOutNbElement
@@ -2142,10 +2142,10 @@ foreign import ccall unsafe "ta_func.h TA_CDLKICKING"
 
 ta_cdlkicking :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
 ta_cdlkicking inOpen inHigh inLow inClose = do
-    _inOpen <- V.thaw inOpen
-    _inHigh <- V.thaw inHigh
-    _inLow <- V.thaw inLow
-    _inClose <- V.thaw inClose
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
     withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
       withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
@@ -2155,7 +2155,7 @@ ta_cdlkicking inOpen inHigh inLow inClose = do
               alloca $ \cOutNbElement ->
                 withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
                   do rc <- c_ta_cdlkicking 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
-                     out_outInteger <- V.freeze _outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
                        0 -> do outBegIdx <- peek cOutBegIdx
                                outNbElement <- peek cOutNbElement
@@ -2184,10 +2184,10 @@ foreign import ccall unsafe "ta_func.h TA_CDLKICKINGBYLENGTH"
 
 ta_cdlkickingbylength :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
 ta_cdlkickingbylength inOpen inHigh inLow inClose = do
-    _inOpen <- V.thaw inOpen
-    _inHigh <- V.thaw inHigh
-    _inLow <- V.thaw inLow
-    _inClose <- V.thaw inClose
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
     withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
       withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
@@ -2197,7 +2197,7 @@ ta_cdlkickingbylength inOpen inHigh inLow inClose = do
               alloca $ \cOutNbElement ->
                 withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
                   do rc <- c_ta_cdlkickingbylength 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
-                     out_outInteger <- V.freeze _outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
                        0 -> do outBegIdx <- peek cOutBegIdx
                                outNbElement <- peek cOutNbElement
@@ -2226,10 +2226,10 @@ foreign import ccall unsafe "ta_func.h TA_CDLLADDERBOTTOM"
 
 ta_cdlladderbottom :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
 ta_cdlladderbottom inOpen inHigh inLow inClose = do
-    _inOpen <- V.thaw inOpen
-    _inHigh <- V.thaw inHigh
-    _inLow <- V.thaw inLow
-    _inClose <- V.thaw inClose
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
     withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
       withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
@@ -2239,7 +2239,7 @@ ta_cdlladderbottom inOpen inHigh inLow inClose = do
               alloca $ \cOutNbElement ->
                 withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
                   do rc <- c_ta_cdlladderbottom 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
-                     out_outInteger <- V.freeze _outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
                        0 -> do outBegIdx <- peek cOutBegIdx
                                outNbElement <- peek cOutNbElement
@@ -2268,10 +2268,10 @@ foreign import ccall unsafe "ta_func.h TA_CDLLONGLEGGEDDOJI"
 
 ta_cdllongleggeddoji :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
 ta_cdllongleggeddoji inOpen inHigh inLow inClose = do
-    _inOpen <- V.thaw inOpen
-    _inHigh <- V.thaw inHigh
-    _inLow <- V.thaw inLow
-    _inClose <- V.thaw inClose
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
     withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
       withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
@@ -2281,7 +2281,7 @@ ta_cdllongleggeddoji inOpen inHigh inLow inClose = do
               alloca $ \cOutNbElement ->
                 withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
                   do rc <- c_ta_cdllongleggeddoji 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
-                     out_outInteger <- V.freeze _outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
                        0 -> do outBegIdx <- peek cOutBegIdx
                                outNbElement <- peek cOutNbElement
@@ -2310,10 +2310,10 @@ foreign import ccall unsafe "ta_func.h TA_CDLLONGLINE"
 
 ta_cdllongline :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
 ta_cdllongline inOpen inHigh inLow inClose = do
-    _inOpen <- V.thaw inOpen
-    _inHigh <- V.thaw inHigh
-    _inLow <- V.thaw inLow
-    _inClose <- V.thaw inClose
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
     withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
       withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
@@ -2323,7 +2323,7 @@ ta_cdllongline inOpen inHigh inLow inClose = do
               alloca $ \cOutNbElement ->
                 withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
                   do rc <- c_ta_cdllongline 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
-                     out_outInteger <- V.freeze _outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
                        0 -> do outBegIdx <- peek cOutBegIdx
                                outNbElement <- peek cOutNbElement
@@ -2352,10 +2352,10 @@ foreign import ccall unsafe "ta_func.h TA_CDLMARUBOZU"
 
 ta_cdlmarubozu :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
 ta_cdlmarubozu inOpen inHigh inLow inClose = do
-    _inOpen <- V.thaw inOpen
-    _inHigh <- V.thaw inHigh
-    _inLow <- V.thaw inLow
-    _inClose <- V.thaw inClose
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
     withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
       withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
@@ -2365,7 +2365,7 @@ ta_cdlmarubozu inOpen inHigh inLow inClose = do
               alloca $ \cOutNbElement ->
                 withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
                   do rc <- c_ta_cdlmarubozu 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
-                     out_outInteger <- V.freeze _outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
                        0 -> do outBegIdx <- peek cOutBegIdx
                                outNbElement <- peek cOutNbElement
@@ -2394,10 +2394,10 @@ foreign import ccall unsafe "ta_func.h TA_CDLMATCHINGLOW"
 
 ta_cdlmatchinglow :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
 ta_cdlmatchinglow inOpen inHigh inLow inClose = do
-    _inOpen <- V.thaw inOpen
-    _inHigh <- V.thaw inHigh
-    _inLow <- V.thaw inLow
-    _inClose <- V.thaw inClose
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
     withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
       withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
@@ -2407,7 +2407,7 @@ ta_cdlmatchinglow inOpen inHigh inLow inClose = do
               alloca $ \cOutNbElement ->
                 withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
                   do rc <- c_ta_cdlmatchinglow 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
-                     out_outInteger <- V.freeze _outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
                        0 -> do outBegIdx <- peek cOutBegIdx
                                outNbElement <- peek cOutNbElement
@@ -2437,10 +2437,10 @@ foreign import ccall unsafe "ta_func.h TA_CDLMATHOLD"
 
 ta_cdlmathold :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> Double -> IO (Either Int (Int, Int, V.Vector Int))
 ta_cdlmathold inOpen inHigh inLow inClose optInPenetration = do
-    _inOpen <- V.thaw inOpen
-    _inHigh <- V.thaw inHigh
-    _inLow <- V.thaw inLow
-    _inClose <- V.thaw inClose
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
     withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
       withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
@@ -2450,7 +2450,7 @@ ta_cdlmathold inOpen inHigh inLow inClose optInPenetration = do
               alloca $ \cOutNbElement ->
                 withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
                   do rc <- c_ta_cdlmathold 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose (realToFrac optInPenetration) cOutBegIdx cOutNbElement c_outInteger
-                     out_outInteger <- V.freeze _outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
                        0 -> do outBegIdx <- peek cOutBegIdx
                                outNbElement <- peek cOutNbElement
@@ -2480,10 +2480,10 @@ foreign import ccall unsafe "ta_func.h TA_CDLMORNINGDOJISTAR"
 
 ta_cdlmorningdojistar :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> Double -> IO (Either Int (Int, Int, V.Vector Int))
 ta_cdlmorningdojistar inOpen inHigh inLow inClose optInPenetration = do
-    _inOpen <- V.thaw inOpen
-    _inHigh <- V.thaw inHigh
-    _inLow <- V.thaw inLow
-    _inClose <- V.thaw inClose
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
     withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
       withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
@@ -2493,7 +2493,7 @@ ta_cdlmorningdojistar inOpen inHigh inLow inClose optInPenetration = do
               alloca $ \cOutNbElement ->
                 withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
                   do rc <- c_ta_cdlmorningdojistar 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose (realToFrac optInPenetration) cOutBegIdx cOutNbElement c_outInteger
-                     out_outInteger <- V.freeze _outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
                        0 -> do outBegIdx <- peek cOutBegIdx
                                outNbElement <- peek cOutNbElement
@@ -2523,10 +2523,10 @@ foreign import ccall unsafe "ta_func.h TA_CDLMORNINGSTAR"
 
 ta_cdlmorningstar :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> Double -> IO (Either Int (Int, Int, V.Vector Int))
 ta_cdlmorningstar inOpen inHigh inLow inClose optInPenetration = do
-    _inOpen <- V.thaw inOpen
-    _inHigh <- V.thaw inHigh
-    _inLow <- V.thaw inLow
-    _inClose <- V.thaw inClose
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
     withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
       withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
@@ -2536,7 +2536,7 @@ ta_cdlmorningstar inOpen inHigh inLow inClose optInPenetration = do
               alloca $ \cOutNbElement ->
                 withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
                   do rc <- c_ta_cdlmorningstar 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose (realToFrac optInPenetration) cOutBegIdx cOutNbElement c_outInteger
-                     out_outInteger <- V.freeze _outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
                        0 -> do outBegIdx <- peek cOutBegIdx
                                outNbElement <- peek cOutNbElement
@@ -2565,10 +2565,10 @@ foreign import ccall unsafe "ta_func.h TA_CDLONNECK"
 
 ta_cdlonneck :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
 ta_cdlonneck inOpen inHigh inLow inClose = do
-    _inOpen <- V.thaw inOpen
-    _inHigh <- V.thaw inHigh
-    _inLow <- V.thaw inLow
-    _inClose <- V.thaw inClose
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
     withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
       withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
@@ -2578,7 +2578,7 @@ ta_cdlonneck inOpen inHigh inLow inClose = do
               alloca $ \cOutNbElement ->
                 withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
                   do rc <- c_ta_cdlonneck 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
-                     out_outInteger <- V.freeze _outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
                        0 -> do outBegIdx <- peek cOutBegIdx
                                outNbElement <- peek cOutNbElement
@@ -2607,10 +2607,10 @@ foreign import ccall unsafe "ta_func.h TA_CDLPIERCING"
 
 ta_cdlpiercing :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
 ta_cdlpiercing inOpen inHigh inLow inClose = do
-    _inOpen <- V.thaw inOpen
-    _inHigh <- V.thaw inHigh
-    _inLow <- V.thaw inLow
-    _inClose <- V.thaw inClose
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
     withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
       withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
@@ -2620,7 +2620,7 @@ ta_cdlpiercing inOpen inHigh inLow inClose = do
               alloca $ \cOutNbElement ->
                 withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
                   do rc <- c_ta_cdlpiercing 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
-                     out_outInteger <- V.freeze _outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
                        0 -> do outBegIdx <- peek cOutBegIdx
                                outNbElement <- peek cOutNbElement
@@ -2649,10 +2649,10 @@ foreign import ccall unsafe "ta_func.h TA_CDLRICKSHAWMAN"
 
 ta_cdlrickshawman :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
 ta_cdlrickshawman inOpen inHigh inLow inClose = do
-    _inOpen <- V.thaw inOpen
-    _inHigh <- V.thaw inHigh
-    _inLow <- V.thaw inLow
-    _inClose <- V.thaw inClose
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
     withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
       withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
@@ -2662,7 +2662,7 @@ ta_cdlrickshawman inOpen inHigh inLow inClose = do
               alloca $ \cOutNbElement ->
                 withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
                   do rc <- c_ta_cdlrickshawman 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
-                     out_outInteger <- V.freeze _outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
                        0 -> do outBegIdx <- peek cOutBegIdx
                                outNbElement <- peek cOutNbElement
@@ -2691,10 +2691,10 @@ foreign import ccall unsafe "ta_func.h TA_CDLRISEFALL3METHODS"
 
 ta_cdlrisefall3methods :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
 ta_cdlrisefall3methods inOpen inHigh inLow inClose = do
-    _inOpen <- V.thaw inOpen
-    _inHigh <- V.thaw inHigh
-    _inLow <- V.thaw inLow
-    _inClose <- V.thaw inClose
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
     withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
       withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
@@ -2704,7 +2704,7 @@ ta_cdlrisefall3methods inOpen inHigh inLow inClose = do
               alloca $ \cOutNbElement ->
                 withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
                   do rc <- c_ta_cdlrisefall3methods 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
-                     out_outInteger <- V.freeze _outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
                        0 -> do outBegIdx <- peek cOutBegIdx
                                outNbElement <- peek cOutNbElement
@@ -2733,10 +2733,10 @@ foreign import ccall unsafe "ta_func.h TA_CDLSEPARATINGLINES"
 
 ta_cdlseparatinglines :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
 ta_cdlseparatinglines inOpen inHigh inLow inClose = do
-    _inOpen <- V.thaw inOpen
-    _inHigh <- V.thaw inHigh
-    _inLow <- V.thaw inLow
-    _inClose <- V.thaw inClose
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
     withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
       withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
@@ -2746,7 +2746,7 @@ ta_cdlseparatinglines inOpen inHigh inLow inClose = do
               alloca $ \cOutNbElement ->
                 withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
                   do rc <- c_ta_cdlseparatinglines 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
-                     out_outInteger <- V.freeze _outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
                        0 -> do outBegIdx <- peek cOutBegIdx
                                outNbElement <- peek cOutNbElement
@@ -2775,10 +2775,10 @@ foreign import ccall unsafe "ta_func.h TA_CDLSHOOTINGSTAR"
 
 ta_cdlshootingstar :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
 ta_cdlshootingstar inOpen inHigh inLow inClose = do
-    _inOpen <- V.thaw inOpen
-    _inHigh <- V.thaw inHigh
-    _inLow <- V.thaw inLow
-    _inClose <- V.thaw inClose
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
     withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
       withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
@@ -2788,7 +2788,7 @@ ta_cdlshootingstar inOpen inHigh inLow inClose = do
               alloca $ \cOutNbElement ->
                 withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
                   do rc <- c_ta_cdlshootingstar 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
-                     out_outInteger <- V.freeze _outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
                        0 -> do outBegIdx <- peek cOutBegIdx
                                outNbElement <- peek cOutNbElement
@@ -2817,10 +2817,10 @@ foreign import ccall unsafe "ta_func.h TA_CDLSHORTLINE"
 
 ta_cdlshortline :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
 ta_cdlshortline inOpen inHigh inLow inClose = do
-    _inOpen <- V.thaw inOpen
-    _inHigh <- V.thaw inHigh
-    _inLow <- V.thaw inLow
-    _inClose <- V.thaw inClose
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
     withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
       withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
@@ -2830,7 +2830,7 @@ ta_cdlshortline inOpen inHigh inLow inClose = do
               alloca $ \cOutNbElement ->
                 withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
                   do rc <- c_ta_cdlshortline 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
-                     out_outInteger <- V.freeze _outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
                        0 -> do outBegIdx <- peek cOutBegIdx
                                outNbElement <- peek cOutNbElement
@@ -2859,10 +2859,10 @@ foreign import ccall unsafe "ta_func.h TA_CDLSPINNINGTOP"
 
 ta_cdlspinningtop :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
 ta_cdlspinningtop inOpen inHigh inLow inClose = do
-    _inOpen <- V.thaw inOpen
-    _inHigh <- V.thaw inHigh
-    _inLow <- V.thaw inLow
-    _inClose <- V.thaw inClose
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
     withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
       withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
@@ -2872,7 +2872,7 @@ ta_cdlspinningtop inOpen inHigh inLow inClose = do
               alloca $ \cOutNbElement ->
                 withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
                   do rc <- c_ta_cdlspinningtop 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
-                     out_outInteger <- V.freeze _outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
                        0 -> do outBegIdx <- peek cOutBegIdx
                                outNbElement <- peek cOutNbElement
@@ -2901,10 +2901,10 @@ foreign import ccall unsafe "ta_func.h TA_CDLSTALLEDPATTERN"
 
 ta_cdlstalledpattern :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
 ta_cdlstalledpattern inOpen inHigh inLow inClose = do
-    _inOpen <- V.thaw inOpen
-    _inHigh <- V.thaw inHigh
-    _inLow <- V.thaw inLow
-    _inClose <- V.thaw inClose
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
     withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
       withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
@@ -2914,7 +2914,7 @@ ta_cdlstalledpattern inOpen inHigh inLow inClose = do
               alloca $ \cOutNbElement ->
                 withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
                   do rc <- c_ta_cdlstalledpattern 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
-                     out_outInteger <- V.freeze _outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
                        0 -> do outBegIdx <- peek cOutBegIdx
                                outNbElement <- peek cOutNbElement
@@ -2943,10 +2943,10 @@ foreign import ccall unsafe "ta_func.h TA_CDLSTICKSANDWICH"
 
 ta_cdlsticksandwich :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
 ta_cdlsticksandwich inOpen inHigh inLow inClose = do
-    _inOpen <- V.thaw inOpen
-    _inHigh <- V.thaw inHigh
-    _inLow <- V.thaw inLow
-    _inClose <- V.thaw inClose
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
     withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
       withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
@@ -2956,7 +2956,7 @@ ta_cdlsticksandwich inOpen inHigh inLow inClose = do
               alloca $ \cOutNbElement ->
                 withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
                   do rc <- c_ta_cdlsticksandwich 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
-                     out_outInteger <- V.freeze _outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
                        0 -> do outBegIdx <- peek cOutBegIdx
                                outNbElement <- peek cOutNbElement
@@ -2985,10 +2985,10 @@ foreign import ccall unsafe "ta_func.h TA_CDLTAKURI"
 
 ta_cdltakuri :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
 ta_cdltakuri inOpen inHigh inLow inClose = do
-    _inOpen <- V.thaw inOpen
-    _inHigh <- V.thaw inHigh
-    _inLow <- V.thaw inLow
-    _inClose <- V.thaw inClose
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
     withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
       withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
@@ -2998,7 +2998,7 @@ ta_cdltakuri inOpen inHigh inLow inClose = do
               alloca $ \cOutNbElement ->
                 withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
                   do rc <- c_ta_cdltakuri 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
-                     out_outInteger <- V.freeze _outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
                        0 -> do outBegIdx <- peek cOutBegIdx
                                outNbElement <- peek cOutNbElement
@@ -3027,10 +3027,10 @@ foreign import ccall unsafe "ta_func.h TA_CDLTASUKIGAP"
 
 ta_cdltasukigap :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
 ta_cdltasukigap inOpen inHigh inLow inClose = do
-    _inOpen <- V.thaw inOpen
-    _inHigh <- V.thaw inHigh
-    _inLow <- V.thaw inLow
-    _inClose <- V.thaw inClose
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
     withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
       withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
@@ -3040,7 +3040,7 @@ ta_cdltasukigap inOpen inHigh inLow inClose = do
               alloca $ \cOutNbElement ->
                 withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
                   do rc <- c_ta_cdltasukigap 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
-                     out_outInteger <- V.freeze _outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
                        0 -> do outBegIdx <- peek cOutBegIdx
                                outNbElement <- peek cOutNbElement
@@ -3069,10 +3069,10 @@ foreign import ccall unsafe "ta_func.h TA_CDLTHRUSTING"
 
 ta_cdlthrusting :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
 ta_cdlthrusting inOpen inHigh inLow inClose = do
-    _inOpen <- V.thaw inOpen
-    _inHigh <- V.thaw inHigh
-    _inLow <- V.thaw inLow
-    _inClose <- V.thaw inClose
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
     withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
       withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
@@ -3082,7 +3082,7 @@ ta_cdlthrusting inOpen inHigh inLow inClose = do
               alloca $ \cOutNbElement ->
                 withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
                   do rc <- c_ta_cdlthrusting 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
-                     out_outInteger <- V.freeze _outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
                        0 -> do outBegIdx <- peek cOutBegIdx
                                outNbElement <- peek cOutNbElement
@@ -3111,10 +3111,10 @@ foreign import ccall unsafe "ta_func.h TA_CDLTRISTAR"
 
 ta_cdltristar :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
 ta_cdltristar inOpen inHigh inLow inClose = do
-    _inOpen <- V.thaw inOpen
-    _inHigh <- V.thaw inHigh
-    _inLow <- V.thaw inLow
-    _inClose <- V.thaw inClose
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
     withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
       withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
@@ -3124,7 +3124,7 @@ ta_cdltristar inOpen inHigh inLow inClose = do
               alloca $ \cOutNbElement ->
                 withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
                   do rc <- c_ta_cdltristar 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
-                     out_outInteger <- V.freeze _outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
                        0 -> do outBegIdx <- peek cOutBegIdx
                                outNbElement <- peek cOutNbElement
@@ -3153,10 +3153,10 @@ foreign import ccall unsafe "ta_func.h TA_CDLUNIQUE3RIVER"
 
 ta_cdlunique3river :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
 ta_cdlunique3river inOpen inHigh inLow inClose = do
-    _inOpen <- V.thaw inOpen
-    _inHigh <- V.thaw inHigh
-    _inLow <- V.thaw inLow
-    _inClose <- V.thaw inClose
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
     withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
       withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
@@ -3166,7 +3166,7 @@ ta_cdlunique3river inOpen inHigh inLow inClose = do
               alloca $ \cOutNbElement ->
                 withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
                   do rc <- c_ta_cdlunique3river 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
-                     out_outInteger <- V.freeze _outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
                        0 -> do outBegIdx <- peek cOutBegIdx
                                outNbElement <- peek cOutNbElement
@@ -3195,10 +3195,10 @@ foreign import ccall unsafe "ta_func.h TA_CDLUPSIDEGAP2CROWS"
 
 ta_cdlupsidegap2crows :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
 ta_cdlupsidegap2crows inOpen inHigh inLow inClose = do
-    _inOpen <- V.thaw inOpen
-    _inHigh <- V.thaw inHigh
-    _inLow <- V.thaw inLow
-    _inClose <- V.thaw inClose
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
     withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
       withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
@@ -3208,7 +3208,7 @@ ta_cdlupsidegap2crows inOpen inHigh inLow inClose = do
               alloca $ \cOutNbElement ->
                 withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
                   do rc <- c_ta_cdlupsidegap2crows 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
-                     out_outInteger <- V.freeze _outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
                        0 -> do outBegIdx <- peek cOutBegIdx
                                outNbElement <- peek cOutNbElement
@@ -3237,10 +3237,10 @@ foreign import ccall unsafe "ta_func.h TA_CDLXSIDEGAP3METHODS"
 
 ta_cdlxsidegap3methods :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
 ta_cdlxsidegap3methods inOpen inHigh inLow inClose = do
-    _inOpen <- V.thaw inOpen
-    _inHigh <- V.thaw inHigh
-    _inLow <- V.thaw inLow
-    _inClose <- V.thaw inClose
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
     withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
       withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
@@ -3250,7 +3250,7 @@ ta_cdlxsidegap3methods inOpen inHigh inLow inClose = do
               alloca $ \cOutNbElement ->
                 withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
                   do rc <- c_ta_cdlxsidegap3methods 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
-                     out_outInteger <- V.freeze _outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
                        0 -> do outBegIdx <- peek cOutBegIdx
                                outNbElement <- peek cOutNbElement
@@ -3276,14 +3276,14 @@ foreign import ccall unsafe "ta_func.h TA_CEIL"
 
 ta_ceil :: V.Vector Double -> IO (Either Int (Int, Int, V.Vector Double))
 ta_ceil inReal = do
-    _inReal <- V.thaw inReal
+    _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
     withForeignPtr (vecPtr _inReal) $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
           withForeignPtr (vecPtr _outReal) $ \c_outReal ->
             do rc <- c_ta_ceil 0 (fromIntegral $ len - 1) c_inReal cOutBegIdx cOutNbElement c_outReal
-               out_outReal <- V.freeze _outReal
+               out_outReal <- V.unsafeFreeze _outReal
                case rc of
                  0 -> do outBegIdx <- peek cOutBegIdx
                          outNbElement <- peek cOutNbElement
@@ -3310,14 +3310,14 @@ foreign import ccall unsafe "ta_func.h TA_CMO"
 
 ta_cmo :: V.Vector Double -> Int -> IO (Either Int (Int, Int, V.Vector Double))
 ta_cmo inReal optInTimePeriod = do
-    _inReal <- V.thaw inReal
+    _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
     withForeignPtr (vecPtr _inReal) $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
           withForeignPtr (vecPtr _outReal) $ \c_outReal ->
             do rc <- c_ta_cmo 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
-               out_outReal <- V.freeze _outReal
+               out_outReal <- V.unsafeFreeze _outReal
                case rc of
                  0 -> do outBegIdx <- peek cOutBegIdx
                          outNbElement <- peek cOutNbElement
@@ -3345,8 +3345,8 @@ foreign import ccall unsafe "ta_func.h TA_CORREL"
 
 ta_correl :: V.Vector Double -> V.Vector Double -> Int -> IO (Either Int (Int, Int, V.Vector Double))
 ta_correl inReal0 inReal1 optInTimePeriod = do
-    _inReal0 <- V.thaw inReal0
-    _inReal1 <- V.thaw inReal1
+    _inReal0 <- V.unsafeThaw inReal0
+    _inReal1 <- V.unsafeThaw inReal1
     _outReal <- VM.new len
     withForeignPtr (vecPtr _inReal0) $ \c_inReal0 ->
       withForeignPtr (vecPtr _inReal1) $ \c_inReal1 ->
@@ -3354,7 +3354,7 @@ ta_correl inReal0 inReal1 optInTimePeriod = do
           alloca $ \cOutNbElement ->
             withForeignPtr (vecPtr _outReal) $ \c_outReal ->
               do rc <- c_ta_correl 0 (fromIntegral $ len - 1) c_inReal0 c_inReal1 (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
-                 out_outReal <- V.freeze _outReal
+                 out_outReal <- V.unsafeFreeze _outReal
                  case rc of
                    0 -> do outBegIdx <- peek cOutBegIdx
                            outNbElement <- peek cOutNbElement
@@ -3380,14 +3380,14 @@ foreign import ccall unsafe "ta_func.h TA_COS"
 
 ta_cos :: V.Vector Double -> IO (Either Int (Int, Int, V.Vector Double))
 ta_cos inReal = do
-    _inReal <- V.thaw inReal
+    _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
     withForeignPtr (vecPtr _inReal) $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
           withForeignPtr (vecPtr _outReal) $ \c_outReal ->
             do rc <- c_ta_cos 0 (fromIntegral $ len - 1) c_inReal cOutBegIdx cOutNbElement c_outReal
-               out_outReal <- V.freeze _outReal
+               out_outReal <- V.unsafeFreeze _outReal
                case rc of
                  0 -> do outBegIdx <- peek cOutBegIdx
                          outNbElement <- peek cOutNbElement
@@ -3413,14 +3413,14 @@ foreign import ccall unsafe "ta_func.h TA_COSH"
 
 ta_cosh :: V.Vector Double -> IO (Either Int (Int, Int, V.Vector Double))
 ta_cosh inReal = do
-    _inReal <- V.thaw inReal
+    _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
     withForeignPtr (vecPtr _inReal) $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
           withForeignPtr (vecPtr _outReal) $ \c_outReal ->
             do rc <- c_ta_cosh 0 (fromIntegral $ len - 1) c_inReal cOutBegIdx cOutNbElement c_outReal
-               out_outReal <- V.freeze _outReal
+               out_outReal <- V.unsafeFreeze _outReal
                case rc of
                  0 -> do outBegIdx <- peek cOutBegIdx
                          outNbElement <- peek cOutNbElement
@@ -3447,14 +3447,14 @@ foreign import ccall unsafe "ta_func.h TA_DEMA"
 
 ta_dema :: V.Vector Double -> Int -> IO (Either Int (Int, Int, V.Vector Double))
 ta_dema inReal optInTimePeriod = do
-    _inReal <- V.thaw inReal
+    _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
     withForeignPtr (vecPtr _inReal) $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
           withForeignPtr (vecPtr _outReal) $ \c_outReal ->
             do rc <- c_ta_dema 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
-               out_outReal <- V.freeze _outReal
+               out_outReal <- V.unsafeFreeze _outReal
                case rc of
                  0 -> do outBegIdx <- peek cOutBegIdx
                          outNbElement <- peek cOutNbElement
@@ -3481,8 +3481,8 @@ foreign import ccall unsafe "ta_func.h TA_DIV"
 
 ta_div :: V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Double))
 ta_div inReal0 inReal1 = do
-    _inReal0 <- V.thaw inReal0
-    _inReal1 <- V.thaw inReal1
+    _inReal0 <- V.unsafeThaw inReal0
+    _inReal1 <- V.unsafeThaw inReal1
     _outReal <- VM.new len
     withForeignPtr (vecPtr _inReal0) $ \c_inReal0 ->
       withForeignPtr (vecPtr _inReal1) $ \c_inReal1 ->
@@ -3490,7 +3490,7 @@ ta_div inReal0 inReal1 = do
           alloca $ \cOutNbElement ->
             withForeignPtr (vecPtr _outReal) $ \c_outReal ->
               do rc <- c_ta_div 0 (fromIntegral $ len - 1) c_inReal0 c_inReal1 cOutBegIdx cOutNbElement c_outReal
-                 out_outReal <- V.freeze _outReal
+                 out_outReal <- V.unsafeFreeze _outReal
                  case rc of
                    0 -> do outBegIdx <- peek cOutBegIdx
                            outNbElement <- peek cOutNbElement
@@ -3519,9 +3519,9 @@ foreign import ccall unsafe "ta_func.h TA_DX"
 
 ta_dx :: V.Vector Double -> V.Vector Double -> V.Vector Double -> Int -> IO (Either Int (Int, Int, V.Vector Double))
 ta_dx inHigh inLow inClose optInTimePeriod = do
-    _inHigh <- V.thaw inHigh
-    _inLow <- V.thaw inLow
-    _inClose <- V.thaw inClose
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
     _outReal <- VM.new len
     withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
       withForeignPtr (vecPtr _inLow) $ \c_inLow ->
@@ -3530,7 +3530,7 @@ ta_dx inHigh inLow inClose optInTimePeriod = do
             alloca $ \cOutNbElement ->
               withForeignPtr (vecPtr _outReal) $ \c_outReal ->
                 do rc <- c_ta_dx 0 (fromIntegral $ len - 1) c_inHigh c_inLow c_inClose (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
-                   out_outReal <- V.freeze _outReal
+                   out_outReal <- V.unsafeFreeze _outReal
                    case rc of
                      0 -> do outBegIdx <- peek cOutBegIdx
                              outNbElement <- peek cOutNbElement
@@ -3557,14 +3557,14 @@ foreign import ccall unsafe "ta_func.h TA_EMA"
 
 ta_ema :: V.Vector Double -> Int -> IO (Either Int (Int, Int, V.Vector Double))
 ta_ema inReal optInTimePeriod = do
-    _inReal <- V.thaw inReal
+    _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
     withForeignPtr (vecPtr _inReal) $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
           withForeignPtr (vecPtr _outReal) $ \c_outReal ->
             do rc <- c_ta_ema 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
-               out_outReal <- V.freeze _outReal
+               out_outReal <- V.unsafeFreeze _outReal
                case rc of
                  0 -> do outBegIdx <- peek cOutBegIdx
                          outNbElement <- peek cOutNbElement
@@ -3590,14 +3590,14 @@ foreign import ccall unsafe "ta_func.h TA_EXP"
 
 ta_exp :: V.Vector Double -> IO (Either Int (Int, Int, V.Vector Double))
 ta_exp inReal = do
-    _inReal <- V.thaw inReal
+    _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
     withForeignPtr (vecPtr _inReal) $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
           withForeignPtr (vecPtr _outReal) $ \c_outReal ->
             do rc <- c_ta_exp 0 (fromIntegral $ len - 1) c_inReal cOutBegIdx cOutNbElement c_outReal
-               out_outReal <- V.freeze _outReal
+               out_outReal <- V.unsafeFreeze _outReal
                case rc of
                  0 -> do outBegIdx <- peek cOutBegIdx
                          outNbElement <- peek cOutNbElement
@@ -3623,14 +3623,14 @@ foreign import ccall unsafe "ta_func.h TA_FLOOR"
 
 ta_floor :: V.Vector Double -> IO (Either Int (Int, Int, V.Vector Double))
 ta_floor inReal = do
-    _inReal <- V.thaw inReal
+    _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
     withForeignPtr (vecPtr _inReal) $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
           withForeignPtr (vecPtr _outReal) $ \c_outReal ->
             do rc <- c_ta_floor 0 (fromIntegral $ len - 1) c_inReal cOutBegIdx cOutNbElement c_outReal
-               out_outReal <- V.freeze _outReal
+               out_outReal <- V.unsafeFreeze _outReal
                case rc of
                  0 -> do outBegIdx <- peek cOutBegIdx
                          outNbElement <- peek cOutNbElement
@@ -3656,14 +3656,14 @@ foreign import ccall unsafe "ta_func.h TA_HT_DCPERIOD"
 
 ta_ht_dcperiod :: V.Vector Double -> IO (Either Int (Int, Int, V.Vector Double))
 ta_ht_dcperiod inReal = do
-    _inReal <- V.thaw inReal
+    _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
     withForeignPtr (vecPtr _inReal) $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
           withForeignPtr (vecPtr _outReal) $ \c_outReal ->
             do rc <- c_ta_ht_dcperiod 0 (fromIntegral $ len - 1) c_inReal cOutBegIdx cOutNbElement c_outReal
-               out_outReal <- V.freeze _outReal
+               out_outReal <- V.unsafeFreeze _outReal
                case rc of
                  0 -> do outBegIdx <- peek cOutBegIdx
                          outNbElement <- peek cOutNbElement
@@ -3689,14 +3689,14 @@ foreign import ccall unsafe "ta_func.h TA_HT_DCPHASE"
 
 ta_ht_dcphase :: V.Vector Double -> IO (Either Int (Int, Int, V.Vector Double))
 ta_ht_dcphase inReal = do
-    _inReal <- V.thaw inReal
+    _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
     withForeignPtr (vecPtr _inReal) $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
           withForeignPtr (vecPtr _outReal) $ \c_outReal ->
             do rc <- c_ta_ht_dcphase 0 (fromIntegral $ len - 1) c_inReal cOutBegIdx cOutNbElement c_outReal
-               out_outReal <- V.freeze _outReal
+               out_outReal <- V.unsafeFreeze _outReal
                case rc of
                  0 -> do outBegIdx <- peek cOutBegIdx
                          outNbElement <- peek cOutNbElement
@@ -3723,7 +3723,7 @@ foreign import ccall unsafe "ta_func.h TA_HT_PHASOR"
 
 ta_ht_phasor :: V.Vector Double -> IO (Either Int (Int, Int, V.Vector Double, V.Vector Double))
 ta_ht_phasor inReal = do
-    _inReal <- V.thaw inReal
+    _inReal <- V.unsafeThaw inReal
     _outInPhase <- VM.new len
     _outQuadrature <- VM.new len
     withForeignPtr (vecPtr _inReal) $ \c_inReal ->
@@ -3732,8 +3732,8 @@ ta_ht_phasor inReal = do
           withForeignPtr (vecPtr _outInPhase) $ \c_outInPhase ->
             withForeignPtr (vecPtr _outQuadrature) $ \c_outQuadrature ->
               do rc <- c_ta_ht_phasor 0 (fromIntegral $ len - 1) c_inReal cOutBegIdx cOutNbElement c_outInPhase c_outQuadrature
-                 out_outInPhase <- V.freeze _outInPhase
-                 out_outQuadrature <- V.freeze _outQuadrature
+                 out_outInPhase <- V.unsafeFreeze _outInPhase
+                 out_outQuadrature <- V.unsafeFreeze _outQuadrature
                  case rc of
                    0 -> do outBegIdx <- peek cOutBegIdx
                            outNbElement <- peek cOutNbElement
@@ -3761,7 +3761,7 @@ foreign import ccall unsafe "ta_func.h TA_HT_SINE"
 
 ta_ht_sine :: V.Vector Double -> IO (Either Int (Int, Int, V.Vector Double, V.Vector Double))
 ta_ht_sine inReal = do
-    _inReal <- V.thaw inReal
+    _inReal <- V.unsafeThaw inReal
     _outSine <- VM.new len
     _outLeadSine <- VM.new len
     withForeignPtr (vecPtr _inReal) $ \c_inReal ->
@@ -3770,8 +3770,8 @@ ta_ht_sine inReal = do
           withForeignPtr (vecPtr _outSine) $ \c_outSine ->
             withForeignPtr (vecPtr _outLeadSine) $ \c_outLeadSine ->
               do rc <- c_ta_ht_sine 0 (fromIntegral $ len - 1) c_inReal cOutBegIdx cOutNbElement c_outSine c_outLeadSine
-                 out_outSine <- V.freeze _outSine
-                 out_outLeadSine <- V.freeze _outLeadSine
+                 out_outSine <- V.unsafeFreeze _outSine
+                 out_outLeadSine <- V.unsafeFreeze _outLeadSine
                  case rc of
                    0 -> do outBegIdx <- peek cOutBegIdx
                            outNbElement <- peek cOutNbElement
@@ -3798,14 +3798,14 @@ foreign import ccall unsafe "ta_func.h TA_HT_TRENDLINE"
 
 ta_ht_trendline :: V.Vector Double -> IO (Either Int (Int, Int, V.Vector Double))
 ta_ht_trendline inReal = do
-    _inReal <- V.thaw inReal
+    _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
     withForeignPtr (vecPtr _inReal) $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
           withForeignPtr (vecPtr _outReal) $ \c_outReal ->
             do rc <- c_ta_ht_trendline 0 (fromIntegral $ len - 1) c_inReal cOutBegIdx cOutNbElement c_outReal
-               out_outReal <- V.freeze _outReal
+               out_outReal <- V.unsafeFreeze _outReal
                case rc of
                  0 -> do outBegIdx <- peek cOutBegIdx
                          outNbElement <- peek cOutNbElement
@@ -3831,14 +3831,14 @@ foreign import ccall unsafe "ta_func.h TA_HT_TRENDMODE"
 
 ta_ht_trendmode :: V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
 ta_ht_trendmode inReal = do
-    _inReal <- V.thaw inReal
+    _inReal <- V.unsafeThaw inReal
     _outInteger <- VM.new len
     withForeignPtr (vecPtr _inReal) $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
           withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
             do rc <- c_ta_ht_trendmode 0 (fromIntegral $ len - 1) c_inReal cOutBegIdx cOutNbElement c_outInteger
-               out_outInteger <- V.freeze _outInteger
+               out_outInteger <- V.unsafeFreeze _outInteger
                case rc of
                  0 -> do outBegIdx <- peek cOutBegIdx
                          outNbElement <- peek cOutNbElement
@@ -3865,14 +3865,14 @@ foreign import ccall unsafe "ta_func.h TA_KAMA"
 
 ta_kama :: V.Vector Double -> Int -> IO (Either Int (Int, Int, V.Vector Double))
 ta_kama inReal optInTimePeriod = do
-    _inReal <- V.thaw inReal
+    _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
     withForeignPtr (vecPtr _inReal) $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
           withForeignPtr (vecPtr _outReal) $ \c_outReal ->
             do rc <- c_ta_kama 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
-               out_outReal <- V.freeze _outReal
+               out_outReal <- V.unsafeFreeze _outReal
                case rc of
                  0 -> do outBegIdx <- peek cOutBegIdx
                          outNbElement <- peek cOutNbElement
@@ -3899,14 +3899,14 @@ foreign import ccall unsafe "ta_func.h TA_LINEARREG"
 
 ta_linearreg :: V.Vector Double -> Int -> IO (Either Int (Int, Int, V.Vector Double))
 ta_linearreg inReal optInTimePeriod = do
-    _inReal <- V.thaw inReal
+    _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
     withForeignPtr (vecPtr _inReal) $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
           withForeignPtr (vecPtr _outReal) $ \c_outReal ->
             do rc <- c_ta_linearreg 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
-               out_outReal <- V.freeze _outReal
+               out_outReal <- V.unsafeFreeze _outReal
                case rc of
                  0 -> do outBegIdx <- peek cOutBegIdx
                          outNbElement <- peek cOutNbElement
@@ -3933,14 +3933,14 @@ foreign import ccall unsafe "ta_func.h TA_LINEARREG_ANGLE"
 
 ta_linearreg_angle :: V.Vector Double -> Int -> IO (Either Int (Int, Int, V.Vector Double))
 ta_linearreg_angle inReal optInTimePeriod = do
-    _inReal <- V.thaw inReal
+    _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
     withForeignPtr (vecPtr _inReal) $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
           withForeignPtr (vecPtr _outReal) $ \c_outReal ->
             do rc <- c_ta_linearreg_angle 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
-               out_outReal <- V.freeze _outReal
+               out_outReal <- V.unsafeFreeze _outReal
                case rc of
                  0 -> do outBegIdx <- peek cOutBegIdx
                          outNbElement <- peek cOutNbElement
@@ -3967,14 +3967,14 @@ foreign import ccall unsafe "ta_func.h TA_LINEARREG_INTERCEPT"
 
 ta_linearreg_intercept :: V.Vector Double -> Int -> IO (Either Int (Int, Int, V.Vector Double))
 ta_linearreg_intercept inReal optInTimePeriod = do
-    _inReal <- V.thaw inReal
+    _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
     withForeignPtr (vecPtr _inReal) $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
           withForeignPtr (vecPtr _outReal) $ \c_outReal ->
             do rc <- c_ta_linearreg_intercept 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
-               out_outReal <- V.freeze _outReal
+               out_outReal <- V.unsafeFreeze _outReal
                case rc of
                  0 -> do outBegIdx <- peek cOutBegIdx
                          outNbElement <- peek cOutNbElement
@@ -4001,14 +4001,14 @@ foreign import ccall unsafe "ta_func.h TA_LINEARREG_SLOPE"
 
 ta_linearreg_slope :: V.Vector Double -> Int -> IO (Either Int (Int, Int, V.Vector Double))
 ta_linearreg_slope inReal optInTimePeriod = do
-    _inReal <- V.thaw inReal
+    _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
     withForeignPtr (vecPtr _inReal) $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
           withForeignPtr (vecPtr _outReal) $ \c_outReal ->
             do rc <- c_ta_linearreg_slope 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
-               out_outReal <- V.freeze _outReal
+               out_outReal <- V.unsafeFreeze _outReal
                case rc of
                  0 -> do outBegIdx <- peek cOutBegIdx
                          outNbElement <- peek cOutNbElement
@@ -4034,14 +4034,14 @@ foreign import ccall unsafe "ta_func.h TA_LN"
 
 ta_ln :: V.Vector Double -> IO (Either Int (Int, Int, V.Vector Double))
 ta_ln inReal = do
-    _inReal <- V.thaw inReal
+    _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
     withForeignPtr (vecPtr _inReal) $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
           withForeignPtr (vecPtr _outReal) $ \c_outReal ->
             do rc <- c_ta_ln 0 (fromIntegral $ len - 1) c_inReal cOutBegIdx cOutNbElement c_outReal
-               out_outReal <- V.freeze _outReal
+               out_outReal <- V.unsafeFreeze _outReal
                case rc of
                  0 -> do outBegIdx <- peek cOutBegIdx
                          outNbElement <- peek cOutNbElement
@@ -4067,14 +4067,14 @@ foreign import ccall unsafe "ta_func.h TA_LOG10"
 
 ta_log10 :: V.Vector Double -> IO (Either Int (Int, Int, V.Vector Double))
 ta_log10 inReal = do
-    _inReal <- V.thaw inReal
+    _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
     withForeignPtr (vecPtr _inReal) $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
           withForeignPtr (vecPtr _outReal) $ \c_outReal ->
             do rc <- c_ta_log10 0 (fromIntegral $ len - 1) c_inReal cOutBegIdx cOutNbElement c_outReal
-               out_outReal <- V.freeze _outReal
+               out_outReal <- V.unsafeFreeze _outReal
                case rc of
                  0 -> do outBegIdx <- peek cOutBegIdx
                          outNbElement <- peek cOutNbElement
@@ -4102,14 +4102,14 @@ foreign import ccall unsafe "ta_func.h TA_MA"
 
 ta_ma :: V.Vector Double -> Int -> Int -> IO (Either Int (Int, Int, V.Vector Double))
 ta_ma inReal optInTimePeriod optInMAType = do
-    _inReal <- V.thaw inReal
+    _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
     withForeignPtr (vecPtr _inReal) $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
           withForeignPtr (vecPtr _outReal) $ \c_outReal ->
             do rc <- c_ta_ma 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) (fromIntegral optInMAType) cOutBegIdx cOutNbElement c_outReal
-               out_outReal <- V.freeze _outReal
+               out_outReal <- V.unsafeFreeze _outReal
                case rc of
                  0 -> do outBegIdx <- peek cOutBegIdx
                          outNbElement <- peek cOutNbElement
@@ -4140,7 +4140,7 @@ foreign import ccall unsafe "ta_func.h TA_MACD"
 
 ta_macd :: V.Vector Double -> Int -> Int -> Int -> IO (Either Int (Int, Int, V.Vector Double, V.Vector Double, V.Vector Double))
 ta_macd inReal optInFastPeriod optInSlowPeriod optInSignalPeriod = do
-    _inReal <- V.thaw inReal
+    _inReal <- V.unsafeThaw inReal
     _outMACD <- VM.new len
     _outMACDSignal <- VM.new len
     _outMACDHist <- VM.new len
@@ -4151,9 +4151,9 @@ ta_macd inReal optInFastPeriod optInSlowPeriod optInSignalPeriod = do
             withForeignPtr (vecPtr _outMACDSignal) $ \c_outMACDSignal ->
               withForeignPtr (vecPtr _outMACDHist) $ \c_outMACDHist ->
                 do rc <- c_ta_macd 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInFastPeriod) (fromIntegral optInSlowPeriod) (fromIntegral optInSignalPeriod) cOutBegIdx cOutNbElement c_outMACD c_outMACDSignal c_outMACDHist
-                   out_outMACD <- V.freeze _outMACD
-                   out_outMACDSignal <- V.freeze _outMACDSignal
-                   out_outMACDHist <- V.freeze _outMACDHist
+                   out_outMACD <- V.unsafeFreeze _outMACD
+                   out_outMACDSignal <- V.unsafeFreeze _outMACDSignal
+                   out_outMACDHist <- V.unsafeFreeze _outMACDHist
                    case rc of
                      0 -> do outBegIdx <- peek cOutBegIdx
                              outNbElement <- peek cOutNbElement
@@ -4189,7 +4189,7 @@ foreign import ccall unsafe "ta_func.h TA_MACDEXT"
 
 ta_macdext :: V.Vector Double -> Int -> Int -> Int -> Int -> Int -> Int -> IO (Either Int (Int, Int, V.Vector Double, V.Vector Double, V.Vector Double))
 ta_macdext inReal optInFastPeriod optInFastMAType optInSlowPeriod optInSlowMAType optInSignalPeriod optInSignalMAType = do
-    _inReal <- V.thaw inReal
+    _inReal <- V.unsafeThaw inReal
     _outMACD <- VM.new len
     _outMACDSignal <- VM.new len
     _outMACDHist <- VM.new len
@@ -4200,9 +4200,9 @@ ta_macdext inReal optInFastPeriod optInFastMAType optInSlowPeriod optInSlowMATyp
             withForeignPtr (vecPtr _outMACDSignal) $ \c_outMACDSignal ->
               withForeignPtr (vecPtr _outMACDHist) $ \c_outMACDHist ->
                 do rc <- c_ta_macdext 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInFastPeriod) (fromIntegral optInFastMAType) (fromIntegral optInSlowPeriod) (fromIntegral optInSlowMAType) (fromIntegral optInSignalPeriod) (fromIntegral optInSignalMAType) cOutBegIdx cOutNbElement c_outMACD c_outMACDSignal c_outMACDHist
-                   out_outMACD <- V.freeze _outMACD
-                   out_outMACDSignal <- V.freeze _outMACDSignal
-                   out_outMACDHist <- V.freeze _outMACDHist
+                   out_outMACD <- V.unsafeFreeze _outMACD
+                   out_outMACDSignal <- V.unsafeFreeze _outMACDSignal
+                   out_outMACDHist <- V.unsafeFreeze _outMACDHist
                    case rc of
                      0 -> do outBegIdx <- peek cOutBegIdx
                              outNbElement <- peek cOutNbElement
@@ -4233,7 +4233,7 @@ foreign import ccall unsafe "ta_func.h TA_MACDFIX"
 
 ta_macdfix :: V.Vector Double -> Int -> IO (Either Int (Int, Int, V.Vector Double, V.Vector Double, V.Vector Double))
 ta_macdfix inReal optInSignalPeriod = do
-    _inReal <- V.thaw inReal
+    _inReal <- V.unsafeThaw inReal
     _outMACD <- VM.new len
     _outMACDSignal <- VM.new len
     _outMACDHist <- VM.new len
@@ -4244,9 +4244,9 @@ ta_macdfix inReal optInSignalPeriod = do
             withForeignPtr (vecPtr _outMACDSignal) $ \c_outMACDSignal ->
               withForeignPtr (vecPtr _outMACDHist) $ \c_outMACDHist ->
                 do rc <- c_ta_macdfix 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInSignalPeriod) cOutBegIdx cOutNbElement c_outMACD c_outMACDSignal c_outMACDHist
-                   out_outMACD <- V.freeze _outMACD
-                   out_outMACDSignal <- V.freeze _outMACDSignal
-                   out_outMACDHist <- V.freeze _outMACDHist
+                   out_outMACD <- V.unsafeFreeze _outMACD
+                   out_outMACDSignal <- V.unsafeFreeze _outMACDSignal
+                   out_outMACDHist <- V.unsafeFreeze _outMACDHist
                    case rc of
                      0 -> do outBegIdx <- peek cOutBegIdx
                              outNbElement <- peek cOutNbElement
@@ -4277,7 +4277,7 @@ foreign import ccall unsafe "ta_func.h TA_MAMA"
 
 ta_mama :: V.Vector Double -> Double -> Double -> IO (Either Int (Int, Int, V.Vector Double, V.Vector Double))
 ta_mama inReal optInFastLimit optInSlowLimit = do
-    _inReal <- V.thaw inReal
+    _inReal <- V.unsafeThaw inReal
     _outMAMA <- VM.new len
     _outFAMA <- VM.new len
     withForeignPtr (vecPtr _inReal) $ \c_inReal ->
@@ -4286,8 +4286,8 @@ ta_mama inReal optInFastLimit optInSlowLimit = do
           withForeignPtr (vecPtr _outMAMA) $ \c_outMAMA ->
             withForeignPtr (vecPtr _outFAMA) $ \c_outFAMA ->
               do rc <- c_ta_mama 0 (fromIntegral $ len - 1) c_inReal (realToFrac optInFastLimit) (realToFrac optInSlowLimit) cOutBegIdx cOutNbElement c_outMAMA c_outFAMA
-                 out_outMAMA <- V.freeze _outMAMA
-                 out_outFAMA <- V.freeze _outFAMA
+                 out_outMAMA <- V.unsafeFreeze _outMAMA
+                 out_outFAMA <- V.unsafeFreeze _outFAMA
                  case rc of
                    0 -> do outBegIdx <- peek cOutBegIdx
                            outNbElement <- peek cOutNbElement
@@ -4318,8 +4318,8 @@ foreign import ccall unsafe "ta_func.h TA_MAVP"
 
 ta_mavp :: V.Vector Double -> V.Vector Double -> Int -> Int -> Int -> IO (Either Int (Int, Int, V.Vector Double))
 ta_mavp inReal inPeriods optInMinPeriod optInMaxPeriod optInMAType = do
-    _inReal <- V.thaw inReal
-    _inPeriods <- V.thaw inPeriods
+    _inReal <- V.unsafeThaw inReal
+    _inPeriods <- V.unsafeThaw inPeriods
     _outReal <- VM.new len
     withForeignPtr (vecPtr _inReal) $ \c_inReal ->
       withForeignPtr (vecPtr _inPeriods) $ \c_inPeriods ->
@@ -4327,7 +4327,7 @@ ta_mavp inReal inPeriods optInMinPeriod optInMaxPeriod optInMAType = do
           alloca $ \cOutNbElement ->
             withForeignPtr (vecPtr _outReal) $ \c_outReal ->
               do rc <- c_ta_mavp 0 (fromIntegral $ len - 1) c_inReal c_inPeriods (fromIntegral optInMinPeriod) (fromIntegral optInMaxPeriod) (fromIntegral optInMAType) cOutBegIdx cOutNbElement c_outReal
-                 out_outReal <- V.freeze _outReal
+                 out_outReal <- V.unsafeFreeze _outReal
                  case rc of
                    0 -> do outBegIdx <- peek cOutBegIdx
                            outNbElement <- peek cOutNbElement
@@ -4354,14 +4354,14 @@ foreign import ccall unsafe "ta_func.h TA_MAX"
 
 ta_max :: V.Vector Double -> Int -> IO (Either Int (Int, Int, V.Vector Double))
 ta_max inReal optInTimePeriod = do
-    _inReal <- V.thaw inReal
+    _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
     withForeignPtr (vecPtr _inReal) $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
           withForeignPtr (vecPtr _outReal) $ \c_outReal ->
             do rc <- c_ta_max 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
-               out_outReal <- V.freeze _outReal
+               out_outReal <- V.unsafeFreeze _outReal
                case rc of
                  0 -> do outBegIdx <- peek cOutBegIdx
                          outNbElement <- peek cOutNbElement
@@ -4388,14 +4388,14 @@ foreign import ccall unsafe "ta_func.h TA_MAXINDEX"
 
 ta_maxindex :: V.Vector Double -> Int -> IO (Either Int (Int, Int, V.Vector Int))
 ta_maxindex inReal optInTimePeriod = do
-    _inReal <- V.thaw inReal
+    _inReal <- V.unsafeThaw inReal
     _outInteger <- VM.new len
     withForeignPtr (vecPtr _inReal) $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
           withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
             do rc <- c_ta_maxindex 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outInteger
-               out_outInteger <- V.freeze _outInteger
+               out_outInteger <- V.unsafeFreeze _outInteger
                case rc of
                  0 -> do outBegIdx <- peek cOutBegIdx
                          outNbElement <- peek cOutNbElement
@@ -4422,8 +4422,8 @@ foreign import ccall unsafe "ta_func.h TA_MEDPRICE"
 
 ta_medprice :: V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Double))
 ta_medprice inHigh inLow = do
-    _inHigh <- V.thaw inHigh
-    _inLow <- V.thaw inLow
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
     _outReal <- VM.new len
     withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
       withForeignPtr (vecPtr _inLow) $ \c_inLow ->
@@ -4431,7 +4431,7 @@ ta_medprice inHigh inLow = do
           alloca $ \cOutNbElement ->
             withForeignPtr (vecPtr _outReal) $ \c_outReal ->
               do rc <- c_ta_medprice 0 (fromIntegral $ len - 1) c_inHigh c_inLow cOutBegIdx cOutNbElement c_outReal
-                 out_outReal <- V.freeze _outReal
+                 out_outReal <- V.unsafeFreeze _outReal
                  case rc of
                    0 -> do outBegIdx <- peek cOutBegIdx
                            outNbElement <- peek cOutNbElement
@@ -4461,10 +4461,10 @@ foreign import ccall unsafe "ta_func.h TA_MFI"
 
 ta_mfi :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> Int -> IO (Either Int (Int, Int, V.Vector Double))
 ta_mfi inHigh inLow inClose inVolume optInTimePeriod = do
-    _inHigh <- V.thaw inHigh
-    _inLow <- V.thaw inLow
-    _inClose <- V.thaw inClose
-    _inVolume <- V.thaw inVolume
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
+    _inVolume <- V.unsafeThaw inVolume
     _outReal <- VM.new len
     withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
       withForeignPtr (vecPtr _inLow) $ \c_inLow ->
@@ -4474,7 +4474,7 @@ ta_mfi inHigh inLow inClose inVolume optInTimePeriod = do
               alloca $ \cOutNbElement ->
                 withForeignPtr (vecPtr _outReal) $ \c_outReal ->
                   do rc <- c_ta_mfi 0 (fromIntegral $ len - 1) c_inHigh c_inLow c_inClose c_inVolume (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
-                     out_outReal <- V.freeze _outReal
+                     out_outReal <- V.unsafeFreeze _outReal
                      case rc of
                        0 -> do outBegIdx <- peek cOutBegIdx
                                outNbElement <- peek cOutNbElement
@@ -4501,14 +4501,14 @@ foreign import ccall unsafe "ta_func.h TA_MIDPOINT"
 
 ta_midpoint :: V.Vector Double -> Int -> IO (Either Int (Int, Int, V.Vector Double))
 ta_midpoint inReal optInTimePeriod = do
-    _inReal <- V.thaw inReal
+    _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
     withForeignPtr (vecPtr _inReal) $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
           withForeignPtr (vecPtr _outReal) $ \c_outReal ->
             do rc <- c_ta_midpoint 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
-               out_outReal <- V.freeze _outReal
+               out_outReal <- V.unsafeFreeze _outReal
                case rc of
                  0 -> do outBegIdx <- peek cOutBegIdx
                          outNbElement <- peek cOutNbElement
@@ -4536,8 +4536,8 @@ foreign import ccall unsafe "ta_func.h TA_MIDPRICE"
 
 ta_midprice :: V.Vector Double -> V.Vector Double -> Int -> IO (Either Int (Int, Int, V.Vector Double))
 ta_midprice inHigh inLow optInTimePeriod = do
-    _inHigh <- V.thaw inHigh
-    _inLow <- V.thaw inLow
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
     _outReal <- VM.new len
     withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
       withForeignPtr (vecPtr _inLow) $ \c_inLow ->
@@ -4545,7 +4545,7 @@ ta_midprice inHigh inLow optInTimePeriod = do
           alloca $ \cOutNbElement ->
             withForeignPtr (vecPtr _outReal) $ \c_outReal ->
               do rc <- c_ta_midprice 0 (fromIntegral $ len - 1) c_inHigh c_inLow (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
-                 out_outReal <- V.freeze _outReal
+                 out_outReal <- V.unsafeFreeze _outReal
                  case rc of
                    0 -> do outBegIdx <- peek cOutBegIdx
                            outNbElement <- peek cOutNbElement
@@ -4572,14 +4572,14 @@ foreign import ccall unsafe "ta_func.h TA_MIN"
 
 ta_min :: V.Vector Double -> Int -> IO (Either Int (Int, Int, V.Vector Double))
 ta_min inReal optInTimePeriod = do
-    _inReal <- V.thaw inReal
+    _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
     withForeignPtr (vecPtr _inReal) $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
           withForeignPtr (vecPtr _outReal) $ \c_outReal ->
             do rc <- c_ta_min 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
-               out_outReal <- V.freeze _outReal
+               out_outReal <- V.unsafeFreeze _outReal
                case rc of
                  0 -> do outBegIdx <- peek cOutBegIdx
                          outNbElement <- peek cOutNbElement
@@ -4606,14 +4606,14 @@ foreign import ccall unsafe "ta_func.h TA_MININDEX"
 
 ta_minindex :: V.Vector Double -> Int -> IO (Either Int (Int, Int, V.Vector Int))
 ta_minindex inReal optInTimePeriod = do
-    _inReal <- V.thaw inReal
+    _inReal <- V.unsafeThaw inReal
     _outInteger <- VM.new len
     withForeignPtr (vecPtr _inReal) $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
           withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
             do rc <- c_ta_minindex 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outInteger
-               out_outInteger <- V.freeze _outInteger
+               out_outInteger <- V.unsafeFreeze _outInteger
                case rc of
                  0 -> do outBegIdx <- peek cOutBegIdx
                          outNbElement <- peek cOutNbElement
@@ -4641,7 +4641,7 @@ foreign import ccall unsafe "ta_func.h TA_MINMAX"
 
 ta_minmax :: V.Vector Double -> Int -> IO (Either Int (Int, Int, V.Vector Double, V.Vector Double))
 ta_minmax inReal optInTimePeriod = do
-    _inReal <- V.thaw inReal
+    _inReal <- V.unsafeThaw inReal
     _outMin <- VM.new len
     _outMax <- VM.new len
     withForeignPtr (vecPtr _inReal) $ \c_inReal ->
@@ -4650,8 +4650,8 @@ ta_minmax inReal optInTimePeriod = do
           withForeignPtr (vecPtr _outMin) $ \c_outMin ->
             withForeignPtr (vecPtr _outMax) $ \c_outMax ->
               do rc <- c_ta_minmax 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outMin c_outMax
-                 out_outMin <- V.freeze _outMin
-                 out_outMax <- V.freeze _outMax
+                 out_outMin <- V.unsafeFreeze _outMin
+                 out_outMax <- V.unsafeFreeze _outMax
                  case rc of
                    0 -> do outBegIdx <- peek cOutBegIdx
                            outNbElement <- peek cOutNbElement
@@ -4680,7 +4680,7 @@ foreign import ccall unsafe "ta_func.h TA_MINMAXINDEX"
 
 ta_minmaxindex :: V.Vector Double -> Int -> IO (Either Int (Int, Int, V.Vector Int, V.Vector Int))
 ta_minmaxindex inReal optInTimePeriod = do
-    _inReal <- V.thaw inReal
+    _inReal <- V.unsafeThaw inReal
     _outMinIdx <- VM.new len
     _outMaxIdx <- VM.new len
     withForeignPtr (vecPtr _inReal) $ \c_inReal ->
@@ -4689,8 +4689,8 @@ ta_minmaxindex inReal optInTimePeriod = do
           withForeignPtr (vecPtr _outMinIdx) $ \c_outMinIdx ->
             withForeignPtr (vecPtr _outMaxIdx) $ \c_outMaxIdx ->
               do rc <- c_ta_minmaxindex 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outMinIdx c_outMaxIdx
-                 out_outMinIdx <- V.freeze _outMinIdx
-                 out_outMaxIdx <- V.freeze _outMaxIdx
+                 out_outMinIdx <- V.unsafeFreeze _outMinIdx
+                 out_outMaxIdx <- V.unsafeFreeze _outMaxIdx
                  case rc of
                    0 -> do outBegIdx <- peek cOutBegIdx
                            outNbElement <- peek cOutNbElement
@@ -4720,9 +4720,9 @@ foreign import ccall unsafe "ta_func.h TA_MINUS_DI"
 
 ta_minus_di :: V.Vector Double -> V.Vector Double -> V.Vector Double -> Int -> IO (Either Int (Int, Int, V.Vector Double))
 ta_minus_di inHigh inLow inClose optInTimePeriod = do
-    _inHigh <- V.thaw inHigh
-    _inLow <- V.thaw inLow
-    _inClose <- V.thaw inClose
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
     _outReal <- VM.new len
     withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
       withForeignPtr (vecPtr _inLow) $ \c_inLow ->
@@ -4731,7 +4731,7 @@ ta_minus_di inHigh inLow inClose optInTimePeriod = do
             alloca $ \cOutNbElement ->
               withForeignPtr (vecPtr _outReal) $ \c_outReal ->
                 do rc <- c_ta_minus_di 0 (fromIntegral $ len - 1) c_inHigh c_inLow c_inClose (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
-                   out_outReal <- V.freeze _outReal
+                   out_outReal <- V.unsafeFreeze _outReal
                    case rc of
                      0 -> do outBegIdx <- peek cOutBegIdx
                              outNbElement <- peek cOutNbElement
@@ -4759,8 +4759,8 @@ foreign import ccall unsafe "ta_func.h TA_MINUS_DM"
 
 ta_minus_dm :: V.Vector Double -> V.Vector Double -> Int -> IO (Either Int (Int, Int, V.Vector Double))
 ta_minus_dm inHigh inLow optInTimePeriod = do
-    _inHigh <- V.thaw inHigh
-    _inLow <- V.thaw inLow
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
     _outReal <- VM.new len
     withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
       withForeignPtr (vecPtr _inLow) $ \c_inLow ->
@@ -4768,7 +4768,7 @@ ta_minus_dm inHigh inLow optInTimePeriod = do
           alloca $ \cOutNbElement ->
             withForeignPtr (vecPtr _outReal) $ \c_outReal ->
               do rc <- c_ta_minus_dm 0 (fromIntegral $ len - 1) c_inHigh c_inLow (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
-                 out_outReal <- V.freeze _outReal
+                 out_outReal <- V.unsafeFreeze _outReal
                  case rc of
                    0 -> do outBegIdx <- peek cOutBegIdx
                            outNbElement <- peek cOutNbElement
@@ -4795,14 +4795,14 @@ foreign import ccall unsafe "ta_func.h TA_MOM"
 
 ta_mom :: V.Vector Double -> Int -> IO (Either Int (Int, Int, V.Vector Double))
 ta_mom inReal optInTimePeriod = do
-    _inReal <- V.thaw inReal
+    _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
     withForeignPtr (vecPtr _inReal) $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
           withForeignPtr (vecPtr _outReal) $ \c_outReal ->
             do rc <- c_ta_mom 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
-               out_outReal <- V.freeze _outReal
+               out_outReal <- V.unsafeFreeze _outReal
                case rc of
                  0 -> do outBegIdx <- peek cOutBegIdx
                          outNbElement <- peek cOutNbElement
@@ -4829,8 +4829,8 @@ foreign import ccall unsafe "ta_func.h TA_MULT"
 
 ta_mult :: V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Double))
 ta_mult inReal0 inReal1 = do
-    _inReal0 <- V.thaw inReal0
-    _inReal1 <- V.thaw inReal1
+    _inReal0 <- V.unsafeThaw inReal0
+    _inReal1 <- V.unsafeThaw inReal1
     _outReal <- VM.new len
     withForeignPtr (vecPtr _inReal0) $ \c_inReal0 ->
       withForeignPtr (vecPtr _inReal1) $ \c_inReal1 ->
@@ -4838,7 +4838,7 @@ ta_mult inReal0 inReal1 = do
           alloca $ \cOutNbElement ->
             withForeignPtr (vecPtr _outReal) $ \c_outReal ->
               do rc <- c_ta_mult 0 (fromIntegral $ len - 1) c_inReal0 c_inReal1 cOutBegIdx cOutNbElement c_outReal
-                 out_outReal <- V.freeze _outReal
+                 out_outReal <- V.unsafeFreeze _outReal
                  case rc of
                    0 -> do outBegIdx <- peek cOutBegIdx
                            outNbElement <- peek cOutNbElement
@@ -4867,9 +4867,9 @@ foreign import ccall unsafe "ta_func.h TA_NATR"
 
 ta_natr :: V.Vector Double -> V.Vector Double -> V.Vector Double -> Int -> IO (Either Int (Int, Int, V.Vector Double))
 ta_natr inHigh inLow inClose optInTimePeriod = do
-    _inHigh <- V.thaw inHigh
-    _inLow <- V.thaw inLow
-    _inClose <- V.thaw inClose
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
     _outReal <- VM.new len
     withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
       withForeignPtr (vecPtr _inLow) $ \c_inLow ->
@@ -4878,7 +4878,7 @@ ta_natr inHigh inLow inClose optInTimePeriod = do
             alloca $ \cOutNbElement ->
               withForeignPtr (vecPtr _outReal) $ \c_outReal ->
                 do rc <- c_ta_natr 0 (fromIntegral $ len - 1) c_inHigh c_inLow c_inClose (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
-                   out_outReal <- V.freeze _outReal
+                   out_outReal <- V.unsafeFreeze _outReal
                    case rc of
                      0 -> do outBegIdx <- peek cOutBegIdx
                              outNbElement <- peek cOutNbElement
@@ -4905,8 +4905,8 @@ foreign import ccall unsafe "ta_func.h TA_OBV"
 
 ta_obv :: V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Double))
 ta_obv inReal inVolume1 = do
-    _inReal <- V.thaw inReal
-    _inVolume1 <- V.thaw inVolume1
+    _inReal <- V.unsafeThaw inReal
+    _inVolume1 <- V.unsafeThaw inVolume1
     _outReal <- VM.new len
     withForeignPtr (vecPtr _inReal) $ \c_inReal ->
       withForeignPtr (vecPtr _inVolume1) $ \c_inVolume1 ->
@@ -4914,7 +4914,7 @@ ta_obv inReal inVolume1 = do
           alloca $ \cOutNbElement ->
             withForeignPtr (vecPtr _outReal) $ \c_outReal ->
               do rc <- c_ta_obv 0 (fromIntegral $ len - 1) c_inReal c_inVolume1 cOutBegIdx cOutNbElement c_outReal
-                 out_outReal <- V.freeze _outReal
+                 out_outReal <- V.unsafeFreeze _outReal
                  case rc of
                    0 -> do outBegIdx <- peek cOutBegIdx
                            outNbElement <- peek cOutNbElement
@@ -4943,9 +4943,9 @@ foreign import ccall unsafe "ta_func.h TA_PLUS_DI"
 
 ta_plus_di :: V.Vector Double -> V.Vector Double -> V.Vector Double -> Int -> IO (Either Int (Int, Int, V.Vector Double))
 ta_plus_di inHigh inLow inClose optInTimePeriod = do
-    _inHigh <- V.thaw inHigh
-    _inLow <- V.thaw inLow
-    _inClose <- V.thaw inClose
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
     _outReal <- VM.new len
     withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
       withForeignPtr (vecPtr _inLow) $ \c_inLow ->
@@ -4954,7 +4954,7 @@ ta_plus_di inHigh inLow inClose optInTimePeriod = do
             alloca $ \cOutNbElement ->
               withForeignPtr (vecPtr _outReal) $ \c_outReal ->
                 do rc <- c_ta_plus_di 0 (fromIntegral $ len - 1) c_inHigh c_inLow c_inClose (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
-                   out_outReal <- V.freeze _outReal
+                   out_outReal <- V.unsafeFreeze _outReal
                    case rc of
                      0 -> do outBegIdx <- peek cOutBegIdx
                              outNbElement <- peek cOutNbElement
@@ -4982,8 +4982,8 @@ foreign import ccall unsafe "ta_func.h TA_PLUS_DM"
 
 ta_plus_dm :: V.Vector Double -> V.Vector Double -> Int -> IO (Either Int (Int, Int, V.Vector Double))
 ta_plus_dm inHigh inLow optInTimePeriod = do
-    _inHigh <- V.thaw inHigh
-    _inLow <- V.thaw inLow
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
     _outReal <- VM.new len
     withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
       withForeignPtr (vecPtr _inLow) $ \c_inLow ->
@@ -4991,7 +4991,7 @@ ta_plus_dm inHigh inLow optInTimePeriod = do
           alloca $ \cOutNbElement ->
             withForeignPtr (vecPtr _outReal) $ \c_outReal ->
               do rc <- c_ta_plus_dm 0 (fromIntegral $ len - 1) c_inHigh c_inLow (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
-                 out_outReal <- V.freeze _outReal
+                 out_outReal <- V.unsafeFreeze _outReal
                  case rc of
                    0 -> do outBegIdx <- peek cOutBegIdx
                            outNbElement <- peek cOutNbElement
@@ -5020,14 +5020,14 @@ foreign import ccall unsafe "ta_func.h TA_PPO"
 
 ta_ppo :: V.Vector Double -> Int -> Int -> Int -> IO (Either Int (Int, Int, V.Vector Double))
 ta_ppo inReal optInFastPeriod optInSlowPeriod optInMAType = do
-    _inReal <- V.thaw inReal
+    _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
     withForeignPtr (vecPtr _inReal) $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
           withForeignPtr (vecPtr _outReal) $ \c_outReal ->
             do rc <- c_ta_ppo 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInFastPeriod) (fromIntegral optInSlowPeriod) (fromIntegral optInMAType) cOutBegIdx cOutNbElement c_outReal
-               out_outReal <- V.freeze _outReal
+               out_outReal <- V.unsafeFreeze _outReal
                case rc of
                  0 -> do outBegIdx <- peek cOutBegIdx
                          outNbElement <- peek cOutNbElement
@@ -5054,14 +5054,14 @@ foreign import ccall unsafe "ta_func.h TA_ROC"
 
 ta_roc :: V.Vector Double -> Int -> IO (Either Int (Int, Int, V.Vector Double))
 ta_roc inReal optInTimePeriod = do
-    _inReal <- V.thaw inReal
+    _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
     withForeignPtr (vecPtr _inReal) $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
           withForeignPtr (vecPtr _outReal) $ \c_outReal ->
             do rc <- c_ta_roc 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
-               out_outReal <- V.freeze _outReal
+               out_outReal <- V.unsafeFreeze _outReal
                case rc of
                  0 -> do outBegIdx <- peek cOutBegIdx
                          outNbElement <- peek cOutNbElement
@@ -5088,14 +5088,14 @@ foreign import ccall unsafe "ta_func.h TA_ROCP"
 
 ta_rocp :: V.Vector Double -> Int -> IO (Either Int (Int, Int, V.Vector Double))
 ta_rocp inReal optInTimePeriod = do
-    _inReal <- V.thaw inReal
+    _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
     withForeignPtr (vecPtr _inReal) $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
           withForeignPtr (vecPtr _outReal) $ \c_outReal ->
             do rc <- c_ta_rocp 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
-               out_outReal <- V.freeze _outReal
+               out_outReal <- V.unsafeFreeze _outReal
                case rc of
                  0 -> do outBegIdx <- peek cOutBegIdx
                          outNbElement <- peek cOutNbElement
@@ -5122,14 +5122,14 @@ foreign import ccall unsafe "ta_func.h TA_ROCR"
 
 ta_rocr :: V.Vector Double -> Int -> IO (Either Int (Int, Int, V.Vector Double))
 ta_rocr inReal optInTimePeriod = do
-    _inReal <- V.thaw inReal
+    _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
     withForeignPtr (vecPtr _inReal) $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
           withForeignPtr (vecPtr _outReal) $ \c_outReal ->
             do rc <- c_ta_rocr 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
-               out_outReal <- V.freeze _outReal
+               out_outReal <- V.unsafeFreeze _outReal
                case rc of
                  0 -> do outBegIdx <- peek cOutBegIdx
                          outNbElement <- peek cOutNbElement
@@ -5156,14 +5156,14 @@ foreign import ccall unsafe "ta_func.h TA_ROCR100"
 
 ta_rocr100 :: V.Vector Double -> Int -> IO (Either Int (Int, Int, V.Vector Double))
 ta_rocr100 inReal optInTimePeriod = do
-    _inReal <- V.thaw inReal
+    _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
     withForeignPtr (vecPtr _inReal) $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
           withForeignPtr (vecPtr _outReal) $ \c_outReal ->
             do rc <- c_ta_rocr100 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
-               out_outReal <- V.freeze _outReal
+               out_outReal <- V.unsafeFreeze _outReal
                case rc of
                  0 -> do outBegIdx <- peek cOutBegIdx
                          outNbElement <- peek cOutNbElement
@@ -5190,14 +5190,14 @@ foreign import ccall unsafe "ta_func.h TA_RSI"
 
 ta_rsi :: V.Vector Double -> Int -> IO (Either Int (Int, Int, V.Vector Double))
 ta_rsi inReal optInTimePeriod = do
-    _inReal <- V.thaw inReal
+    _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
     withForeignPtr (vecPtr _inReal) $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
           withForeignPtr (vecPtr _outReal) $ \c_outReal ->
             do rc <- c_ta_rsi 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
-               out_outReal <- V.freeze _outReal
+               out_outReal <- V.unsafeFreeze _outReal
                case rc of
                  0 -> do outBegIdx <- peek cOutBegIdx
                          outNbElement <- peek cOutNbElement
@@ -5226,8 +5226,8 @@ foreign import ccall unsafe "ta_func.h TA_SAR"
 
 ta_sar :: V.Vector Double -> V.Vector Double -> Double -> Double -> IO (Either Int (Int, Int, V.Vector Double))
 ta_sar inHigh inLow optInAcceleration optInMaximum = do
-    _inHigh <- V.thaw inHigh
-    _inLow <- V.thaw inLow
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
     _outReal <- VM.new len
     withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
       withForeignPtr (vecPtr _inLow) $ \c_inLow ->
@@ -5235,7 +5235,7 @@ ta_sar inHigh inLow optInAcceleration optInMaximum = do
           alloca $ \cOutNbElement ->
             withForeignPtr (vecPtr _outReal) $ \c_outReal ->
               do rc <- c_ta_sar 0 (fromIntegral $ len - 1) c_inHigh c_inLow (realToFrac optInAcceleration) (realToFrac optInMaximum) cOutBegIdx cOutNbElement c_outReal
-                 out_outReal <- V.freeze _outReal
+                 out_outReal <- V.unsafeFreeze _outReal
                  case rc of
                    0 -> do outBegIdx <- peek cOutBegIdx
                            outNbElement <- peek cOutNbElement
@@ -5270,8 +5270,8 @@ foreign import ccall unsafe "ta_func.h TA_SAREXT"
 
 ta_sarext :: V.Vector Double -> V.Vector Double -> Double -> Double -> Double -> Double -> Double -> Double -> Double -> Double -> IO (Either Int (Int, Int, V.Vector Double))
 ta_sarext inHigh inLow optInStartValue optInOffsetOnReverse optInAccelerationInitLong optInAccelerationLong optInAccelerationMaxLong optInAccelerationInitShort optInAccelerationShort optInAccelerationMaxShort = do
-    _inHigh <- V.thaw inHigh
-    _inLow <- V.thaw inLow
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
     _outReal <- VM.new len
     withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
       withForeignPtr (vecPtr _inLow) $ \c_inLow ->
@@ -5279,7 +5279,7 @@ ta_sarext inHigh inLow optInStartValue optInOffsetOnReverse optInAccelerationIni
           alloca $ \cOutNbElement ->
             withForeignPtr (vecPtr _outReal) $ \c_outReal ->
               do rc <- c_ta_sarext 0 (fromIntegral $ len - 1) c_inHigh c_inLow (realToFrac optInStartValue) (realToFrac optInOffsetOnReverse) (realToFrac optInAccelerationInitLong) (realToFrac optInAccelerationLong) (realToFrac optInAccelerationMaxLong) (realToFrac optInAccelerationInitShort) (realToFrac optInAccelerationShort) (realToFrac optInAccelerationMaxShort) cOutBegIdx cOutNbElement c_outReal
-                 out_outReal <- V.freeze _outReal
+                 out_outReal <- V.unsafeFreeze _outReal
                  case rc of
                    0 -> do outBegIdx <- peek cOutBegIdx
                            outNbElement <- peek cOutNbElement
@@ -5305,14 +5305,14 @@ foreign import ccall unsafe "ta_func.h TA_SIN"
 
 ta_sin :: V.Vector Double -> IO (Either Int (Int, Int, V.Vector Double))
 ta_sin inReal = do
-    _inReal <- V.thaw inReal
+    _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
     withForeignPtr (vecPtr _inReal) $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
           withForeignPtr (vecPtr _outReal) $ \c_outReal ->
             do rc <- c_ta_sin 0 (fromIntegral $ len - 1) c_inReal cOutBegIdx cOutNbElement c_outReal
-               out_outReal <- V.freeze _outReal
+               out_outReal <- V.unsafeFreeze _outReal
                case rc of
                  0 -> do outBegIdx <- peek cOutBegIdx
                          outNbElement <- peek cOutNbElement
@@ -5338,14 +5338,14 @@ foreign import ccall unsafe "ta_func.h TA_SINH"
 
 ta_sinh :: V.Vector Double -> IO (Either Int (Int, Int, V.Vector Double))
 ta_sinh inReal = do
-    _inReal <- V.thaw inReal
+    _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
     withForeignPtr (vecPtr _inReal) $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
           withForeignPtr (vecPtr _outReal) $ \c_outReal ->
             do rc <- c_ta_sinh 0 (fromIntegral $ len - 1) c_inReal cOutBegIdx cOutNbElement c_outReal
-               out_outReal <- V.freeze _outReal
+               out_outReal <- V.unsafeFreeze _outReal
                case rc of
                  0 -> do outBegIdx <- peek cOutBegIdx
                          outNbElement <- peek cOutNbElement
@@ -5372,14 +5372,14 @@ foreign import ccall unsafe "ta_func.h TA_SMA"
 
 ta_sma :: V.Vector Double -> Int -> IO (Either Int (Int, Int, V.Vector Double))
 ta_sma inReal optInTimePeriod = do
-    _inReal <- V.thaw inReal
+    _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
     withForeignPtr (vecPtr _inReal) $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
           withForeignPtr (vecPtr _outReal) $ \c_outReal ->
             do rc <- c_ta_sma 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
-               out_outReal <- V.freeze _outReal
+               out_outReal <- V.unsafeFreeze _outReal
                case rc of
                  0 -> do outBegIdx <- peek cOutBegIdx
                          outNbElement <- peek cOutNbElement
@@ -5405,14 +5405,14 @@ foreign import ccall unsafe "ta_func.h TA_SQRT"
 
 ta_sqrt :: V.Vector Double -> IO (Either Int (Int, Int, V.Vector Double))
 ta_sqrt inReal = do
-    _inReal <- V.thaw inReal
+    _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
     withForeignPtr (vecPtr _inReal) $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
           withForeignPtr (vecPtr _outReal) $ \c_outReal ->
             do rc <- c_ta_sqrt 0 (fromIntegral $ len - 1) c_inReal cOutBegIdx cOutNbElement c_outReal
-               out_outReal <- V.freeze _outReal
+               out_outReal <- V.unsafeFreeze _outReal
                case rc of
                  0 -> do outBegIdx <- peek cOutBegIdx
                          outNbElement <- peek cOutNbElement
@@ -5440,14 +5440,14 @@ foreign import ccall unsafe "ta_func.h TA_STDDEV"
 
 ta_stddev :: V.Vector Double -> Int -> Double -> IO (Either Int (Int, Int, V.Vector Double))
 ta_stddev inReal optInTimePeriod optInNbDev = do
-    _inReal <- V.thaw inReal
+    _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
     withForeignPtr (vecPtr _inReal) $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
           withForeignPtr (vecPtr _outReal) $ \c_outReal ->
             do rc <- c_ta_stddev 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) (realToFrac optInNbDev) cOutBegIdx cOutNbElement c_outReal
-               out_outReal <- V.freeze _outReal
+               out_outReal <- V.unsafeFreeze _outReal
                case rc of
                  0 -> do outBegIdx <- peek cOutBegIdx
                          outNbElement <- peek cOutNbElement
@@ -5481,9 +5481,9 @@ foreign import ccall unsafe "ta_func.h TA_STOCH"
 
 ta_stoch :: V.Vector Double -> V.Vector Double -> V.Vector Double -> Int -> Int -> Int -> Int -> Int -> IO (Either Int (Int, Int, V.Vector Double, V.Vector Double))
 ta_stoch inHigh inLow inClose optInFastK_Period optInSlowK_Period optInSlowK_MAType optInSlowD_Period optInSlowD_MAType = do
-    _inHigh <- V.thaw inHigh
-    _inLow <- V.thaw inLow
-    _inClose <- V.thaw inClose
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
     _outSlowK <- VM.new len
     _outSlowD <- VM.new len
     withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
@@ -5494,8 +5494,8 @@ ta_stoch inHigh inLow inClose optInFastK_Period optInSlowK_Period optInSlowK_MAT
               withForeignPtr (vecPtr _outSlowK) $ \c_outSlowK ->
                 withForeignPtr (vecPtr _outSlowD) $ \c_outSlowD ->
                   do rc <- c_ta_stoch 0 (fromIntegral $ len - 1) c_inHigh c_inLow c_inClose (fromIntegral optInFastK_Period) (fromIntegral optInSlowK_Period) (fromIntegral optInSlowK_MAType) (fromIntegral optInSlowD_Period) (fromIntegral optInSlowD_MAType) cOutBegIdx cOutNbElement c_outSlowK c_outSlowD
-                     out_outSlowK <- V.freeze _outSlowK
-                     out_outSlowD <- V.freeze _outSlowD
+                     out_outSlowK <- V.unsafeFreeze _outSlowK
+                     out_outSlowD <- V.unsafeFreeze _outSlowD
                      case rc of
                        0 -> do outBegIdx <- peek cOutBegIdx
                                outNbElement <- peek cOutNbElement
@@ -5528,9 +5528,9 @@ foreign import ccall unsafe "ta_func.h TA_STOCHF"
 
 ta_stochf :: V.Vector Double -> V.Vector Double -> V.Vector Double -> Int -> Int -> Int -> IO (Either Int (Int, Int, V.Vector Double, V.Vector Double))
 ta_stochf inHigh inLow inClose optInFastK_Period optInFastD_Period optInFastD_MAType = do
-    _inHigh <- V.thaw inHigh
-    _inLow <- V.thaw inLow
-    _inClose <- V.thaw inClose
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
     _outFastK <- VM.new len
     _outFastD <- VM.new len
     withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
@@ -5541,8 +5541,8 @@ ta_stochf inHigh inLow inClose optInFastK_Period optInFastD_Period optInFastD_MA
               withForeignPtr (vecPtr _outFastK) $ \c_outFastK ->
                 withForeignPtr (vecPtr _outFastD) $ \c_outFastD ->
                   do rc <- c_ta_stochf 0 (fromIntegral $ len - 1) c_inHigh c_inLow c_inClose (fromIntegral optInFastK_Period) (fromIntegral optInFastD_Period) (fromIntegral optInFastD_MAType) cOutBegIdx cOutNbElement c_outFastK c_outFastD
-                     out_outFastK <- V.freeze _outFastK
-                     out_outFastD <- V.freeze _outFastD
+                     out_outFastK <- V.unsafeFreeze _outFastK
+                     out_outFastD <- V.unsafeFreeze _outFastD
                      case rc of
                        0 -> do outBegIdx <- peek cOutBegIdx
                                outNbElement <- peek cOutNbElement
@@ -5574,7 +5574,7 @@ foreign import ccall unsafe "ta_func.h TA_STOCHRSI"
 
 ta_stochrsi :: V.Vector Double -> Int -> Int -> Int -> Int -> IO (Either Int (Int, Int, V.Vector Double, V.Vector Double))
 ta_stochrsi inReal optInTimePeriod optInFastK_Period optInFastD_Period optInFastD_MAType = do
-    _inReal <- V.thaw inReal
+    _inReal <- V.unsafeThaw inReal
     _outFastK <- VM.new len
     _outFastD <- VM.new len
     withForeignPtr (vecPtr _inReal) $ \c_inReal ->
@@ -5583,8 +5583,8 @@ ta_stochrsi inReal optInTimePeriod optInFastK_Period optInFastD_Period optInFast
           withForeignPtr (vecPtr _outFastK) $ \c_outFastK ->
             withForeignPtr (vecPtr _outFastD) $ \c_outFastD ->
               do rc <- c_ta_stochrsi 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) (fromIntegral optInFastK_Period) (fromIntegral optInFastD_Period) (fromIntegral optInFastD_MAType) cOutBegIdx cOutNbElement c_outFastK c_outFastD
-                 out_outFastK <- V.freeze _outFastK
-                 out_outFastD <- V.freeze _outFastD
+                 out_outFastK <- V.unsafeFreeze _outFastK
+                 out_outFastD <- V.unsafeFreeze _outFastD
                  case rc of
                    0 -> do outBegIdx <- peek cOutBegIdx
                            outNbElement <- peek cOutNbElement
@@ -5612,8 +5612,8 @@ foreign import ccall unsafe "ta_func.h TA_SUB"
 
 ta_sub :: V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Double))
 ta_sub inReal0 inReal1 = do
-    _inReal0 <- V.thaw inReal0
-    _inReal1 <- V.thaw inReal1
+    _inReal0 <- V.unsafeThaw inReal0
+    _inReal1 <- V.unsafeThaw inReal1
     _outReal <- VM.new len
     withForeignPtr (vecPtr _inReal0) $ \c_inReal0 ->
       withForeignPtr (vecPtr _inReal1) $ \c_inReal1 ->
@@ -5621,7 +5621,7 @@ ta_sub inReal0 inReal1 = do
           alloca $ \cOutNbElement ->
             withForeignPtr (vecPtr _outReal) $ \c_outReal ->
               do rc <- c_ta_sub 0 (fromIntegral $ len - 1) c_inReal0 c_inReal1 cOutBegIdx cOutNbElement c_outReal
-                 out_outReal <- V.freeze _outReal
+                 out_outReal <- V.unsafeFreeze _outReal
                  case rc of
                    0 -> do outBegIdx <- peek cOutBegIdx
                            outNbElement <- peek cOutNbElement
@@ -5648,14 +5648,14 @@ foreign import ccall unsafe "ta_func.h TA_SUM"
 
 ta_sum :: V.Vector Double -> Int -> IO (Either Int (Int, Int, V.Vector Double))
 ta_sum inReal optInTimePeriod = do
-    _inReal <- V.thaw inReal
+    _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
     withForeignPtr (vecPtr _inReal) $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
           withForeignPtr (vecPtr _outReal) $ \c_outReal ->
             do rc <- c_ta_sum 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
-               out_outReal <- V.freeze _outReal
+               out_outReal <- V.unsafeFreeze _outReal
                case rc of
                  0 -> do outBegIdx <- peek cOutBegIdx
                          outNbElement <- peek cOutNbElement
@@ -5683,14 +5683,14 @@ foreign import ccall unsafe "ta_func.h TA_T3"
 
 ta_t3 :: V.Vector Double -> Int -> Double -> IO (Either Int (Int, Int, V.Vector Double))
 ta_t3 inReal optInTimePeriod optInVFactor = do
-    _inReal <- V.thaw inReal
+    _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
     withForeignPtr (vecPtr _inReal) $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
           withForeignPtr (vecPtr _outReal) $ \c_outReal ->
             do rc <- c_ta_t3 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) (realToFrac optInVFactor) cOutBegIdx cOutNbElement c_outReal
-               out_outReal <- V.freeze _outReal
+               out_outReal <- V.unsafeFreeze _outReal
                case rc of
                  0 -> do outBegIdx <- peek cOutBegIdx
                          outNbElement <- peek cOutNbElement
@@ -5716,14 +5716,14 @@ foreign import ccall unsafe "ta_func.h TA_TAN"
 
 ta_tan :: V.Vector Double -> IO (Either Int (Int, Int, V.Vector Double))
 ta_tan inReal = do
-    _inReal <- V.thaw inReal
+    _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
     withForeignPtr (vecPtr _inReal) $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
           withForeignPtr (vecPtr _outReal) $ \c_outReal ->
             do rc <- c_ta_tan 0 (fromIntegral $ len - 1) c_inReal cOutBegIdx cOutNbElement c_outReal
-               out_outReal <- V.freeze _outReal
+               out_outReal <- V.unsafeFreeze _outReal
                case rc of
                  0 -> do outBegIdx <- peek cOutBegIdx
                          outNbElement <- peek cOutNbElement
@@ -5749,14 +5749,14 @@ foreign import ccall unsafe "ta_func.h TA_TANH"
 
 ta_tanh :: V.Vector Double -> IO (Either Int (Int, Int, V.Vector Double))
 ta_tanh inReal = do
-    _inReal <- V.thaw inReal
+    _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
     withForeignPtr (vecPtr _inReal) $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
           withForeignPtr (vecPtr _outReal) $ \c_outReal ->
             do rc <- c_ta_tanh 0 (fromIntegral $ len - 1) c_inReal cOutBegIdx cOutNbElement c_outReal
-               out_outReal <- V.freeze _outReal
+               out_outReal <- V.unsafeFreeze _outReal
                case rc of
                  0 -> do outBegIdx <- peek cOutBegIdx
                          outNbElement <- peek cOutNbElement
@@ -5783,14 +5783,14 @@ foreign import ccall unsafe "ta_func.h TA_TEMA"
 
 ta_tema :: V.Vector Double -> Int -> IO (Either Int (Int, Int, V.Vector Double))
 ta_tema inReal optInTimePeriod = do
-    _inReal <- V.thaw inReal
+    _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
     withForeignPtr (vecPtr _inReal) $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
           withForeignPtr (vecPtr _outReal) $ \c_outReal ->
             do rc <- c_ta_tema 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
-               out_outReal <- V.freeze _outReal
+               out_outReal <- V.unsafeFreeze _outReal
                case rc of
                  0 -> do outBegIdx <- peek cOutBegIdx
                          outNbElement <- peek cOutNbElement
@@ -5818,9 +5818,9 @@ foreign import ccall unsafe "ta_func.h TA_TRANGE"
 
 ta_trange :: V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Double))
 ta_trange inHigh inLow inClose = do
-    _inHigh <- V.thaw inHigh
-    _inLow <- V.thaw inLow
-    _inClose <- V.thaw inClose
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
     _outReal <- VM.new len
     withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
       withForeignPtr (vecPtr _inLow) $ \c_inLow ->
@@ -5829,7 +5829,7 @@ ta_trange inHigh inLow inClose = do
             alloca $ \cOutNbElement ->
               withForeignPtr (vecPtr _outReal) $ \c_outReal ->
                 do rc <- c_ta_trange 0 (fromIntegral $ len - 1) c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outReal
-                   out_outReal <- V.freeze _outReal
+                   out_outReal <- V.unsafeFreeze _outReal
                    case rc of
                      0 -> do outBegIdx <- peek cOutBegIdx
                              outNbElement <- peek cOutNbElement
@@ -5856,14 +5856,14 @@ foreign import ccall unsafe "ta_func.h TA_TRIMA"
 
 ta_trima :: V.Vector Double -> Int -> IO (Either Int (Int, Int, V.Vector Double))
 ta_trima inReal optInTimePeriod = do
-    _inReal <- V.thaw inReal
+    _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
     withForeignPtr (vecPtr _inReal) $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
           withForeignPtr (vecPtr _outReal) $ \c_outReal ->
             do rc <- c_ta_trima 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
-               out_outReal <- V.freeze _outReal
+               out_outReal <- V.unsafeFreeze _outReal
                case rc of
                  0 -> do outBegIdx <- peek cOutBegIdx
                          outNbElement <- peek cOutNbElement
@@ -5890,14 +5890,14 @@ foreign import ccall unsafe "ta_func.h TA_TRIX"
 
 ta_trix :: V.Vector Double -> Int -> IO (Either Int (Int, Int, V.Vector Double))
 ta_trix inReal optInTimePeriod = do
-    _inReal <- V.thaw inReal
+    _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
     withForeignPtr (vecPtr _inReal) $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
           withForeignPtr (vecPtr _outReal) $ \c_outReal ->
             do rc <- c_ta_trix 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
-               out_outReal <- V.freeze _outReal
+               out_outReal <- V.unsafeFreeze _outReal
                case rc of
                  0 -> do outBegIdx <- peek cOutBegIdx
                          outNbElement <- peek cOutNbElement
@@ -5924,14 +5924,14 @@ foreign import ccall unsafe "ta_func.h TA_TSF"
 
 ta_tsf :: V.Vector Double -> Int -> IO (Either Int (Int, Int, V.Vector Double))
 ta_tsf inReal optInTimePeriod = do
-    _inReal <- V.thaw inReal
+    _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
     withForeignPtr (vecPtr _inReal) $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
           withForeignPtr (vecPtr _outReal) $ \c_outReal ->
             do rc <- c_ta_tsf 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
-               out_outReal <- V.freeze _outReal
+               out_outReal <- V.unsafeFreeze _outReal
                case rc of
                  0 -> do outBegIdx <- peek cOutBegIdx
                          outNbElement <- peek cOutNbElement
@@ -5959,9 +5959,9 @@ foreign import ccall unsafe "ta_func.h TA_TYPPRICE"
 
 ta_typprice :: V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Double))
 ta_typprice inHigh inLow inClose = do
-    _inHigh <- V.thaw inHigh
-    _inLow <- V.thaw inLow
-    _inClose <- V.thaw inClose
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
     _outReal <- VM.new len
     withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
       withForeignPtr (vecPtr _inLow) $ \c_inLow ->
@@ -5970,7 +5970,7 @@ ta_typprice inHigh inLow inClose = do
             alloca $ \cOutNbElement ->
               withForeignPtr (vecPtr _outReal) $ \c_outReal ->
                 do rc <- c_ta_typprice 0 (fromIntegral $ len - 1) c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outReal
-                   out_outReal <- V.freeze _outReal
+                   out_outReal <- V.unsafeFreeze _outReal
                    case rc of
                      0 -> do outBegIdx <- peek cOutBegIdx
                              outNbElement <- peek cOutNbElement
@@ -6001,9 +6001,9 @@ foreign import ccall unsafe "ta_func.h TA_ULTOSC"
 
 ta_ultosc :: V.Vector Double -> V.Vector Double -> V.Vector Double -> Int -> Int -> Int -> IO (Either Int (Int, Int, V.Vector Double))
 ta_ultosc inHigh inLow inClose optInTimePeriod1 optInTimePeriod2 optInTimePeriod3 = do
-    _inHigh <- V.thaw inHigh
-    _inLow <- V.thaw inLow
-    _inClose <- V.thaw inClose
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
     _outReal <- VM.new len
     withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
       withForeignPtr (vecPtr _inLow) $ \c_inLow ->
@@ -6012,7 +6012,7 @@ ta_ultosc inHigh inLow inClose optInTimePeriod1 optInTimePeriod2 optInTimePeriod
             alloca $ \cOutNbElement ->
               withForeignPtr (vecPtr _outReal) $ \c_outReal ->
                 do rc <- c_ta_ultosc 0 (fromIntegral $ len - 1) c_inHigh c_inLow c_inClose (fromIntegral optInTimePeriod1) (fromIntegral optInTimePeriod2) (fromIntegral optInTimePeriod3) cOutBegIdx cOutNbElement c_outReal
-                   out_outReal <- V.freeze _outReal
+                   out_outReal <- V.unsafeFreeze _outReal
                    case rc of
                      0 -> do outBegIdx <- peek cOutBegIdx
                              outNbElement <- peek cOutNbElement
@@ -6040,14 +6040,14 @@ foreign import ccall unsafe "ta_func.h TA_VAR"
 
 ta_var :: V.Vector Double -> Int -> Double -> IO (Either Int (Int, Int, V.Vector Double))
 ta_var inReal optInTimePeriod optInNbDev = do
-    _inReal <- V.thaw inReal
+    _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
     withForeignPtr (vecPtr _inReal) $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
           withForeignPtr (vecPtr _outReal) $ \c_outReal ->
             do rc <- c_ta_var 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) (realToFrac optInNbDev) cOutBegIdx cOutNbElement c_outReal
-               out_outReal <- V.freeze _outReal
+               out_outReal <- V.unsafeFreeze _outReal
                case rc of
                  0 -> do outBegIdx <- peek cOutBegIdx
                          outNbElement <- peek cOutNbElement
@@ -6075,9 +6075,9 @@ foreign import ccall unsafe "ta_func.h TA_WCLPRICE"
 
 ta_wclprice :: V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Double))
 ta_wclprice inHigh inLow inClose = do
-    _inHigh <- V.thaw inHigh
-    _inLow <- V.thaw inLow
-    _inClose <- V.thaw inClose
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
     _outReal <- VM.new len
     withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
       withForeignPtr (vecPtr _inLow) $ \c_inLow ->
@@ -6086,7 +6086,7 @@ ta_wclprice inHigh inLow inClose = do
             alloca $ \cOutNbElement ->
               withForeignPtr (vecPtr _outReal) $ \c_outReal ->
                 do rc <- c_ta_wclprice 0 (fromIntegral $ len - 1) c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outReal
-                   out_outReal <- V.freeze _outReal
+                   out_outReal <- V.unsafeFreeze _outReal
                    case rc of
                      0 -> do outBegIdx <- peek cOutBegIdx
                              outNbElement <- peek cOutNbElement
@@ -6115,9 +6115,9 @@ foreign import ccall unsafe "ta_func.h TA_WILLR"
 
 ta_willr :: V.Vector Double -> V.Vector Double -> V.Vector Double -> Int -> IO (Either Int (Int, Int, V.Vector Double))
 ta_willr inHigh inLow inClose optInTimePeriod = do
-    _inHigh <- V.thaw inHigh
-    _inLow <- V.thaw inLow
-    _inClose <- V.thaw inClose
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
     _outReal <- VM.new len
     withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
       withForeignPtr (vecPtr _inLow) $ \c_inLow ->
@@ -6126,7 +6126,7 @@ ta_willr inHigh inLow inClose optInTimePeriod = do
             alloca $ \cOutNbElement ->
               withForeignPtr (vecPtr _outReal) $ \c_outReal ->
                 do rc <- c_ta_willr 0 (fromIntegral $ len - 1) c_inHigh c_inLow c_inClose (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
-                   out_outReal <- V.freeze _outReal
+                   out_outReal <- V.unsafeFreeze _outReal
                    case rc of
                      0 -> do outBegIdx <- peek cOutBegIdx
                              outNbElement <- peek cOutNbElement
@@ -6153,14 +6153,14 @@ foreign import ccall unsafe "ta_func.h TA_WMA"
 
 ta_wma :: V.Vector Double -> Int -> IO (Either Int (Int, Int, V.Vector Double))
 ta_wma inReal optInTimePeriod = do
-    _inReal <- V.thaw inReal
+    _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
     withForeignPtr (vecPtr _inReal) $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
           withForeignPtr (vecPtr _outReal) $ \c_outReal ->
             do rc <- c_ta_wma 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
-               out_outReal <- V.freeze _outReal
+               out_outReal <- V.unsafeFreeze _outReal
                case rc of
                  0 -> do outBegIdx <- peek cOutBegIdx
                          outNbElement <- peek cOutNbElement

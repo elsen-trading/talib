@@ -345,7 +345,7 @@ void printHsCode(const TA_FuncInfo *funcInfo, void *opaqueData) {
     int indent = 4;
     for (int i = 0; i < hsParams.inputs; i++) {
         char *in = hsParams.inputNames[i];
-        printfIndent(indent, "_%s <- V.thaw %s\n", in, in);
+        printfIndent(indent, "_%s <- V.unsafeThaw %s\n", in, in);
     }
 
     for (int i = 0; i < hsParams.outputs; i++) {
@@ -389,7 +389,7 @@ void printHsCode(const TA_FuncInfo *funcInfo, void *opaqueData) {
 
     for (int i = 0; i < hsParams.outputs; i++) {
         char *out = hsParams.outputNames[i];
-        printfIndent(indent, "out_%s <- V.freeze _%s\n", out, out);
+        printfIndent(indent, "out_%s <- V.unsafeFreeze _%s\n", out, out);
     }
 
     printfIndent(indent, "case rc of\n");
