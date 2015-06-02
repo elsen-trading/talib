@@ -270,8 +270,8 @@ void printHsCode(const TA_FuncInfo *funcInfo, void *opaqueData) {
             strcat(tsSig, " -> ");
             strcat(ctaSig, " -> ");
         }
-        strcat(tsSig, "V.Vector Double");
-        strcat(ctaSig, "Ptr Double");
+        strcat(tsSig, "V.Vector CDouble");
+        strcat(ctaSig, "Ptr CDouble");
     }
 
     for (int i = 0; i < hsParams.optInputs; i++) {
@@ -288,13 +288,13 @@ void printHsCode(const TA_FuncInfo *funcInfo, void *opaqueData) {
     strcat(ctaSig, " -> Ptr CInt -> Ptr CInt");
     for (int i = 0; i < hsParams.outputs; i++) {
         strcat(ctaSig, " -> ");
-        char *cHsOutputType = hsParams.outputTypes[i] == INTARRAY ? "Ptr Int" : "Ptr Double";
+        char *cHsOutputType = hsParams.outputTypes[i] == INTARRAY ? "Ptr CInt" : "Ptr CDouble";
         strcat(ctaSig, cHsOutputType);
     }
 
     strcat(tsSig, " -> IO (Either Int (Int, Int");
     for (int i = 0; i < hsParams.outputs; i++) {
-        strcat(tsSig, hsParams.outputTypes[i] == INTARRAY ? ", V.Vector Int" : ", V.Vector Double");
+        strcat(tsSig, hsParams.outputTypes[i] == INTARRAY ? ", V.Vector CInt" : ", V.Vector CDouble");
     }
     strcat(tsSig, "))");
 

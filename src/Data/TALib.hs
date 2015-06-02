@@ -8,7 +8,6 @@ import Foreign.ForeignPtr
 import Foreign.ForeignPtr.Unsafe
 import Foreign.Storable
 import System.IO.Unsafe
-import Data.List.Split
 import qualified Data.Vector.Storable as V
 import qualified Data.Vector.Storable.Mutable as VM
 
@@ -33,7 +32,7 @@ vecPtr = fst . VM.unsafeToForeignPtr0
 --
 
 foreign import ccall unsafe "ta_func.h TA_ACOS"
-  c_ta_acos :: CInt -> CInt -> Ptr Double -> Ptr CInt -> Ptr CInt -> Ptr Double -> IO CInt
+  c_ta_acos :: CInt -> CInt -> Ptr CDouble -> Ptr CInt -> Ptr CInt -> Ptr CDouble -> IO CInt
 
 -- inputs
 --   inReal
@@ -41,7 +40,7 @@ foreign import ccall unsafe "ta_func.h TA_ACOS"
 -- outputs
 --   outReal (double[])
 
-ta_acos :: V.Vector Double -> IO (Either Int (Int, Int, V.Vector Double))
+ta_acos :: V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CDouble))
 ta_acos inReal = do
     _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
@@ -66,7 +65,7 @@ ta_acos inReal = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_AD"
-  c_ta_ad :: CInt -> CInt -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr CInt -> Ptr CInt -> Ptr Double -> IO CInt
+  c_ta_ad :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CInt -> Ptr CInt -> Ptr CDouble -> IO CInt
 
 -- inputs
 --   inHigh
@@ -77,7 +76,7 @@ foreign import ccall unsafe "ta_func.h TA_AD"
 -- outputs
 --   outReal (double[])
 
-ta_ad :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Double))
+ta_ad :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CDouble))
 ta_ad inHigh inLow inClose inVolume = do
     _inHigh <- V.unsafeThaw inHigh
     _inLow <- V.unsafeThaw inLow
@@ -108,7 +107,7 @@ ta_ad inHigh inLow inClose inVolume = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_ADD"
-  c_ta_add :: CInt -> CInt -> Ptr Double -> Ptr Double -> Ptr CInt -> Ptr CInt -> Ptr Double -> IO CInt
+  c_ta_add :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> Ptr CInt -> Ptr CInt -> Ptr CDouble -> IO CInt
 
 -- inputs
 --   inReal0
@@ -117,7 +116,7 @@ foreign import ccall unsafe "ta_func.h TA_ADD"
 -- outputs
 --   outReal (double[])
 
-ta_add :: V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Double))
+ta_add :: V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CDouble))
 ta_add inReal0 inReal1 = do
     _inReal0 <- V.unsafeThaw inReal0
     _inReal1 <- V.unsafeThaw inReal1
@@ -144,7 +143,7 @@ ta_add inReal0 inReal1 = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_ADOSC"
-  c_ta_adosc :: CInt -> CInt -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr Double -> CInt -> CInt -> Ptr CInt -> Ptr CInt -> Ptr Double -> IO CInt
+  c_ta_adosc :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> CInt -> CInt -> Ptr CInt -> Ptr CInt -> Ptr CDouble -> IO CInt
 
 -- inputs
 --   inHigh
@@ -157,7 +156,7 @@ foreign import ccall unsafe "ta_func.h TA_ADOSC"
 -- outputs
 --   outReal (double[])
 
-ta_adosc :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> Int -> Int -> IO (Either Int (Int, Int, V.Vector Double))
+ta_adosc :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> Int -> Int -> IO (Either Int (Int, Int, V.Vector CDouble))
 ta_adosc inHigh inLow inClose inVolume optInFastPeriod optInSlowPeriod = do
     _inHigh <- V.unsafeThaw inHigh
     _inLow <- V.unsafeThaw inLow
@@ -188,7 +187,7 @@ ta_adosc inHigh inLow inClose inVolume optInFastPeriod optInSlowPeriod = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_ADX"
-  c_ta_adx :: CInt -> CInt -> Ptr Double -> Ptr Double -> Ptr Double -> CInt -> Ptr CInt -> Ptr CInt -> Ptr Double -> IO CInt
+  c_ta_adx :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> CInt -> Ptr CInt -> Ptr CInt -> Ptr CDouble -> IO CInt
 
 -- inputs
 --   inHigh
@@ -199,7 +198,7 @@ foreign import ccall unsafe "ta_func.h TA_ADX"
 -- outputs
 --   outReal (double[])
 
-ta_adx :: V.Vector Double -> V.Vector Double -> V.Vector Double -> Int -> IO (Either Int (Int, Int, V.Vector Double))
+ta_adx :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble))
 ta_adx inHigh inLow inClose optInTimePeriod = do
     _inHigh <- V.unsafeThaw inHigh
     _inLow <- V.unsafeThaw inLow
@@ -228,7 +227,7 @@ ta_adx inHigh inLow inClose optInTimePeriod = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_ADXR"
-  c_ta_adxr :: CInt -> CInt -> Ptr Double -> Ptr Double -> Ptr Double -> CInt -> Ptr CInt -> Ptr CInt -> Ptr Double -> IO CInt
+  c_ta_adxr :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> CInt -> Ptr CInt -> Ptr CInt -> Ptr CDouble -> IO CInt
 
 -- inputs
 --   inHigh
@@ -239,7 +238,7 @@ foreign import ccall unsafe "ta_func.h TA_ADXR"
 -- outputs
 --   outReal (double[])
 
-ta_adxr :: V.Vector Double -> V.Vector Double -> V.Vector Double -> Int -> IO (Either Int (Int, Int, V.Vector Double))
+ta_adxr :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble))
 ta_adxr inHigh inLow inClose optInTimePeriod = do
     _inHigh <- V.unsafeThaw inHigh
     _inLow <- V.unsafeThaw inLow
@@ -268,7 +267,7 @@ ta_adxr inHigh inLow inClose optInTimePeriod = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_APO"
-  c_ta_apo :: CInt -> CInt -> Ptr Double -> CInt -> CInt -> CInt -> Ptr CInt -> Ptr CInt -> Ptr Double -> IO CInt
+  c_ta_apo :: CInt -> CInt -> Ptr CDouble -> CInt -> CInt -> CInt -> Ptr CInt -> Ptr CInt -> Ptr CDouble -> IO CInt
 
 -- inputs
 --   inReal
@@ -279,7 +278,7 @@ foreign import ccall unsafe "ta_func.h TA_APO"
 -- outputs
 --   outReal (double[])
 
-ta_apo :: V.Vector Double -> Int -> Int -> Int -> IO (Either Int (Int, Int, V.Vector Double))
+ta_apo :: V.Vector CDouble -> Int -> Int -> Int -> IO (Either Int (Int, Int, V.Vector CDouble))
 ta_apo inReal optInFastPeriod optInSlowPeriod optInMAType = do
     _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
@@ -304,7 +303,7 @@ ta_apo inReal optInFastPeriod optInSlowPeriod optInMAType = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_AROON"
-  c_ta_aroon :: CInt -> CInt -> Ptr Double -> Ptr Double -> CInt -> Ptr CInt -> Ptr CInt -> Ptr Double -> Ptr Double -> IO CInt
+  c_ta_aroon :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> CInt -> Ptr CInt -> Ptr CInt -> Ptr CDouble -> Ptr CDouble -> IO CInt
 
 -- inputs
 --   inHigh
@@ -315,7 +314,7 @@ foreign import ccall unsafe "ta_func.h TA_AROON"
 --   outAroonDown (double[])
 --   outAroonUp (double[])
 
-ta_aroon :: V.Vector Double -> V.Vector Double -> Int -> IO (Either Int (Int, Int, V.Vector Double, V.Vector Double))
+ta_aroon :: V.Vector CDouble -> V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble, V.Vector CDouble))
 ta_aroon inHigh inLow optInTimePeriod = do
     _inHigh <- V.unsafeThaw inHigh
     _inLow <- V.unsafeThaw inLow
@@ -346,7 +345,7 @@ ta_aroon inHigh inLow optInTimePeriod = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_AROONOSC"
-  c_ta_aroonosc :: CInt -> CInt -> Ptr Double -> Ptr Double -> CInt -> Ptr CInt -> Ptr CInt -> Ptr Double -> IO CInt
+  c_ta_aroonosc :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> CInt -> Ptr CInt -> Ptr CInt -> Ptr CDouble -> IO CInt
 
 -- inputs
 --   inHigh
@@ -356,7 +355,7 @@ foreign import ccall unsafe "ta_func.h TA_AROONOSC"
 -- outputs
 --   outReal (double[])
 
-ta_aroonosc :: V.Vector Double -> V.Vector Double -> Int -> IO (Either Int (Int, Int, V.Vector Double))
+ta_aroonosc :: V.Vector CDouble -> V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble))
 ta_aroonosc inHigh inLow optInTimePeriod = do
     _inHigh <- V.unsafeThaw inHigh
     _inLow <- V.unsafeThaw inLow
@@ -383,7 +382,7 @@ ta_aroonosc inHigh inLow optInTimePeriod = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_ASIN"
-  c_ta_asin :: CInt -> CInt -> Ptr Double -> Ptr CInt -> Ptr CInt -> Ptr Double -> IO CInt
+  c_ta_asin :: CInt -> CInt -> Ptr CDouble -> Ptr CInt -> Ptr CInt -> Ptr CDouble -> IO CInt
 
 -- inputs
 --   inReal
@@ -391,7 +390,7 @@ foreign import ccall unsafe "ta_func.h TA_ASIN"
 -- outputs
 --   outReal (double[])
 
-ta_asin :: V.Vector Double -> IO (Either Int (Int, Int, V.Vector Double))
+ta_asin :: V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CDouble))
 ta_asin inReal = do
     _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
@@ -416,7 +415,7 @@ ta_asin inReal = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_ATAN"
-  c_ta_atan :: CInt -> CInt -> Ptr Double -> Ptr CInt -> Ptr CInt -> Ptr Double -> IO CInt
+  c_ta_atan :: CInt -> CInt -> Ptr CDouble -> Ptr CInt -> Ptr CInt -> Ptr CDouble -> IO CInt
 
 -- inputs
 --   inReal
@@ -424,7 +423,7 @@ foreign import ccall unsafe "ta_func.h TA_ATAN"
 -- outputs
 --   outReal (double[])
 
-ta_atan :: V.Vector Double -> IO (Either Int (Int, Int, V.Vector Double))
+ta_atan :: V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CDouble))
 ta_atan inReal = do
     _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
@@ -449,7 +448,7 @@ ta_atan inReal = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_ATR"
-  c_ta_atr :: CInt -> CInt -> Ptr Double -> Ptr Double -> Ptr Double -> CInt -> Ptr CInt -> Ptr CInt -> Ptr Double -> IO CInt
+  c_ta_atr :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> CInt -> Ptr CInt -> Ptr CInt -> Ptr CDouble -> IO CInt
 
 -- inputs
 --   inHigh
@@ -460,7 +459,7 @@ foreign import ccall unsafe "ta_func.h TA_ATR"
 -- outputs
 --   outReal (double[])
 
-ta_atr :: V.Vector Double -> V.Vector Double -> V.Vector Double -> Int -> IO (Either Int (Int, Int, V.Vector Double))
+ta_atr :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble))
 ta_atr inHigh inLow inClose optInTimePeriod = do
     _inHigh <- V.unsafeThaw inHigh
     _inLow <- V.unsafeThaw inLow
@@ -489,7 +488,7 @@ ta_atr inHigh inLow inClose optInTimePeriod = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_AVGPRICE"
-  c_ta_avgprice :: CInt -> CInt -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr CInt -> Ptr CInt -> Ptr Double -> IO CInt
+  c_ta_avgprice :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CInt -> Ptr CInt -> Ptr CDouble -> IO CInt
 
 -- inputs
 --   inOpen
@@ -500,7 +499,7 @@ foreign import ccall unsafe "ta_func.h TA_AVGPRICE"
 -- outputs
 --   outReal (double[])
 
-ta_avgprice :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Double))
+ta_avgprice :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CDouble))
 ta_avgprice inOpen inHigh inLow inClose = do
     _inOpen <- V.unsafeThaw inOpen
     _inHigh <- V.unsafeThaw inHigh
@@ -531,7 +530,7 @@ ta_avgprice inOpen inHigh inLow inClose = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_BBANDS"
-  c_ta_bbands :: CInt -> CInt -> Ptr Double -> CInt -> CDouble -> CDouble -> CInt -> Ptr CInt -> Ptr CInt -> Ptr Double -> Ptr Double -> Ptr Double -> IO CInt
+  c_ta_bbands :: CInt -> CInt -> Ptr CDouble -> CInt -> CDouble -> CDouble -> CInt -> Ptr CInt -> Ptr CInt -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> IO CInt
 
 -- inputs
 --   inReal
@@ -545,7 +544,7 @@ foreign import ccall unsafe "ta_func.h TA_BBANDS"
 --   outRealMiddleBand (double[])
 --   outRealLowerBand (double[])
 
-ta_bbands :: V.Vector Double -> Int -> Double -> Double -> Int -> IO (Either Int (Int, Int, V.Vector Double, V.Vector Double, V.Vector Double))
+ta_bbands :: V.Vector CDouble -> Int -> Double -> Double -> Int -> IO (Either Int (Int, Int, V.Vector CDouble, V.Vector CDouble, V.Vector CDouble))
 ta_bbands inReal optInTimePeriod optInNbDevUp optInNbDevDn optInMAType = do
     _inReal <- V.unsafeThaw inReal
     _outRealUpperBand <- VM.new len
@@ -578,7 +577,7 @@ ta_bbands inReal optInTimePeriod optInNbDevUp optInNbDevDn optInMAType = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_BETA"
-  c_ta_beta :: CInt -> CInt -> Ptr Double -> Ptr Double -> CInt -> Ptr CInt -> Ptr CInt -> Ptr Double -> IO CInt
+  c_ta_beta :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> CInt -> Ptr CInt -> Ptr CInt -> Ptr CDouble -> IO CInt
 
 -- inputs
 --   inReal0
@@ -588,7 +587,7 @@ foreign import ccall unsafe "ta_func.h TA_BETA"
 -- outputs
 --   outReal (double[])
 
-ta_beta :: V.Vector Double -> V.Vector Double -> Int -> IO (Either Int (Int, Int, V.Vector Double))
+ta_beta :: V.Vector CDouble -> V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble))
 ta_beta inReal0 inReal1 optInTimePeriod = do
     _inReal0 <- V.unsafeThaw inReal0
     _inReal1 <- V.unsafeThaw inReal1
@@ -615,7 +614,7 @@ ta_beta inReal0 inReal1 optInTimePeriod = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_BOP"
-  c_ta_bop :: CInt -> CInt -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr CInt -> Ptr CInt -> Ptr Double -> IO CInt
+  c_ta_bop :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CInt -> Ptr CInt -> Ptr CDouble -> IO CInt
 
 -- inputs
 --   inOpen
@@ -626,7 +625,7 @@ foreign import ccall unsafe "ta_func.h TA_BOP"
 -- outputs
 --   outReal (double[])
 
-ta_bop :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Double))
+ta_bop :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CDouble))
 ta_bop inOpen inHigh inLow inClose = do
     _inOpen <- V.unsafeThaw inOpen
     _inHigh <- V.unsafeThaw inHigh
@@ -657,7 +656,7 @@ ta_bop inOpen inHigh inLow inClose = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_CCI"
-  c_ta_cci :: CInt -> CInt -> Ptr Double -> Ptr Double -> Ptr Double -> CInt -> Ptr CInt -> Ptr CInt -> Ptr Double -> IO CInt
+  c_ta_cci :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> CInt -> Ptr CInt -> Ptr CInt -> Ptr CDouble -> IO CInt
 
 -- inputs
 --   inHigh
@@ -668,7 +667,7 @@ foreign import ccall unsafe "ta_func.h TA_CCI"
 -- outputs
 --   outReal (double[])
 
-ta_cci :: V.Vector Double -> V.Vector Double -> V.Vector Double -> Int -> IO (Either Int (Int, Int, V.Vector Double))
+ta_cci :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble))
 ta_cci inHigh inLow inClose optInTimePeriod = do
     _inHigh <- V.unsafeThaw inHigh
     _inLow <- V.unsafeThaw inLow
@@ -697,7 +696,7 @@ ta_cci inHigh inLow inClose optInTimePeriod = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_CDL2CROWS"
-  c_ta_cdl2crows :: CInt -> CInt -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr CInt -> Ptr CInt -> Ptr Int -> IO CInt
+  c_ta_cdl2crows :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CInt -> Ptr CInt -> Ptr CInt -> IO CInt
 
 -- inputs
 --   inOpen
@@ -708,7 +707,7 @@ foreign import ccall unsafe "ta_func.h TA_CDL2CROWS"
 -- outputs
 --   outInteger (int[])
 
-ta_cdl2crows :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
+ta_cdl2crows :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
 ta_cdl2crows inOpen inHigh inLow inClose = do
     _inOpen <- V.unsafeThaw inOpen
     _inHigh <- V.unsafeThaw inHigh
@@ -739,7 +738,7 @@ ta_cdl2crows inOpen inHigh inLow inClose = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_CDL3BLACKCROWS"
-  c_ta_cdl3blackcrows :: CInt -> CInt -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr CInt -> Ptr CInt -> Ptr Int -> IO CInt
+  c_ta_cdl3blackcrows :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CInt -> Ptr CInt -> Ptr CInt -> IO CInt
 
 -- inputs
 --   inOpen
@@ -750,7 +749,7 @@ foreign import ccall unsafe "ta_func.h TA_CDL3BLACKCROWS"
 -- outputs
 --   outInteger (int[])
 
-ta_cdl3blackcrows :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
+ta_cdl3blackcrows :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
 ta_cdl3blackcrows inOpen inHigh inLow inClose = do
     _inOpen <- V.unsafeThaw inOpen
     _inHigh <- V.unsafeThaw inHigh
@@ -781,7 +780,7 @@ ta_cdl3blackcrows inOpen inHigh inLow inClose = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_CDL3INSIDE"
-  c_ta_cdl3inside :: CInt -> CInt -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr CInt -> Ptr CInt -> Ptr Int -> IO CInt
+  c_ta_cdl3inside :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CInt -> Ptr CInt -> Ptr CInt -> IO CInt
 
 -- inputs
 --   inOpen
@@ -792,7 +791,7 @@ foreign import ccall unsafe "ta_func.h TA_CDL3INSIDE"
 -- outputs
 --   outInteger (int[])
 
-ta_cdl3inside :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
+ta_cdl3inside :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
 ta_cdl3inside inOpen inHigh inLow inClose = do
     _inOpen <- V.unsafeThaw inOpen
     _inHigh <- V.unsafeThaw inHigh
@@ -823,7 +822,7 @@ ta_cdl3inside inOpen inHigh inLow inClose = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_CDL3LINESTRIKE"
-  c_ta_cdl3linestrike :: CInt -> CInt -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr CInt -> Ptr CInt -> Ptr Int -> IO CInt
+  c_ta_cdl3linestrike :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CInt -> Ptr CInt -> Ptr CInt -> IO CInt
 
 -- inputs
 --   inOpen
@@ -834,7 +833,7 @@ foreign import ccall unsafe "ta_func.h TA_CDL3LINESTRIKE"
 -- outputs
 --   outInteger (int[])
 
-ta_cdl3linestrike :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
+ta_cdl3linestrike :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
 ta_cdl3linestrike inOpen inHigh inLow inClose = do
     _inOpen <- V.unsafeThaw inOpen
     _inHigh <- V.unsafeThaw inHigh
@@ -865,7 +864,7 @@ ta_cdl3linestrike inOpen inHigh inLow inClose = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_CDL3OUTSIDE"
-  c_ta_cdl3outside :: CInt -> CInt -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr CInt -> Ptr CInt -> Ptr Int -> IO CInt
+  c_ta_cdl3outside :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CInt -> Ptr CInt -> Ptr CInt -> IO CInt
 
 -- inputs
 --   inOpen
@@ -876,7 +875,7 @@ foreign import ccall unsafe "ta_func.h TA_CDL3OUTSIDE"
 -- outputs
 --   outInteger (int[])
 
-ta_cdl3outside :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
+ta_cdl3outside :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
 ta_cdl3outside inOpen inHigh inLow inClose = do
     _inOpen <- V.unsafeThaw inOpen
     _inHigh <- V.unsafeThaw inHigh
@@ -907,7 +906,7 @@ ta_cdl3outside inOpen inHigh inLow inClose = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_CDL3STARSINSOUTH"
-  c_ta_cdl3starsinsouth :: CInt -> CInt -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr CInt -> Ptr CInt -> Ptr Int -> IO CInt
+  c_ta_cdl3starsinsouth :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CInt -> Ptr CInt -> Ptr CInt -> IO CInt
 
 -- inputs
 --   inOpen
@@ -918,7 +917,7 @@ foreign import ccall unsafe "ta_func.h TA_CDL3STARSINSOUTH"
 -- outputs
 --   outInteger (int[])
 
-ta_cdl3starsinsouth :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
+ta_cdl3starsinsouth :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
 ta_cdl3starsinsouth inOpen inHigh inLow inClose = do
     _inOpen <- V.unsafeThaw inOpen
     _inHigh <- V.unsafeThaw inHigh
@@ -949,7 +948,7 @@ ta_cdl3starsinsouth inOpen inHigh inLow inClose = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_CDL3WHITESOLDIERS"
-  c_ta_cdl3whitesoldiers :: CInt -> CInt -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr CInt -> Ptr CInt -> Ptr Int -> IO CInt
+  c_ta_cdl3whitesoldiers :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CInt -> Ptr CInt -> Ptr CInt -> IO CInt
 
 -- inputs
 --   inOpen
@@ -960,7 +959,7 @@ foreign import ccall unsafe "ta_func.h TA_CDL3WHITESOLDIERS"
 -- outputs
 --   outInteger (int[])
 
-ta_cdl3whitesoldiers :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
+ta_cdl3whitesoldiers :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
 ta_cdl3whitesoldiers inOpen inHigh inLow inClose = do
     _inOpen <- V.unsafeThaw inOpen
     _inHigh <- V.unsafeThaw inHigh
@@ -991,7 +990,7 @@ ta_cdl3whitesoldiers inOpen inHigh inLow inClose = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_CDLABANDONEDBABY"
-  c_ta_cdlabandonedbaby :: CInt -> CInt -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr Double -> CDouble -> Ptr CInt -> Ptr CInt -> Ptr Int -> IO CInt
+  c_ta_cdlabandonedbaby :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> CDouble -> Ptr CInt -> Ptr CInt -> Ptr CInt -> IO CInt
 
 -- inputs
 --   inOpen
@@ -1003,7 +1002,7 @@ foreign import ccall unsafe "ta_func.h TA_CDLABANDONEDBABY"
 -- outputs
 --   outInteger (int[])
 
-ta_cdlabandonedbaby :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> Double -> IO (Either Int (Int, Int, V.Vector Int))
+ta_cdlabandonedbaby :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> Double -> IO (Either Int (Int, Int, V.Vector CInt))
 ta_cdlabandonedbaby inOpen inHigh inLow inClose optInPenetration = do
     _inOpen <- V.unsafeThaw inOpen
     _inHigh <- V.unsafeThaw inHigh
@@ -1034,7 +1033,7 @@ ta_cdlabandonedbaby inOpen inHigh inLow inClose optInPenetration = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_CDLADVANCEBLOCK"
-  c_ta_cdladvanceblock :: CInt -> CInt -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr CInt -> Ptr CInt -> Ptr Int -> IO CInt
+  c_ta_cdladvanceblock :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CInt -> Ptr CInt -> Ptr CInt -> IO CInt
 
 -- inputs
 --   inOpen
@@ -1045,7 +1044,7 @@ foreign import ccall unsafe "ta_func.h TA_CDLADVANCEBLOCK"
 -- outputs
 --   outInteger (int[])
 
-ta_cdladvanceblock :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
+ta_cdladvanceblock :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
 ta_cdladvanceblock inOpen inHigh inLow inClose = do
     _inOpen <- V.unsafeThaw inOpen
     _inHigh <- V.unsafeThaw inHigh
@@ -1076,7 +1075,7 @@ ta_cdladvanceblock inOpen inHigh inLow inClose = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_CDLBELTHOLD"
-  c_ta_cdlbelthold :: CInt -> CInt -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr CInt -> Ptr CInt -> Ptr Int -> IO CInt
+  c_ta_cdlbelthold :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CInt -> Ptr CInt -> Ptr CInt -> IO CInt
 
 -- inputs
 --   inOpen
@@ -1087,7 +1086,7 @@ foreign import ccall unsafe "ta_func.h TA_CDLBELTHOLD"
 -- outputs
 --   outInteger (int[])
 
-ta_cdlbelthold :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
+ta_cdlbelthold :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
 ta_cdlbelthold inOpen inHigh inLow inClose = do
     _inOpen <- V.unsafeThaw inOpen
     _inHigh <- V.unsafeThaw inHigh
@@ -1118,7 +1117,7 @@ ta_cdlbelthold inOpen inHigh inLow inClose = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_CDLBREAKAWAY"
-  c_ta_cdlbreakaway :: CInt -> CInt -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr CInt -> Ptr CInt -> Ptr Int -> IO CInt
+  c_ta_cdlbreakaway :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CInt -> Ptr CInt -> Ptr CInt -> IO CInt
 
 -- inputs
 --   inOpen
@@ -1129,7 +1128,7 @@ foreign import ccall unsafe "ta_func.h TA_CDLBREAKAWAY"
 -- outputs
 --   outInteger (int[])
 
-ta_cdlbreakaway :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
+ta_cdlbreakaway :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
 ta_cdlbreakaway inOpen inHigh inLow inClose = do
     _inOpen <- V.unsafeThaw inOpen
     _inHigh <- V.unsafeThaw inHigh
@@ -1160,7 +1159,7 @@ ta_cdlbreakaway inOpen inHigh inLow inClose = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_CDLCLOSINGMARUBOZU"
-  c_ta_cdlclosingmarubozu :: CInt -> CInt -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr CInt -> Ptr CInt -> Ptr Int -> IO CInt
+  c_ta_cdlclosingmarubozu :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CInt -> Ptr CInt -> Ptr CInt -> IO CInt
 
 -- inputs
 --   inOpen
@@ -1171,7 +1170,7 @@ foreign import ccall unsafe "ta_func.h TA_CDLCLOSINGMARUBOZU"
 -- outputs
 --   outInteger (int[])
 
-ta_cdlclosingmarubozu :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
+ta_cdlclosingmarubozu :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
 ta_cdlclosingmarubozu inOpen inHigh inLow inClose = do
     _inOpen <- V.unsafeThaw inOpen
     _inHigh <- V.unsafeThaw inHigh
@@ -1202,7 +1201,7 @@ ta_cdlclosingmarubozu inOpen inHigh inLow inClose = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_CDLCONCEALBABYSWALL"
-  c_ta_cdlconcealbabyswall :: CInt -> CInt -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr CInt -> Ptr CInt -> Ptr Int -> IO CInt
+  c_ta_cdlconcealbabyswall :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CInt -> Ptr CInt -> Ptr CInt -> IO CInt
 
 -- inputs
 --   inOpen
@@ -1213,7 +1212,7 @@ foreign import ccall unsafe "ta_func.h TA_CDLCONCEALBABYSWALL"
 -- outputs
 --   outInteger (int[])
 
-ta_cdlconcealbabyswall :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
+ta_cdlconcealbabyswall :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
 ta_cdlconcealbabyswall inOpen inHigh inLow inClose = do
     _inOpen <- V.unsafeThaw inOpen
     _inHigh <- V.unsafeThaw inHigh
@@ -1244,7 +1243,7 @@ ta_cdlconcealbabyswall inOpen inHigh inLow inClose = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_CDLCOUNTERATTACK"
-  c_ta_cdlcounterattack :: CInt -> CInt -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr CInt -> Ptr CInt -> Ptr Int -> IO CInt
+  c_ta_cdlcounterattack :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CInt -> Ptr CInt -> Ptr CInt -> IO CInt
 
 -- inputs
 --   inOpen
@@ -1255,7 +1254,7 @@ foreign import ccall unsafe "ta_func.h TA_CDLCOUNTERATTACK"
 -- outputs
 --   outInteger (int[])
 
-ta_cdlcounterattack :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
+ta_cdlcounterattack :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
 ta_cdlcounterattack inOpen inHigh inLow inClose = do
     _inOpen <- V.unsafeThaw inOpen
     _inHigh <- V.unsafeThaw inHigh
@@ -1286,7 +1285,7 @@ ta_cdlcounterattack inOpen inHigh inLow inClose = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_CDLDARKCLOUDCOVER"
-  c_ta_cdldarkcloudcover :: CInt -> CInt -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr Double -> CDouble -> Ptr CInt -> Ptr CInt -> Ptr Int -> IO CInt
+  c_ta_cdldarkcloudcover :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> CDouble -> Ptr CInt -> Ptr CInt -> Ptr CInt -> IO CInt
 
 -- inputs
 --   inOpen
@@ -1298,7 +1297,7 @@ foreign import ccall unsafe "ta_func.h TA_CDLDARKCLOUDCOVER"
 -- outputs
 --   outInteger (int[])
 
-ta_cdldarkcloudcover :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> Double -> IO (Either Int (Int, Int, V.Vector Int))
+ta_cdldarkcloudcover :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> Double -> IO (Either Int (Int, Int, V.Vector CInt))
 ta_cdldarkcloudcover inOpen inHigh inLow inClose optInPenetration = do
     _inOpen <- V.unsafeThaw inOpen
     _inHigh <- V.unsafeThaw inHigh
@@ -1329,7 +1328,7 @@ ta_cdldarkcloudcover inOpen inHigh inLow inClose optInPenetration = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_CDLDOJI"
-  c_ta_cdldoji :: CInt -> CInt -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr CInt -> Ptr CInt -> Ptr Int -> IO CInt
+  c_ta_cdldoji :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CInt -> Ptr CInt -> Ptr CInt -> IO CInt
 
 -- inputs
 --   inOpen
@@ -1340,7 +1339,7 @@ foreign import ccall unsafe "ta_func.h TA_CDLDOJI"
 -- outputs
 --   outInteger (int[])
 
-ta_cdldoji :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
+ta_cdldoji :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
 ta_cdldoji inOpen inHigh inLow inClose = do
     _inOpen <- V.unsafeThaw inOpen
     _inHigh <- V.unsafeThaw inHigh
@@ -1371,7 +1370,7 @@ ta_cdldoji inOpen inHigh inLow inClose = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_CDLDOJISTAR"
-  c_ta_cdldojistar :: CInt -> CInt -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr CInt -> Ptr CInt -> Ptr Int -> IO CInt
+  c_ta_cdldojistar :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CInt -> Ptr CInt -> Ptr CInt -> IO CInt
 
 -- inputs
 --   inOpen
@@ -1382,7 +1381,7 @@ foreign import ccall unsafe "ta_func.h TA_CDLDOJISTAR"
 -- outputs
 --   outInteger (int[])
 
-ta_cdldojistar :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
+ta_cdldojistar :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
 ta_cdldojistar inOpen inHigh inLow inClose = do
     _inOpen <- V.unsafeThaw inOpen
     _inHigh <- V.unsafeThaw inHigh
@@ -1413,7 +1412,7 @@ ta_cdldojistar inOpen inHigh inLow inClose = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_CDLDRAGONFLYDOJI"
-  c_ta_cdldragonflydoji :: CInt -> CInt -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr CInt -> Ptr CInt -> Ptr Int -> IO CInt
+  c_ta_cdldragonflydoji :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CInt -> Ptr CInt -> Ptr CInt -> IO CInt
 
 -- inputs
 --   inOpen
@@ -1424,7 +1423,7 @@ foreign import ccall unsafe "ta_func.h TA_CDLDRAGONFLYDOJI"
 -- outputs
 --   outInteger (int[])
 
-ta_cdldragonflydoji :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
+ta_cdldragonflydoji :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
 ta_cdldragonflydoji inOpen inHigh inLow inClose = do
     _inOpen <- V.unsafeThaw inOpen
     _inHigh <- V.unsafeThaw inHigh
@@ -1455,7 +1454,7 @@ ta_cdldragonflydoji inOpen inHigh inLow inClose = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_CDLENGULFING"
-  c_ta_cdlengulfing :: CInt -> CInt -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr CInt -> Ptr CInt -> Ptr Int -> IO CInt
+  c_ta_cdlengulfing :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CInt -> Ptr CInt -> Ptr CInt -> IO CInt
 
 -- inputs
 --   inOpen
@@ -1466,7 +1465,7 @@ foreign import ccall unsafe "ta_func.h TA_CDLENGULFING"
 -- outputs
 --   outInteger (int[])
 
-ta_cdlengulfing :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
+ta_cdlengulfing :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
 ta_cdlengulfing inOpen inHigh inLow inClose = do
     _inOpen <- V.unsafeThaw inOpen
     _inHigh <- V.unsafeThaw inHigh
@@ -1497,7 +1496,7 @@ ta_cdlengulfing inOpen inHigh inLow inClose = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_CDLEVENINGDOJISTAR"
-  c_ta_cdleveningdojistar :: CInt -> CInt -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr Double -> CDouble -> Ptr CInt -> Ptr CInt -> Ptr Int -> IO CInt
+  c_ta_cdleveningdojistar :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> CDouble -> Ptr CInt -> Ptr CInt -> Ptr CInt -> IO CInt
 
 -- inputs
 --   inOpen
@@ -1509,7 +1508,7 @@ foreign import ccall unsafe "ta_func.h TA_CDLEVENINGDOJISTAR"
 -- outputs
 --   outInteger (int[])
 
-ta_cdleveningdojistar :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> Double -> IO (Either Int (Int, Int, V.Vector Int))
+ta_cdleveningdojistar :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> Double -> IO (Either Int (Int, Int, V.Vector CInt))
 ta_cdleveningdojistar inOpen inHigh inLow inClose optInPenetration = do
     _inOpen <- V.unsafeThaw inOpen
     _inHigh <- V.unsafeThaw inHigh
@@ -1540,7 +1539,7 @@ ta_cdleveningdojistar inOpen inHigh inLow inClose optInPenetration = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_CDLEVENINGSTAR"
-  c_ta_cdleveningstar :: CInt -> CInt -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr Double -> CDouble -> Ptr CInt -> Ptr CInt -> Ptr Int -> IO CInt
+  c_ta_cdleveningstar :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> CDouble -> Ptr CInt -> Ptr CInt -> Ptr CInt -> IO CInt
 
 -- inputs
 --   inOpen
@@ -1552,7 +1551,7 @@ foreign import ccall unsafe "ta_func.h TA_CDLEVENINGSTAR"
 -- outputs
 --   outInteger (int[])
 
-ta_cdleveningstar :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> Double -> IO (Either Int (Int, Int, V.Vector Int))
+ta_cdleveningstar :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> Double -> IO (Either Int (Int, Int, V.Vector CInt))
 ta_cdleveningstar inOpen inHigh inLow inClose optInPenetration = do
     _inOpen <- V.unsafeThaw inOpen
     _inHigh <- V.unsafeThaw inHigh
@@ -1583,7 +1582,8 @@ ta_cdleveningstar inOpen inHigh inLow inClose optInPenetration = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_CDLGAPSIDESIDEWHITE"
-  c_ta_cdlgapsidesidewhite :: CInt -> CInt -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr CInt -> Ptr CInt -> Ptr Int -> IO CInt
+  c_ta_cdlgapsidesidewhite :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CInt -> Ptr CInt -> Ptr CInt -> IO CInt
+
 
 -- inputs
 --   inOpen
@@ -1594,7 +1594,7 @@ foreign import ccall unsafe "ta_func.h TA_CDLGAPSIDESIDEWHITE"
 -- outputs
 --   outInteger (int[])
 
-ta_cdlgapsidesidewhite :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
+ta_cdlgapsidesidewhite :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
 ta_cdlgapsidesidewhite inOpen inHigh inLow inClose = do
     _inOpen <- V.unsafeThaw inOpen
     _inHigh <- V.unsafeThaw inHigh
@@ -1625,7 +1625,7 @@ ta_cdlgapsidesidewhite inOpen inHigh inLow inClose = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_CDLGRAVESTONEDOJI"
-  c_ta_cdlgravestonedoji :: CInt -> CInt -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr CInt -> Ptr CInt -> Ptr Int -> IO CInt
+  c_ta_cdlgravestonedoji :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CInt -> Ptr CInt -> Ptr CInt -> IO CInt
 
 -- inputs
 --   inOpen
@@ -1636,7 +1636,7 @@ foreign import ccall unsafe "ta_func.h TA_CDLGRAVESTONEDOJI"
 -- outputs
 --   outInteger (int[])
 
-ta_cdlgravestonedoji :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
+ta_cdlgravestonedoji :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
 ta_cdlgravestonedoji inOpen inHigh inLow inClose = do
     _inOpen <- V.unsafeThaw inOpen
     _inHigh <- V.unsafeThaw inHigh
@@ -1667,7 +1667,7 @@ ta_cdlgravestonedoji inOpen inHigh inLow inClose = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_CDLHAMMER"
-  c_ta_cdlhammer :: CInt -> CInt -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr CInt -> Ptr CInt -> Ptr Int -> IO CInt
+  c_ta_cdlhammer :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CInt -> Ptr CInt -> Ptr CInt -> IO CInt
 
 -- inputs
 --   inOpen
@@ -1678,7 +1678,7 @@ foreign import ccall unsafe "ta_func.h TA_CDLHAMMER"
 -- outputs
 --   outInteger (int[])
 
-ta_cdlhammer :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
+ta_cdlhammer :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
 ta_cdlhammer inOpen inHigh inLow inClose = do
     _inOpen <- V.unsafeThaw inOpen
     _inHigh <- V.unsafeThaw inHigh
@@ -1709,7 +1709,7 @@ ta_cdlhammer inOpen inHigh inLow inClose = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_CDLHANGINGMAN"
-  c_ta_cdlhangingman :: CInt -> CInt -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr CInt -> Ptr CInt -> Ptr Int -> IO CInt
+  c_ta_cdlhangingman :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CInt -> Ptr CInt -> Ptr CInt -> IO CInt
 
 -- inputs
 --   inOpen
@@ -1720,7 +1720,7 @@ foreign import ccall unsafe "ta_func.h TA_CDLHANGINGMAN"
 -- outputs
 --   outInteger (int[])
 
-ta_cdlhangingman :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
+ta_cdlhangingman :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
 ta_cdlhangingman inOpen inHigh inLow inClose = do
     _inOpen <- V.unsafeThaw inOpen
     _inHigh <- V.unsafeThaw inHigh
@@ -1751,7 +1751,7 @@ ta_cdlhangingman inOpen inHigh inLow inClose = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_CDLHARAMI"
-  c_ta_cdlharami :: CInt -> CInt -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr CInt -> Ptr CInt -> Ptr Int -> IO CInt
+  c_ta_cdlharami :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CInt -> Ptr CInt -> Ptr CInt -> IO CInt
 
 -- inputs
 --   inOpen
@@ -1762,7 +1762,7 @@ foreign import ccall unsafe "ta_func.h TA_CDLHARAMI"
 -- outputs
 --   outInteger (int[])
 
-ta_cdlharami :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
+ta_cdlharami :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
 ta_cdlharami inOpen inHigh inLow inClose = do
     _inOpen <- V.unsafeThaw inOpen
     _inHigh <- V.unsafeThaw inHigh
@@ -1793,7 +1793,7 @@ ta_cdlharami inOpen inHigh inLow inClose = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_CDLHARAMICROSS"
-  c_ta_cdlharamicross :: CInt -> CInt -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr CInt -> Ptr CInt -> Ptr Int -> IO CInt
+  c_ta_cdlharamicross :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CInt -> Ptr CInt -> Ptr CInt -> IO CInt
 
 -- inputs
 --   inOpen
@@ -1804,7 +1804,7 @@ foreign import ccall unsafe "ta_func.h TA_CDLHARAMICROSS"
 -- outputs
 --   outInteger (int[])
 
-ta_cdlharamicross :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
+ta_cdlharamicross :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
 ta_cdlharamicross inOpen inHigh inLow inClose = do
     _inOpen <- V.unsafeThaw inOpen
     _inHigh <- V.unsafeThaw inHigh
@@ -1835,7 +1835,7 @@ ta_cdlharamicross inOpen inHigh inLow inClose = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_CDLHIGHWAVE"
-  c_ta_cdlhighwave :: CInt -> CInt -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr CInt -> Ptr CInt -> Ptr Int -> IO CInt
+  c_ta_cdlhighwave :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CInt -> Ptr CInt -> Ptr CInt -> IO CInt
 
 -- inputs
 --   inOpen
@@ -1846,7 +1846,7 @@ foreign import ccall unsafe "ta_func.h TA_CDLHIGHWAVE"
 -- outputs
 --   outInteger (int[])
 
-ta_cdlhighwave :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
+ta_cdlhighwave :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
 ta_cdlhighwave inOpen inHigh inLow inClose = do
     _inOpen <- V.unsafeThaw inOpen
     _inHigh <- V.unsafeThaw inHigh
@@ -1877,7 +1877,7 @@ ta_cdlhighwave inOpen inHigh inLow inClose = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_CDLHIKKAKE"
-  c_ta_cdlhikkake :: CInt -> CInt -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr CInt -> Ptr CInt -> Ptr Int -> IO CInt
+  c_ta_cdlhikkake :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CInt -> Ptr CInt -> Ptr CInt -> IO CInt
 
 -- inputs
 --   inOpen
@@ -1888,7 +1888,7 @@ foreign import ccall unsafe "ta_func.h TA_CDLHIKKAKE"
 -- outputs
 --   outInteger (int[])
 
-ta_cdlhikkake :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
+ta_cdlhikkake :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
 ta_cdlhikkake inOpen inHigh inLow inClose = do
     _inOpen <- V.unsafeThaw inOpen
     _inHigh <- V.unsafeThaw inHigh
@@ -1919,7 +1919,7 @@ ta_cdlhikkake inOpen inHigh inLow inClose = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_CDLHIKKAKEMOD"
-  c_ta_cdlhikkakemod :: CInt -> CInt -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr CInt -> Ptr CInt -> Ptr Int -> IO CInt
+  c_ta_cdlhikkakemod :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CInt -> Ptr CInt -> Ptr CInt -> IO CInt
 
 -- inputs
 --   inOpen
@@ -1930,7 +1930,7 @@ foreign import ccall unsafe "ta_func.h TA_CDLHIKKAKEMOD"
 -- outputs
 --   outInteger (int[])
 
-ta_cdlhikkakemod :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
+ta_cdlhikkakemod :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
 ta_cdlhikkakemod inOpen inHigh inLow inClose = do
     _inOpen <- V.unsafeThaw inOpen
     _inHigh <- V.unsafeThaw inHigh
@@ -1961,7 +1961,7 @@ ta_cdlhikkakemod inOpen inHigh inLow inClose = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_CDLHOMINGPIGEON"
-  c_ta_cdlhomingpigeon :: CInt -> CInt -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr CInt -> Ptr CInt -> Ptr Int -> IO CInt
+  c_ta_cdlhomingpigeon :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CInt -> Ptr CInt -> Ptr CInt -> IO CInt
 
 -- inputs
 --   inOpen
@@ -1972,7 +1972,7 @@ foreign import ccall unsafe "ta_func.h TA_CDLHOMINGPIGEON"
 -- outputs
 --   outInteger (int[])
 
-ta_cdlhomingpigeon :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
+ta_cdlhomingpigeon :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
 ta_cdlhomingpigeon inOpen inHigh inLow inClose = do
     _inOpen <- V.unsafeThaw inOpen
     _inHigh <- V.unsafeThaw inHigh
@@ -2003,7 +2003,7 @@ ta_cdlhomingpigeon inOpen inHigh inLow inClose = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_CDLIDENTICAL3CROWS"
-  c_ta_cdlidentical3crows :: CInt -> CInt -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr CInt -> Ptr CInt -> Ptr Int -> IO CInt
+  c_ta_cdlidentical3crows :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CInt -> Ptr CInt -> Ptr CInt -> IO CInt
 
 -- inputs
 --   inOpen
@@ -2014,7 +2014,7 @@ foreign import ccall unsafe "ta_func.h TA_CDLIDENTICAL3CROWS"
 -- outputs
 --   outInteger (int[])
 
-ta_cdlidentical3crows :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
+ta_cdlidentical3crows :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
 ta_cdlidentical3crows inOpen inHigh inLow inClose = do
     _inOpen <- V.unsafeThaw inOpen
     _inHigh <- V.unsafeThaw inHigh
@@ -2045,7 +2045,7 @@ ta_cdlidentical3crows inOpen inHigh inLow inClose = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_CDLINNECK"
-  c_ta_cdlinneck :: CInt -> CInt -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr CInt -> Ptr CInt -> Ptr Int -> IO CInt
+  c_ta_cdlinneck :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CInt -> Ptr CInt -> Ptr CInt -> IO CInt
 
 -- inputs
 --   inOpen
@@ -2056,7 +2056,7 @@ foreign import ccall unsafe "ta_func.h TA_CDLINNECK"
 -- outputs
 --   outInteger (int[])
 
-ta_cdlinneck :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
+ta_cdlinneck :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
 ta_cdlinneck inOpen inHigh inLow inClose = do
     _inOpen <- V.unsafeThaw inOpen
     _inHigh <- V.unsafeThaw inHigh
@@ -2087,7 +2087,7 @@ ta_cdlinneck inOpen inHigh inLow inClose = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_CDLINVERTEDHAMMER"
-  c_ta_cdlinvertedhammer :: CInt -> CInt -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr CInt -> Ptr CInt -> Ptr Int -> IO CInt
+  c_ta_cdlinvertedhammer :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CInt -> Ptr CInt -> Ptr CInt -> IO CInt
 
 -- inputs
 --   inOpen
@@ -2098,7 +2098,7 @@ foreign import ccall unsafe "ta_func.h TA_CDLINVERTEDHAMMER"
 -- outputs
 --   outInteger (int[])
 
-ta_cdlinvertedhammer :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
+ta_cdlinvertedhammer :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
 ta_cdlinvertedhammer inOpen inHigh inLow inClose = do
     _inOpen <- V.unsafeThaw inOpen
     _inHigh <- V.unsafeThaw inHigh
@@ -2129,7 +2129,7 @@ ta_cdlinvertedhammer inOpen inHigh inLow inClose = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_CDLKICKING"
-  c_ta_cdlkicking :: CInt -> CInt -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr CInt -> Ptr CInt -> Ptr Int -> IO CInt
+  c_ta_cdlkicking :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CInt -> Ptr CInt -> Ptr CInt -> IO CInt
 
 -- inputs
 --   inOpen
@@ -2140,7 +2140,7 @@ foreign import ccall unsafe "ta_func.h TA_CDLKICKING"
 -- outputs
 --   outInteger (int[])
 
-ta_cdlkicking :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
+ta_cdlkicking :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
 ta_cdlkicking inOpen inHigh inLow inClose = do
     _inOpen <- V.unsafeThaw inOpen
     _inHigh <- V.unsafeThaw inHigh
@@ -2171,7 +2171,7 @@ ta_cdlkicking inOpen inHigh inLow inClose = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_CDLKICKINGBYLENGTH"
-  c_ta_cdlkickingbylength :: CInt -> CInt -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr CInt -> Ptr CInt -> Ptr Int -> IO CInt
+  c_ta_cdlkickingbylength :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CInt -> Ptr CInt -> Ptr CInt -> IO CInt
 
 -- inputs
 --   inOpen
@@ -2182,7 +2182,7 @@ foreign import ccall unsafe "ta_func.h TA_CDLKICKINGBYLENGTH"
 -- outputs
 --   outInteger (int[])
 
-ta_cdlkickingbylength :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
+ta_cdlkickingbylength :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
 ta_cdlkickingbylength inOpen inHigh inLow inClose = do
     _inOpen <- V.unsafeThaw inOpen
     _inHigh <- V.unsafeThaw inHigh
@@ -2213,7 +2213,7 @@ ta_cdlkickingbylength inOpen inHigh inLow inClose = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_CDLLADDERBOTTOM"
-  c_ta_cdlladderbottom :: CInt -> CInt -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr CInt -> Ptr CInt -> Ptr Int -> IO CInt
+  c_ta_cdlladderbottom :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CInt -> Ptr CInt -> Ptr CInt -> IO CInt
 
 -- inputs
 --   inOpen
@@ -2224,7 +2224,7 @@ foreign import ccall unsafe "ta_func.h TA_CDLLADDERBOTTOM"
 -- outputs
 --   outInteger (int[])
 
-ta_cdlladderbottom :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
+ta_cdlladderbottom :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
 ta_cdlladderbottom inOpen inHigh inLow inClose = do
     _inOpen <- V.unsafeThaw inOpen
     _inHigh <- V.unsafeThaw inHigh
@@ -2255,7 +2255,7 @@ ta_cdlladderbottom inOpen inHigh inLow inClose = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_CDLLONGLEGGEDDOJI"
-  c_ta_cdllongleggeddoji :: CInt -> CInt -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr CInt -> Ptr CInt -> Ptr Int -> IO CInt
+  c_ta_cdllongleggeddoji :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CInt -> Ptr CInt -> Ptr CInt -> IO CInt
 
 -- inputs
 --   inOpen
@@ -2266,7 +2266,7 @@ foreign import ccall unsafe "ta_func.h TA_CDLLONGLEGGEDDOJI"
 -- outputs
 --   outInteger (int[])
 
-ta_cdllongleggeddoji :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
+ta_cdllongleggeddoji :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
 ta_cdllongleggeddoji inOpen inHigh inLow inClose = do
     _inOpen <- V.unsafeThaw inOpen
     _inHigh <- V.unsafeThaw inHigh
@@ -2297,7 +2297,7 @@ ta_cdllongleggeddoji inOpen inHigh inLow inClose = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_CDLLONGLINE"
-  c_ta_cdllongline :: CInt -> CInt -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr CInt -> Ptr CInt -> Ptr Int -> IO CInt
+  c_ta_cdllongline :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CInt -> Ptr CInt -> Ptr CInt -> IO CInt
 
 -- inputs
 --   inOpen
@@ -2308,7 +2308,7 @@ foreign import ccall unsafe "ta_func.h TA_CDLLONGLINE"
 -- outputs
 --   outInteger (int[])
 
-ta_cdllongline :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
+ta_cdllongline :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
 ta_cdllongline inOpen inHigh inLow inClose = do
     _inOpen <- V.unsafeThaw inOpen
     _inHigh <- V.unsafeThaw inHigh
@@ -2339,7 +2339,7 @@ ta_cdllongline inOpen inHigh inLow inClose = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_CDLMARUBOZU"
-  c_ta_cdlmarubozu :: CInt -> CInt -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr CInt -> Ptr CInt -> Ptr Int -> IO CInt
+  c_ta_cdlmarubozu :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CInt -> Ptr CInt -> Ptr CInt -> IO CInt
 
 -- inputs
 --   inOpen
@@ -2350,7 +2350,7 @@ foreign import ccall unsafe "ta_func.h TA_CDLMARUBOZU"
 -- outputs
 --   outInteger (int[])
 
-ta_cdlmarubozu :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
+ta_cdlmarubozu :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
 ta_cdlmarubozu inOpen inHigh inLow inClose = do
     _inOpen <- V.unsafeThaw inOpen
     _inHigh <- V.unsafeThaw inHigh
@@ -2381,7 +2381,7 @@ ta_cdlmarubozu inOpen inHigh inLow inClose = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_CDLMATCHINGLOW"
-  c_ta_cdlmatchinglow :: CInt -> CInt -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr CInt -> Ptr CInt -> Ptr Int -> IO CInt
+  c_ta_cdlmatchinglow :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CInt -> Ptr CInt -> Ptr CInt -> IO CInt
 
 -- inputs
 --   inOpen
@@ -2392,7 +2392,7 @@ foreign import ccall unsafe "ta_func.h TA_CDLMATCHINGLOW"
 -- outputs
 --   outInteger (int[])
 
-ta_cdlmatchinglow :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
+ta_cdlmatchinglow :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
 ta_cdlmatchinglow inOpen inHigh inLow inClose = do
     _inOpen <- V.unsafeThaw inOpen
     _inHigh <- V.unsafeThaw inHigh
@@ -2423,7 +2423,7 @@ ta_cdlmatchinglow inOpen inHigh inLow inClose = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_CDLMATHOLD"
-  c_ta_cdlmathold :: CInt -> CInt -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr Double -> CDouble -> Ptr CInt -> Ptr CInt -> Ptr Int -> IO CInt
+  c_ta_cdlmathold :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> CDouble -> Ptr CInt -> Ptr CInt -> Ptr CInt -> IO CInt
 
 -- inputs
 --   inOpen
@@ -2435,7 +2435,7 @@ foreign import ccall unsafe "ta_func.h TA_CDLMATHOLD"
 -- outputs
 --   outInteger (int[])
 
-ta_cdlmathold :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> Double -> IO (Either Int (Int, Int, V.Vector Int))
+ta_cdlmathold :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> Double -> IO (Either Int (Int, Int, V.Vector CInt))
 ta_cdlmathold inOpen inHigh inLow inClose optInPenetration = do
     _inOpen <- V.unsafeThaw inOpen
     _inHigh <- V.unsafeThaw inHigh
@@ -2466,7 +2466,7 @@ ta_cdlmathold inOpen inHigh inLow inClose optInPenetration = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_CDLMORNINGDOJISTAR"
-  c_ta_cdlmorningdojistar :: CInt -> CInt -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr Double -> CDouble -> Ptr CInt -> Ptr CInt -> Ptr Int -> IO CInt
+  c_ta_cdlmorningdojistar :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> CDouble -> Ptr CInt -> Ptr CInt -> Ptr CInt -> IO CInt
 
 -- inputs
 --   inOpen
@@ -2478,7 +2478,7 @@ foreign import ccall unsafe "ta_func.h TA_CDLMORNINGDOJISTAR"
 -- outputs
 --   outInteger (int[])
 
-ta_cdlmorningdojistar :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> Double -> IO (Either Int (Int, Int, V.Vector Int))
+ta_cdlmorningdojistar :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> Double -> IO (Either Int (Int, Int, V.Vector CInt))
 ta_cdlmorningdojistar inOpen inHigh inLow inClose optInPenetration = do
     _inOpen <- V.unsafeThaw inOpen
     _inHigh <- V.unsafeThaw inHigh
@@ -2509,7 +2509,7 @@ ta_cdlmorningdojistar inOpen inHigh inLow inClose optInPenetration = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_CDLMORNINGSTAR"
-  c_ta_cdlmorningstar :: CInt -> CInt -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr Double -> CDouble -> Ptr CInt -> Ptr CInt -> Ptr Int -> IO CInt
+  c_ta_cdlmorningstar :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> CDouble -> Ptr CInt -> Ptr CInt -> Ptr CInt -> IO CInt
 
 -- inputs
 --   inOpen
@@ -2521,7 +2521,7 @@ foreign import ccall unsafe "ta_func.h TA_CDLMORNINGSTAR"
 -- outputs
 --   outInteger (int[])
 
-ta_cdlmorningstar :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> Double -> IO (Either Int (Int, Int, V.Vector Int))
+ta_cdlmorningstar :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> Double -> IO (Either Int (Int, Int, V.Vector CInt))
 ta_cdlmorningstar inOpen inHigh inLow inClose optInPenetration = do
     _inOpen <- V.unsafeThaw inOpen
     _inHigh <- V.unsafeThaw inHigh
@@ -2552,7 +2552,7 @@ ta_cdlmorningstar inOpen inHigh inLow inClose optInPenetration = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_CDLONNECK"
-  c_ta_cdlonneck :: CInt -> CInt -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr CInt -> Ptr CInt -> Ptr Int -> IO CInt
+  c_ta_cdlonneck :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CInt -> Ptr CInt -> Ptr CInt -> IO CInt
 
 -- inputs
 --   inOpen
@@ -2563,7 +2563,7 @@ foreign import ccall unsafe "ta_func.h TA_CDLONNECK"
 -- outputs
 --   outInteger (int[])
 
-ta_cdlonneck :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
+ta_cdlonneck :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
 ta_cdlonneck inOpen inHigh inLow inClose = do
     _inOpen <- V.unsafeThaw inOpen
     _inHigh <- V.unsafeThaw inHigh
@@ -2594,7 +2594,7 @@ ta_cdlonneck inOpen inHigh inLow inClose = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_CDLPIERCING"
-  c_ta_cdlpiercing :: CInt -> CInt -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr CInt -> Ptr CInt -> Ptr Int -> IO CInt
+  c_ta_cdlpiercing :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CInt -> Ptr CInt -> Ptr CInt -> IO CInt
 
 -- inputs
 --   inOpen
@@ -2605,7 +2605,7 @@ foreign import ccall unsafe "ta_func.h TA_CDLPIERCING"
 -- outputs
 --   outInteger (int[])
 
-ta_cdlpiercing :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
+ta_cdlpiercing :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
 ta_cdlpiercing inOpen inHigh inLow inClose = do
     _inOpen <- V.unsafeThaw inOpen
     _inHigh <- V.unsafeThaw inHigh
@@ -2636,7 +2636,7 @@ ta_cdlpiercing inOpen inHigh inLow inClose = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_CDLRICKSHAWMAN"
-  c_ta_cdlrickshawman :: CInt -> CInt -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr CInt -> Ptr CInt -> Ptr Int -> IO CInt
+  c_ta_cdlrickshawman :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CInt -> Ptr CInt -> Ptr CInt -> IO CInt
 
 -- inputs
 --   inOpen
@@ -2647,7 +2647,7 @@ foreign import ccall unsafe "ta_func.h TA_CDLRICKSHAWMAN"
 -- outputs
 --   outInteger (int[])
 
-ta_cdlrickshawman :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
+ta_cdlrickshawman :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
 ta_cdlrickshawman inOpen inHigh inLow inClose = do
     _inOpen <- V.unsafeThaw inOpen
     _inHigh <- V.unsafeThaw inHigh
@@ -2678,7 +2678,7 @@ ta_cdlrickshawman inOpen inHigh inLow inClose = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_CDLRISEFALL3METHODS"
-  c_ta_cdlrisefall3methods :: CInt -> CInt -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr CInt -> Ptr CInt -> Ptr Int -> IO CInt
+  c_ta_cdlrisefall3methods :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CInt -> Ptr CInt -> Ptr CInt -> IO CInt
 
 -- inputs
 --   inOpen
@@ -2689,7 +2689,7 @@ foreign import ccall unsafe "ta_func.h TA_CDLRISEFALL3METHODS"
 -- outputs
 --   outInteger (int[])
 
-ta_cdlrisefall3methods :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
+ta_cdlrisefall3methods :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
 ta_cdlrisefall3methods inOpen inHigh inLow inClose = do
     _inOpen <- V.unsafeThaw inOpen
     _inHigh <- V.unsafeThaw inHigh
@@ -2720,7 +2720,7 @@ ta_cdlrisefall3methods inOpen inHigh inLow inClose = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_CDLSEPARATINGLINES"
-  c_ta_cdlseparatinglines :: CInt -> CInt -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr CInt -> Ptr CInt -> Ptr Int -> IO CInt
+  c_ta_cdlseparatinglines :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CInt -> Ptr CInt -> Ptr CInt -> IO CInt
 
 -- inputs
 --   inOpen
@@ -2731,7 +2731,7 @@ foreign import ccall unsafe "ta_func.h TA_CDLSEPARATINGLINES"
 -- outputs
 --   outInteger (int[])
 
-ta_cdlseparatinglines :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
+ta_cdlseparatinglines :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
 ta_cdlseparatinglines inOpen inHigh inLow inClose = do
     _inOpen <- V.unsafeThaw inOpen
     _inHigh <- V.unsafeThaw inHigh
@@ -2762,7 +2762,7 @@ ta_cdlseparatinglines inOpen inHigh inLow inClose = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_CDLSHOOTINGSTAR"
-  c_ta_cdlshootingstar :: CInt -> CInt -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr CInt -> Ptr CInt -> Ptr Int -> IO CInt
+  c_ta_cdlshootingstar :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CInt -> Ptr CInt -> Ptr CInt -> IO CInt
 
 -- inputs
 --   inOpen
@@ -2773,7 +2773,7 @@ foreign import ccall unsafe "ta_func.h TA_CDLSHOOTINGSTAR"
 -- outputs
 --   outInteger (int[])
 
-ta_cdlshootingstar :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
+ta_cdlshootingstar :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
 ta_cdlshootingstar inOpen inHigh inLow inClose = do
     _inOpen <- V.unsafeThaw inOpen
     _inHigh <- V.unsafeThaw inHigh
@@ -2804,7 +2804,7 @@ ta_cdlshootingstar inOpen inHigh inLow inClose = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_CDLSHORTLINE"
-  c_ta_cdlshortline :: CInt -> CInt -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr CInt -> Ptr CInt -> Ptr Int -> IO CInt
+  c_ta_cdlshortline :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CInt -> Ptr CInt -> Ptr CInt -> IO CInt
 
 -- inputs
 --   inOpen
@@ -2815,7 +2815,7 @@ foreign import ccall unsafe "ta_func.h TA_CDLSHORTLINE"
 -- outputs
 --   outInteger (int[])
 
-ta_cdlshortline :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
+ta_cdlshortline :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
 ta_cdlshortline inOpen inHigh inLow inClose = do
     _inOpen <- V.unsafeThaw inOpen
     _inHigh <- V.unsafeThaw inHigh
@@ -2846,7 +2846,7 @@ ta_cdlshortline inOpen inHigh inLow inClose = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_CDLSPINNINGTOP"
-  c_ta_cdlspinningtop :: CInt -> CInt -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr CInt -> Ptr CInt -> Ptr Int -> IO CInt
+  c_ta_cdlspinningtop :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CInt -> Ptr CInt -> Ptr CInt -> IO CInt
 
 -- inputs
 --   inOpen
@@ -2857,7 +2857,7 @@ foreign import ccall unsafe "ta_func.h TA_CDLSPINNINGTOP"
 -- outputs
 --   outInteger (int[])
 
-ta_cdlspinningtop :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
+ta_cdlspinningtop :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
 ta_cdlspinningtop inOpen inHigh inLow inClose = do
     _inOpen <- V.unsafeThaw inOpen
     _inHigh <- V.unsafeThaw inHigh
@@ -2888,7 +2888,7 @@ ta_cdlspinningtop inOpen inHigh inLow inClose = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_CDLSTALLEDPATTERN"
-  c_ta_cdlstalledpattern :: CInt -> CInt -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr CInt -> Ptr CInt -> Ptr Int -> IO CInt
+  c_ta_cdlstalledpattern :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CInt -> Ptr CInt -> Ptr CInt -> IO CInt
 
 -- inputs
 --   inOpen
@@ -2899,7 +2899,7 @@ foreign import ccall unsafe "ta_func.h TA_CDLSTALLEDPATTERN"
 -- outputs
 --   outInteger (int[])
 
-ta_cdlstalledpattern :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
+ta_cdlstalledpattern :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
 ta_cdlstalledpattern inOpen inHigh inLow inClose = do
     _inOpen <- V.unsafeThaw inOpen
     _inHigh <- V.unsafeThaw inHigh
@@ -2930,7 +2930,7 @@ ta_cdlstalledpattern inOpen inHigh inLow inClose = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_CDLSTICKSANDWICH"
-  c_ta_cdlsticksandwich :: CInt -> CInt -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr CInt -> Ptr CInt -> Ptr Int -> IO CInt
+  c_ta_cdlsticksandwich :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CInt -> Ptr CInt -> Ptr CInt -> IO CInt
 
 -- inputs
 --   inOpen
@@ -2941,7 +2941,7 @@ foreign import ccall unsafe "ta_func.h TA_CDLSTICKSANDWICH"
 -- outputs
 --   outInteger (int[])
 
-ta_cdlsticksandwich :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
+ta_cdlsticksandwich :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
 ta_cdlsticksandwich inOpen inHigh inLow inClose = do
     _inOpen <- V.unsafeThaw inOpen
     _inHigh <- V.unsafeThaw inHigh
@@ -2972,7 +2972,7 @@ ta_cdlsticksandwich inOpen inHigh inLow inClose = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_CDLTAKURI"
-  c_ta_cdltakuri :: CInt -> CInt -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr CInt -> Ptr CInt -> Ptr Int -> IO CInt
+  c_ta_cdltakuri :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CInt -> Ptr CInt -> Ptr CInt -> IO CInt
 
 -- inputs
 --   inOpen
@@ -2983,7 +2983,7 @@ foreign import ccall unsafe "ta_func.h TA_CDLTAKURI"
 -- outputs
 --   outInteger (int[])
 
-ta_cdltakuri :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
+ta_cdltakuri :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
 ta_cdltakuri inOpen inHigh inLow inClose = do
     _inOpen <- V.unsafeThaw inOpen
     _inHigh <- V.unsafeThaw inHigh
@@ -3014,7 +3014,7 @@ ta_cdltakuri inOpen inHigh inLow inClose = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_CDLTASUKIGAP"
-  c_ta_cdltasukigap :: CInt -> CInt -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr CInt -> Ptr CInt -> Ptr Int -> IO CInt
+  c_ta_cdltasukigap :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CInt -> Ptr CInt -> Ptr CInt -> IO CInt
 
 -- inputs
 --   inOpen
@@ -3025,7 +3025,7 @@ foreign import ccall unsafe "ta_func.h TA_CDLTASUKIGAP"
 -- outputs
 --   outInteger (int[])
 
-ta_cdltasukigap :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
+ta_cdltasukigap :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
 ta_cdltasukigap inOpen inHigh inLow inClose = do
     _inOpen <- V.unsafeThaw inOpen
     _inHigh <- V.unsafeThaw inHigh
@@ -3056,7 +3056,7 @@ ta_cdltasukigap inOpen inHigh inLow inClose = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_CDLTHRUSTING"
-  c_ta_cdlthrusting :: CInt -> CInt -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr CInt -> Ptr CInt -> Ptr Int -> IO CInt
+  c_ta_cdlthrusting :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CInt -> Ptr CInt -> Ptr CInt -> IO CInt
 
 -- inputs
 --   inOpen
@@ -3067,7 +3067,7 @@ foreign import ccall unsafe "ta_func.h TA_CDLTHRUSTING"
 -- outputs
 --   outInteger (int[])
 
-ta_cdlthrusting :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
+ta_cdlthrusting :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
 ta_cdlthrusting inOpen inHigh inLow inClose = do
     _inOpen <- V.unsafeThaw inOpen
     _inHigh <- V.unsafeThaw inHigh
@@ -3098,7 +3098,7 @@ ta_cdlthrusting inOpen inHigh inLow inClose = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_CDLTRISTAR"
-  c_ta_cdltristar :: CInt -> CInt -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr CInt -> Ptr CInt -> Ptr Int -> IO CInt
+  c_ta_cdltristar :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CInt -> Ptr CInt -> Ptr CInt -> IO CInt
 
 -- inputs
 --   inOpen
@@ -3109,7 +3109,7 @@ foreign import ccall unsafe "ta_func.h TA_CDLTRISTAR"
 -- outputs
 --   outInteger (int[])
 
-ta_cdltristar :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
+ta_cdltristar :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
 ta_cdltristar inOpen inHigh inLow inClose = do
     _inOpen <- V.unsafeThaw inOpen
     _inHigh <- V.unsafeThaw inHigh
@@ -3140,7 +3140,7 @@ ta_cdltristar inOpen inHigh inLow inClose = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_CDLUNIQUE3RIVER"
-  c_ta_cdlunique3river :: CInt -> CInt -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr CInt -> Ptr CInt -> Ptr Int -> IO CInt
+  c_ta_cdlunique3river :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CInt -> Ptr CInt -> Ptr CInt -> IO CInt
 
 -- inputs
 --   inOpen
@@ -3151,7 +3151,7 @@ foreign import ccall unsafe "ta_func.h TA_CDLUNIQUE3RIVER"
 -- outputs
 --   outInteger (int[])
 
-ta_cdlunique3river :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
+ta_cdlunique3river :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
 ta_cdlunique3river inOpen inHigh inLow inClose = do
     _inOpen <- V.unsafeThaw inOpen
     _inHigh <- V.unsafeThaw inHigh
@@ -3182,7 +3182,7 @@ ta_cdlunique3river inOpen inHigh inLow inClose = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_CDLUPSIDEGAP2CROWS"
-  c_ta_cdlupsidegap2crows :: CInt -> CInt -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr CInt -> Ptr CInt -> Ptr Int -> IO CInt
+  c_ta_cdlupsidegap2crows :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CInt -> Ptr CInt -> Ptr CInt -> IO CInt
 
 -- inputs
 --   inOpen
@@ -3193,7 +3193,7 @@ foreign import ccall unsafe "ta_func.h TA_CDLUPSIDEGAP2CROWS"
 -- outputs
 --   outInteger (int[])
 
-ta_cdlupsidegap2crows :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
+ta_cdlupsidegap2crows :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
 ta_cdlupsidegap2crows inOpen inHigh inLow inClose = do
     _inOpen <- V.unsafeThaw inOpen
     _inHigh <- V.unsafeThaw inHigh
@@ -3224,7 +3224,7 @@ ta_cdlupsidegap2crows inOpen inHigh inLow inClose = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_CDLXSIDEGAP3METHODS"
-  c_ta_cdlxsidegap3methods :: CInt -> CInt -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr CInt -> Ptr CInt -> Ptr Int -> IO CInt
+  c_ta_cdlxsidegap3methods :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CInt -> Ptr CInt -> Ptr CInt -> IO CInt
 
 -- inputs
 --   inOpen
@@ -3235,7 +3235,7 @@ foreign import ccall unsafe "ta_func.h TA_CDLXSIDEGAP3METHODS"
 -- outputs
 --   outInteger (int[])
 
-ta_cdlxsidegap3methods :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
+ta_cdlxsidegap3methods :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
 ta_cdlxsidegap3methods inOpen inHigh inLow inClose = do
     _inOpen <- V.unsafeThaw inOpen
     _inHigh <- V.unsafeThaw inHigh
@@ -3266,7 +3266,7 @@ ta_cdlxsidegap3methods inOpen inHigh inLow inClose = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_CEIL"
-  c_ta_ceil :: CInt -> CInt -> Ptr Double -> Ptr CInt -> Ptr CInt -> Ptr Double -> IO CInt
+  c_ta_ceil :: CInt -> CInt -> Ptr CDouble -> Ptr CInt -> Ptr CInt -> Ptr CDouble -> IO CInt
 
 -- inputs
 --   inReal
@@ -3274,7 +3274,7 @@ foreign import ccall unsafe "ta_func.h TA_CEIL"
 -- outputs
 --   outReal (double[])
 
-ta_ceil :: V.Vector Double -> IO (Either Int (Int, Int, V.Vector Double))
+ta_ceil :: V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CDouble))
 ta_ceil inReal = do
     _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
@@ -3299,7 +3299,7 @@ ta_ceil inReal = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_CMO"
-  c_ta_cmo :: CInt -> CInt -> Ptr Double -> CInt -> Ptr CInt -> Ptr CInt -> Ptr Double -> IO CInt
+  c_ta_cmo :: CInt -> CInt -> Ptr CDouble -> CInt -> Ptr CInt -> Ptr CInt -> Ptr CDouble -> IO CInt
 
 -- inputs
 --   inReal
@@ -3308,7 +3308,7 @@ foreign import ccall unsafe "ta_func.h TA_CMO"
 -- outputs
 --   outReal (double[])
 
-ta_cmo :: V.Vector Double -> Int -> IO (Either Int (Int, Int, V.Vector Double))
+ta_cmo :: V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble))
 ta_cmo inReal optInTimePeriod = do
     _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
@@ -3333,7 +3333,7 @@ ta_cmo inReal optInTimePeriod = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_CORREL"
-  c_ta_correl :: CInt -> CInt -> Ptr Double -> Ptr Double -> CInt -> Ptr CInt -> Ptr CInt -> Ptr Double -> IO CInt
+  c_ta_correl :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> CInt -> Ptr CInt -> Ptr CInt -> Ptr CDouble -> IO CInt
 
 -- inputs
 --   inReal0
@@ -3343,7 +3343,7 @@ foreign import ccall unsafe "ta_func.h TA_CORREL"
 -- outputs
 --   outReal (double[])
 
-ta_correl :: V.Vector Double -> V.Vector Double -> Int -> IO (Either Int (Int, Int, V.Vector Double))
+ta_correl :: V.Vector CDouble -> V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble))
 ta_correl inReal0 inReal1 optInTimePeriod = do
     _inReal0 <- V.unsafeThaw inReal0
     _inReal1 <- V.unsafeThaw inReal1
@@ -3370,7 +3370,7 @@ ta_correl inReal0 inReal1 optInTimePeriod = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_COS"
-  c_ta_cos :: CInt -> CInt -> Ptr Double -> Ptr CInt -> Ptr CInt -> Ptr Double -> IO CInt
+  c_ta_cos :: CInt -> CInt -> Ptr CDouble -> Ptr CInt -> Ptr CInt -> Ptr CDouble -> IO CInt
 
 -- inputs
 --   inReal
@@ -3378,7 +3378,7 @@ foreign import ccall unsafe "ta_func.h TA_COS"
 -- outputs
 --   outReal (double[])
 
-ta_cos :: V.Vector Double -> IO (Either Int (Int, Int, V.Vector Double))
+ta_cos :: V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CDouble))
 ta_cos inReal = do
     _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
@@ -3403,7 +3403,7 @@ ta_cos inReal = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_COSH"
-  c_ta_cosh :: CInt -> CInt -> Ptr Double -> Ptr CInt -> Ptr CInt -> Ptr Double -> IO CInt
+  c_ta_cosh :: CInt -> CInt -> Ptr CDouble -> Ptr CInt -> Ptr CInt -> Ptr CDouble -> IO CInt
 
 -- inputs
 --   inReal
@@ -3411,7 +3411,7 @@ foreign import ccall unsafe "ta_func.h TA_COSH"
 -- outputs
 --   outReal (double[])
 
-ta_cosh :: V.Vector Double -> IO (Either Int (Int, Int, V.Vector Double))
+ta_cosh :: V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CDouble))
 ta_cosh inReal = do
     _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
@@ -3436,7 +3436,7 @@ ta_cosh inReal = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_DEMA"
-  c_ta_dema :: CInt -> CInt -> Ptr Double -> CInt -> Ptr CInt -> Ptr CInt -> Ptr Double -> IO CInt
+  c_ta_dema :: CInt -> CInt -> Ptr CDouble -> CInt -> Ptr CInt -> Ptr CInt -> Ptr CDouble -> IO CInt
 
 -- inputs
 --   inReal
@@ -3445,7 +3445,7 @@ foreign import ccall unsafe "ta_func.h TA_DEMA"
 -- outputs
 --   outReal (double[])
 
-ta_dema :: V.Vector Double -> Int -> IO (Either Int (Int, Int, V.Vector Double))
+ta_dema :: V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble))
 ta_dema inReal optInTimePeriod = do
     _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
@@ -3470,7 +3470,7 @@ ta_dema inReal optInTimePeriod = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_DIV"
-  c_ta_div :: CInt -> CInt -> Ptr Double -> Ptr Double -> Ptr CInt -> Ptr CInt -> Ptr Double -> IO CInt
+  c_ta_div :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> Ptr CInt -> Ptr CInt -> Ptr CDouble -> IO CInt
 
 -- inputs
 --   inReal0
@@ -3479,7 +3479,7 @@ foreign import ccall unsafe "ta_func.h TA_DIV"
 -- outputs
 --   outReal (double[])
 
-ta_div :: V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Double))
+ta_div :: V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CDouble))
 ta_div inReal0 inReal1 = do
     _inReal0 <- V.unsafeThaw inReal0
     _inReal1 <- V.unsafeThaw inReal1
@@ -3506,7 +3506,7 @@ ta_div inReal0 inReal1 = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_DX"
-  c_ta_dx :: CInt -> CInt -> Ptr Double -> Ptr Double -> Ptr Double -> CInt -> Ptr CInt -> Ptr CInt -> Ptr Double -> IO CInt
+  c_ta_dx :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> CInt -> Ptr CInt -> Ptr CInt -> Ptr CDouble -> IO CInt
 
 -- inputs
 --   inHigh
@@ -3517,7 +3517,7 @@ foreign import ccall unsafe "ta_func.h TA_DX"
 -- outputs
 --   outReal (double[])
 
-ta_dx :: V.Vector Double -> V.Vector Double -> V.Vector Double -> Int -> IO (Either Int (Int, Int, V.Vector Double))
+ta_dx :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble))
 ta_dx inHigh inLow inClose optInTimePeriod = do
     _inHigh <- V.unsafeThaw inHigh
     _inLow <- V.unsafeThaw inLow
@@ -3546,7 +3546,7 @@ ta_dx inHigh inLow inClose optInTimePeriod = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_EMA"
-  c_ta_ema :: CInt -> CInt -> Ptr Double -> CInt -> Ptr CInt -> Ptr CInt -> Ptr Double -> IO CInt
+  c_ta_ema :: CInt -> CInt -> Ptr CDouble -> CInt -> Ptr CInt -> Ptr CInt -> Ptr CDouble -> IO CInt
 
 -- inputs
 --   inReal
@@ -3555,7 +3555,7 @@ foreign import ccall unsafe "ta_func.h TA_EMA"
 -- outputs
 --   outReal (double[])
 
-ta_ema :: V.Vector Double -> Int -> IO (Either Int (Int, Int, V.Vector Double))
+ta_ema :: V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble))
 ta_ema inReal optInTimePeriod = do
     _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
@@ -3580,7 +3580,7 @@ ta_ema inReal optInTimePeriod = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_EXP"
-  c_ta_exp :: CInt -> CInt -> Ptr Double -> Ptr CInt -> Ptr CInt -> Ptr Double -> IO CInt
+  c_ta_exp :: CInt -> CInt -> Ptr CDouble -> Ptr CInt -> Ptr CInt -> Ptr CDouble -> IO CInt
 
 -- inputs
 --   inReal
@@ -3588,7 +3588,7 @@ foreign import ccall unsafe "ta_func.h TA_EXP"
 -- outputs
 --   outReal (double[])
 
-ta_exp :: V.Vector Double -> IO (Either Int (Int, Int, V.Vector Double))
+ta_exp :: V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CDouble))
 ta_exp inReal = do
     _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
@@ -3613,7 +3613,7 @@ ta_exp inReal = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_FLOOR"
-  c_ta_floor :: CInt -> CInt -> Ptr Double -> Ptr CInt -> Ptr CInt -> Ptr Double -> IO CInt
+  c_ta_floor :: CInt -> CInt -> Ptr CDouble -> Ptr CInt -> Ptr CInt -> Ptr CDouble -> IO CInt
 
 -- inputs
 --   inReal
@@ -3621,7 +3621,7 @@ foreign import ccall unsafe "ta_func.h TA_FLOOR"
 -- outputs
 --   outReal (double[])
 
-ta_floor :: V.Vector Double -> IO (Either Int (Int, Int, V.Vector Double))
+ta_floor :: V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CDouble))
 ta_floor inReal = do
     _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
@@ -3646,7 +3646,7 @@ ta_floor inReal = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_HT_DCPERIOD"
-  c_ta_ht_dcperiod :: CInt -> CInt -> Ptr Double -> Ptr CInt -> Ptr CInt -> Ptr Double -> IO CInt
+  c_ta_ht_dcperiod :: CInt -> CInt -> Ptr CDouble -> Ptr CInt -> Ptr CInt -> Ptr CDouble -> IO CInt
 
 -- inputs
 --   inReal
@@ -3654,7 +3654,7 @@ foreign import ccall unsafe "ta_func.h TA_HT_DCPERIOD"
 -- outputs
 --   outReal (double[])
 
-ta_ht_dcperiod :: V.Vector Double -> IO (Either Int (Int, Int, V.Vector Double))
+ta_ht_dcperiod :: V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CDouble))
 ta_ht_dcperiod inReal = do
     _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
@@ -3679,7 +3679,7 @@ ta_ht_dcperiod inReal = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_HT_DCPHASE"
-  c_ta_ht_dcphase :: CInt -> CInt -> Ptr Double -> Ptr CInt -> Ptr CInt -> Ptr Double -> IO CInt
+  c_ta_ht_dcphase :: CInt -> CInt -> Ptr CDouble -> Ptr CInt -> Ptr CInt -> Ptr CDouble -> IO CInt
 
 -- inputs
 --   inReal
@@ -3687,7 +3687,7 @@ foreign import ccall unsafe "ta_func.h TA_HT_DCPHASE"
 -- outputs
 --   outReal (double[])
 
-ta_ht_dcphase :: V.Vector Double -> IO (Either Int (Int, Int, V.Vector Double))
+ta_ht_dcphase :: V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CDouble))
 ta_ht_dcphase inReal = do
     _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
@@ -3712,7 +3712,7 @@ ta_ht_dcphase inReal = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_HT_PHASOR"
-  c_ta_ht_phasor :: CInt -> CInt -> Ptr Double -> Ptr CInt -> Ptr CInt -> Ptr Double -> Ptr Double -> IO CInt
+  c_ta_ht_phasor :: CInt -> CInt -> Ptr CDouble -> Ptr CInt -> Ptr CInt -> Ptr CDouble -> Ptr CDouble -> IO CInt
 
 -- inputs
 --   inReal
@@ -3721,7 +3721,7 @@ foreign import ccall unsafe "ta_func.h TA_HT_PHASOR"
 --   outInPhase (double[])
 --   outQuadrature (double[])
 
-ta_ht_phasor :: V.Vector Double -> IO (Either Int (Int, Int, V.Vector Double, V.Vector Double))
+ta_ht_phasor :: V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CDouble, V.Vector CDouble))
 ta_ht_phasor inReal = do
     _inReal <- V.unsafeThaw inReal
     _outInPhase <- VM.new len
@@ -3750,7 +3750,7 @@ ta_ht_phasor inReal = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_HT_SINE"
-  c_ta_ht_sine :: CInt -> CInt -> Ptr Double -> Ptr CInt -> Ptr CInt -> Ptr Double -> Ptr Double -> IO CInt
+  c_ta_ht_sine :: CInt -> CInt -> Ptr CDouble -> Ptr CInt -> Ptr CInt -> Ptr CDouble -> Ptr CDouble -> IO CInt
 
 -- inputs
 --   inReal
@@ -3759,7 +3759,7 @@ foreign import ccall unsafe "ta_func.h TA_HT_SINE"
 --   outSine (double[])
 --   outLeadSine (double[])
 
-ta_ht_sine :: V.Vector Double -> IO (Either Int (Int, Int, V.Vector Double, V.Vector Double))
+ta_ht_sine :: V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CDouble, V.Vector CDouble))
 ta_ht_sine inReal = do
     _inReal <- V.unsafeThaw inReal
     _outSine <- VM.new len
@@ -3788,7 +3788,7 @@ ta_ht_sine inReal = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_HT_TRENDLINE"
-  c_ta_ht_trendline :: CInt -> CInt -> Ptr Double -> Ptr CInt -> Ptr CInt -> Ptr Double -> IO CInt
+  c_ta_ht_trendline :: CInt -> CInt -> Ptr CDouble -> Ptr CInt -> Ptr CInt -> Ptr CDouble -> IO CInt
 
 -- inputs
 --   inReal
@@ -3796,7 +3796,7 @@ foreign import ccall unsafe "ta_func.h TA_HT_TRENDLINE"
 -- outputs
 --   outReal (double[])
 
-ta_ht_trendline :: V.Vector Double -> IO (Either Int (Int, Int, V.Vector Double))
+ta_ht_trendline :: V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CDouble))
 ta_ht_trendline inReal = do
     _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
@@ -3821,7 +3821,7 @@ ta_ht_trendline inReal = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_HT_TRENDMODE"
-  c_ta_ht_trendmode :: CInt -> CInt -> Ptr Double -> Ptr CInt -> Ptr CInt -> Ptr Int -> IO CInt
+  c_ta_ht_trendmode :: CInt -> CInt -> Ptr CDouble -> Ptr CInt -> Ptr CInt -> Ptr CInt -> IO CInt
 
 -- inputs
 --   inReal
@@ -3829,7 +3829,7 @@ foreign import ccall unsafe "ta_func.h TA_HT_TRENDMODE"
 -- outputs
 --   outInteger (int[])
 
-ta_ht_trendmode :: V.Vector Double -> IO (Either Int (Int, Int, V.Vector Int))
+ta_ht_trendmode :: V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
 ta_ht_trendmode inReal = do
     _inReal <- V.unsafeThaw inReal
     _outInteger <- VM.new len
@@ -3854,7 +3854,7 @@ ta_ht_trendmode inReal = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_KAMA"
-  c_ta_kama :: CInt -> CInt -> Ptr Double -> CInt -> Ptr CInt -> Ptr CInt -> Ptr Double -> IO CInt
+  c_ta_kama :: CInt -> CInt -> Ptr CDouble -> CInt -> Ptr CInt -> Ptr CInt -> Ptr CDouble -> IO CInt
 
 -- inputs
 --   inReal
@@ -3863,7 +3863,7 @@ foreign import ccall unsafe "ta_func.h TA_KAMA"
 -- outputs
 --   outReal (double[])
 
-ta_kama :: V.Vector Double -> Int -> IO (Either Int (Int, Int, V.Vector Double))
+ta_kama :: V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble))
 ta_kama inReal optInTimePeriod = do
     _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
@@ -3888,7 +3888,7 @@ ta_kama inReal optInTimePeriod = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_LINEARREG"
-  c_ta_linearreg :: CInt -> CInt -> Ptr Double -> CInt -> Ptr CInt -> Ptr CInt -> Ptr Double -> IO CInt
+  c_ta_linearreg :: CInt -> CInt -> Ptr CDouble -> CInt -> Ptr CInt -> Ptr CInt -> Ptr CDouble -> IO CInt
 
 -- inputs
 --   inReal
@@ -3897,7 +3897,7 @@ foreign import ccall unsafe "ta_func.h TA_LINEARREG"
 -- outputs
 --   outReal (double[])
 
-ta_linearreg :: V.Vector Double -> Int -> IO (Either Int (Int, Int, V.Vector Double))
+ta_linearreg :: V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble))
 ta_linearreg inReal optInTimePeriod = do
     _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
@@ -3922,7 +3922,7 @@ ta_linearreg inReal optInTimePeriod = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_LINEARREG_ANGLE"
-  c_ta_linearreg_angle :: CInt -> CInt -> Ptr Double -> CInt -> Ptr CInt -> Ptr CInt -> Ptr Double -> IO CInt
+  c_ta_linearreg_angle :: CInt -> CInt -> Ptr CDouble -> CInt -> Ptr CInt -> Ptr CInt -> Ptr CDouble -> IO CInt
 
 -- inputs
 --   inReal
@@ -3931,7 +3931,7 @@ foreign import ccall unsafe "ta_func.h TA_LINEARREG_ANGLE"
 -- outputs
 --   outReal (double[])
 
-ta_linearreg_angle :: V.Vector Double -> Int -> IO (Either Int (Int, Int, V.Vector Double))
+ta_linearreg_angle :: V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble))
 ta_linearreg_angle inReal optInTimePeriod = do
     _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
@@ -3956,7 +3956,7 @@ ta_linearreg_angle inReal optInTimePeriod = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_LINEARREG_INTERCEPT"
-  c_ta_linearreg_intercept :: CInt -> CInt -> Ptr Double -> CInt -> Ptr CInt -> Ptr CInt -> Ptr Double -> IO CInt
+  c_ta_linearreg_intercept :: CInt -> CInt -> Ptr CDouble -> CInt -> Ptr CInt -> Ptr CInt -> Ptr CDouble -> IO CInt
 
 -- inputs
 --   inReal
@@ -3965,7 +3965,7 @@ foreign import ccall unsafe "ta_func.h TA_LINEARREG_INTERCEPT"
 -- outputs
 --   outReal (double[])
 
-ta_linearreg_intercept :: V.Vector Double -> Int -> IO (Either Int (Int, Int, V.Vector Double))
+ta_linearreg_intercept :: V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble))
 ta_linearreg_intercept inReal optInTimePeriod = do
     _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
@@ -3990,7 +3990,7 @@ ta_linearreg_intercept inReal optInTimePeriod = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_LINEARREG_SLOPE"
-  c_ta_linearreg_slope :: CInt -> CInt -> Ptr Double -> CInt -> Ptr CInt -> Ptr CInt -> Ptr Double -> IO CInt
+  c_ta_linearreg_slope :: CInt -> CInt -> Ptr CDouble -> CInt -> Ptr CInt -> Ptr CInt -> Ptr CDouble -> IO CInt
 
 -- inputs
 --   inReal
@@ -3999,7 +3999,7 @@ foreign import ccall unsafe "ta_func.h TA_LINEARREG_SLOPE"
 -- outputs
 --   outReal (double[])
 
-ta_linearreg_slope :: V.Vector Double -> Int -> IO (Either Int (Int, Int, V.Vector Double))
+ta_linearreg_slope :: V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble))
 ta_linearreg_slope inReal optInTimePeriod = do
     _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
@@ -4024,7 +4024,7 @@ ta_linearreg_slope inReal optInTimePeriod = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_LN"
-  c_ta_ln :: CInt -> CInt -> Ptr Double -> Ptr CInt -> Ptr CInt -> Ptr Double -> IO CInt
+  c_ta_ln :: CInt -> CInt -> Ptr CDouble -> Ptr CInt -> Ptr CInt -> Ptr CDouble -> IO CInt
 
 -- inputs
 --   inReal
@@ -4032,7 +4032,7 @@ foreign import ccall unsafe "ta_func.h TA_LN"
 -- outputs
 --   outReal (double[])
 
-ta_ln :: V.Vector Double -> IO (Either Int (Int, Int, V.Vector Double))
+ta_ln :: V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CDouble))
 ta_ln inReal = do
     _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
@@ -4057,7 +4057,7 @@ ta_ln inReal = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_LOG10"
-  c_ta_log10 :: CInt -> CInt -> Ptr Double -> Ptr CInt -> Ptr CInt -> Ptr Double -> IO CInt
+  c_ta_log10 :: CInt -> CInt -> Ptr CDouble -> Ptr CInt -> Ptr CInt -> Ptr CDouble -> IO CInt
 
 -- inputs
 --   inReal
@@ -4065,7 +4065,7 @@ foreign import ccall unsafe "ta_func.h TA_LOG10"
 -- outputs
 --   outReal (double[])
 
-ta_log10 :: V.Vector Double -> IO (Either Int (Int, Int, V.Vector Double))
+ta_log10 :: V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CDouble))
 ta_log10 inReal = do
     _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
@@ -4090,7 +4090,7 @@ ta_log10 inReal = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_MA"
-  c_ta_ma :: CInt -> CInt -> Ptr Double -> CInt -> CInt -> Ptr CInt -> Ptr CInt -> Ptr Double -> IO CInt
+  c_ta_ma :: CInt -> CInt -> Ptr CDouble -> CInt -> CInt -> Ptr CInt -> Ptr CInt -> Ptr CDouble -> IO CInt
 
 -- inputs
 --   inReal
@@ -4100,7 +4100,7 @@ foreign import ccall unsafe "ta_func.h TA_MA"
 -- outputs
 --   outReal (double[])
 
-ta_ma :: V.Vector Double -> Int -> Int -> IO (Either Int (Int, Int, V.Vector Double))
+ta_ma :: V.Vector CDouble -> Int -> Int -> IO (Either Int (Int, Int, V.Vector CDouble))
 ta_ma inReal optInTimePeriod optInMAType = do
     _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
@@ -4125,7 +4125,7 @@ ta_ma inReal optInTimePeriod optInMAType = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_MACD"
-  c_ta_macd :: CInt -> CInt -> Ptr Double -> CInt -> CInt -> CInt -> Ptr CInt -> Ptr CInt -> Ptr Double -> Ptr Double -> Ptr Double -> IO CInt
+  c_ta_macd :: CInt -> CInt -> Ptr CDouble -> CInt -> CInt -> CInt -> Ptr CInt -> Ptr CInt -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> IO CInt
 
 -- inputs
 --   inReal
@@ -4138,7 +4138,7 @@ foreign import ccall unsafe "ta_func.h TA_MACD"
 --   outMACDSignal (double[])
 --   outMACDHist (double[])
 
-ta_macd :: V.Vector Double -> Int -> Int -> Int -> IO (Either Int (Int, Int, V.Vector Double, V.Vector Double, V.Vector Double))
+ta_macd :: V.Vector CDouble -> Int -> Int -> Int -> IO (Either Int (Int, Int, V.Vector CDouble, V.Vector CDouble, V.Vector CDouble))
 ta_macd inReal optInFastPeriod optInSlowPeriod optInSignalPeriod = do
     _inReal <- V.unsafeThaw inReal
     _outMACD <- VM.new len
@@ -4171,7 +4171,7 @@ ta_macd inReal optInFastPeriod optInSlowPeriod optInSignalPeriod = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_MACDEXT"
-  c_ta_macdext :: CInt -> CInt -> Ptr Double -> CInt -> CInt -> CInt -> CInt -> CInt -> CInt -> Ptr CInt -> Ptr CInt -> Ptr Double -> Ptr Double -> Ptr Double -> IO CInt
+  c_ta_macdext :: CInt -> CInt -> Ptr CDouble -> CInt -> CInt -> CInt -> CInt -> CInt -> CInt -> Ptr CInt -> Ptr CInt -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> IO CInt
 
 -- inputs
 --   inReal
@@ -4187,7 +4187,7 @@ foreign import ccall unsafe "ta_func.h TA_MACDEXT"
 --   outMACDSignal (double[])
 --   outMACDHist (double[])
 
-ta_macdext :: V.Vector Double -> Int -> Int -> Int -> Int -> Int -> Int -> IO (Either Int (Int, Int, V.Vector Double, V.Vector Double, V.Vector Double))
+ta_macdext :: V.Vector CDouble -> Int -> Int -> Int -> Int -> Int -> Int -> IO (Either Int (Int, Int, V.Vector CDouble, V.Vector CDouble, V.Vector CDouble))
 ta_macdext inReal optInFastPeriod optInFastMAType optInSlowPeriod optInSlowMAType optInSignalPeriod optInSignalMAType = do
     _inReal <- V.unsafeThaw inReal
     _outMACD <- VM.new len
@@ -4220,7 +4220,7 @@ ta_macdext inReal optInFastPeriod optInFastMAType optInSlowPeriod optInSlowMATyp
 --
 
 foreign import ccall unsafe "ta_func.h TA_MACDFIX"
-  c_ta_macdfix :: CInt -> CInt -> Ptr Double -> CInt -> Ptr CInt -> Ptr CInt -> Ptr Double -> Ptr Double -> Ptr Double -> IO CInt
+  c_ta_macdfix :: CInt -> CInt -> Ptr CDouble -> CInt -> Ptr CInt -> Ptr CInt -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> IO CInt
 
 -- inputs
 --   inReal
@@ -4231,7 +4231,7 @@ foreign import ccall unsafe "ta_func.h TA_MACDFIX"
 --   outMACDSignal (double[])
 --   outMACDHist (double[])
 
-ta_macdfix :: V.Vector Double -> Int -> IO (Either Int (Int, Int, V.Vector Double, V.Vector Double, V.Vector Double))
+ta_macdfix :: V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble, V.Vector CDouble, V.Vector CDouble))
 ta_macdfix inReal optInSignalPeriod = do
     _inReal <- V.unsafeThaw inReal
     _outMACD <- VM.new len
@@ -4264,7 +4264,7 @@ ta_macdfix inReal optInSignalPeriod = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_MAMA"
-  c_ta_mama :: CInt -> CInt -> Ptr Double -> CDouble -> CDouble -> Ptr CInt -> Ptr CInt -> Ptr Double -> Ptr Double -> IO CInt
+  c_ta_mama :: CInt -> CInt -> Ptr CDouble -> CDouble -> CDouble -> Ptr CInt -> Ptr CInt -> Ptr CDouble -> Ptr CDouble -> IO CInt
 
 -- inputs
 --   inReal
@@ -4275,7 +4275,7 @@ foreign import ccall unsafe "ta_func.h TA_MAMA"
 --   outMAMA (double[])
 --   outFAMA (double[])
 
-ta_mama :: V.Vector Double -> Double -> Double -> IO (Either Int (Int, Int, V.Vector Double, V.Vector Double))
+ta_mama :: V.Vector CDouble -> Double -> Double -> IO (Either Int (Int, Int, V.Vector CDouble, V.Vector CDouble))
 ta_mama inReal optInFastLimit optInSlowLimit = do
     _inReal <- V.unsafeThaw inReal
     _outMAMA <- VM.new len
@@ -4304,7 +4304,7 @@ ta_mama inReal optInFastLimit optInSlowLimit = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_MAVP"
-  c_ta_mavp :: CInt -> CInt -> Ptr Double -> Ptr Double -> CInt -> CInt -> CInt -> Ptr CInt -> Ptr CInt -> Ptr Double -> IO CInt
+  c_ta_mavp :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> CInt -> CInt -> CInt -> Ptr CInt -> Ptr CInt -> Ptr CDouble -> IO CInt
 
 -- inputs
 --   inReal
@@ -4316,7 +4316,7 @@ foreign import ccall unsafe "ta_func.h TA_MAVP"
 -- outputs
 --   outReal (double[])
 
-ta_mavp :: V.Vector Double -> V.Vector Double -> Int -> Int -> Int -> IO (Either Int (Int, Int, V.Vector Double))
+ta_mavp :: V.Vector CDouble -> V.Vector CDouble -> Int -> Int -> Int -> IO (Either Int (Int, Int, V.Vector CDouble))
 ta_mavp inReal inPeriods optInMinPeriod optInMaxPeriod optInMAType = do
     _inReal <- V.unsafeThaw inReal
     _inPeriods <- V.unsafeThaw inPeriods
@@ -4343,7 +4343,7 @@ ta_mavp inReal inPeriods optInMinPeriod optInMaxPeriod optInMAType = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_MAX"
-  c_ta_max :: CInt -> CInt -> Ptr Double -> CInt -> Ptr CInt -> Ptr CInt -> Ptr Double -> IO CInt
+  c_ta_max :: CInt -> CInt -> Ptr CDouble -> CInt -> Ptr CInt -> Ptr CInt -> Ptr CDouble -> IO CInt
 
 -- inputs
 --   inReal
@@ -4352,7 +4352,7 @@ foreign import ccall unsafe "ta_func.h TA_MAX"
 -- outputs
 --   outReal (double[])
 
-ta_max :: V.Vector Double -> Int -> IO (Either Int (Int, Int, V.Vector Double))
+ta_max :: V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble))
 ta_max inReal optInTimePeriod = do
     _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
@@ -4377,7 +4377,7 @@ ta_max inReal optInTimePeriod = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_MAXINDEX"
-  c_ta_maxindex :: CInt -> CInt -> Ptr Double -> CInt -> Ptr CInt -> Ptr CInt -> Ptr Int -> IO CInt
+  c_ta_maxindex :: CInt -> CInt -> Ptr CDouble -> CInt -> Ptr CInt -> Ptr CInt -> Ptr CInt -> IO CInt
 
 -- inputs
 --   inReal
@@ -4386,7 +4386,7 @@ foreign import ccall unsafe "ta_func.h TA_MAXINDEX"
 -- outputs
 --   outInteger (int[])
 
-ta_maxindex :: V.Vector Double -> Int -> IO (Either Int (Int, Int, V.Vector Int))
+ta_maxindex :: V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CInt))
 ta_maxindex inReal optInTimePeriod = do
     _inReal <- V.unsafeThaw inReal
     _outInteger <- VM.new len
@@ -4411,7 +4411,7 @@ ta_maxindex inReal optInTimePeriod = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_MEDPRICE"
-  c_ta_medprice :: CInt -> CInt -> Ptr Double -> Ptr Double -> Ptr CInt -> Ptr CInt -> Ptr Double -> IO CInt
+  c_ta_medprice :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> Ptr CInt -> Ptr CInt -> Ptr CDouble -> IO CInt
 
 -- inputs
 --   inHigh
@@ -4420,7 +4420,7 @@ foreign import ccall unsafe "ta_func.h TA_MEDPRICE"
 -- outputs
 --   outReal (double[])
 
-ta_medprice :: V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Double))
+ta_medprice :: V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CDouble))
 ta_medprice inHigh inLow = do
     _inHigh <- V.unsafeThaw inHigh
     _inLow <- V.unsafeThaw inLow
@@ -4447,7 +4447,7 @@ ta_medprice inHigh inLow = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_MFI"
-  c_ta_mfi :: CInt -> CInt -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr Double -> CInt -> Ptr CInt -> Ptr CInt -> Ptr Double -> IO CInt
+  c_ta_mfi :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> CInt -> Ptr CInt -> Ptr CInt -> Ptr CDouble -> IO CInt
 
 -- inputs
 --   inHigh
@@ -4459,7 +4459,7 @@ foreign import ccall unsafe "ta_func.h TA_MFI"
 -- outputs
 --   outReal (double[])
 
-ta_mfi :: V.Vector Double -> V.Vector Double -> V.Vector Double -> V.Vector Double -> Int -> IO (Either Int (Int, Int, V.Vector Double))
+ta_mfi :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble))
 ta_mfi inHigh inLow inClose inVolume optInTimePeriod = do
     _inHigh <- V.unsafeThaw inHigh
     _inLow <- V.unsafeThaw inLow
@@ -4490,7 +4490,7 @@ ta_mfi inHigh inLow inClose inVolume optInTimePeriod = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_MIDPOINT"
-  c_ta_midpoint :: CInt -> CInt -> Ptr Double -> CInt -> Ptr CInt -> Ptr CInt -> Ptr Double -> IO CInt
+  c_ta_midpoint :: CInt -> CInt -> Ptr CDouble -> CInt -> Ptr CInt -> Ptr CInt -> Ptr CDouble -> IO CInt
 
 -- inputs
 --   inReal
@@ -4499,7 +4499,7 @@ foreign import ccall unsafe "ta_func.h TA_MIDPOINT"
 -- outputs
 --   outReal (double[])
 
-ta_midpoint :: V.Vector Double -> Int -> IO (Either Int (Int, Int, V.Vector Double))
+ta_midpoint :: V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble))
 ta_midpoint inReal optInTimePeriod = do
     _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
@@ -4524,7 +4524,7 @@ ta_midpoint inReal optInTimePeriod = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_MIDPRICE"
-  c_ta_midprice :: CInt -> CInt -> Ptr Double -> Ptr Double -> CInt -> Ptr CInt -> Ptr CInt -> Ptr Double -> IO CInt
+  c_ta_midprice :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> CInt -> Ptr CInt -> Ptr CInt -> Ptr CDouble -> IO CInt
 
 -- inputs
 --   inHigh
@@ -4534,7 +4534,7 @@ foreign import ccall unsafe "ta_func.h TA_MIDPRICE"
 -- outputs
 --   outReal (double[])
 
-ta_midprice :: V.Vector Double -> V.Vector Double -> Int -> IO (Either Int (Int, Int, V.Vector Double))
+ta_midprice :: V.Vector CDouble -> V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble))
 ta_midprice inHigh inLow optInTimePeriod = do
     _inHigh <- V.unsafeThaw inHigh
     _inLow <- V.unsafeThaw inLow
@@ -4561,7 +4561,7 @@ ta_midprice inHigh inLow optInTimePeriod = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_MIN"
-  c_ta_min :: CInt -> CInt -> Ptr Double -> CInt -> Ptr CInt -> Ptr CInt -> Ptr Double -> IO CInt
+  c_ta_min :: CInt -> CInt -> Ptr CDouble -> CInt -> Ptr CInt -> Ptr CInt -> Ptr CDouble -> IO CInt
 
 -- inputs
 --   inReal
@@ -4570,7 +4570,7 @@ foreign import ccall unsafe "ta_func.h TA_MIN"
 -- outputs
 --   outReal (double[])
 
-ta_min :: V.Vector Double -> Int -> IO (Either Int (Int, Int, V.Vector Double))
+ta_min :: V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble))
 ta_min inReal optInTimePeriod = do
     _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
@@ -4595,16 +4595,17 @@ ta_min inReal optInTimePeriod = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_MININDEX"
-  c_ta_minindex :: CInt -> CInt -> Ptr Double -> CInt -> Ptr CInt -> Ptr CInt -> Ptr Int -> IO CInt
+  c_ta_minindex :: CInt -> CInt -> Ptr CDouble -> CInt -> Ptr CInt -> Ptr CInt -> Ptr CInt -> IO CInt
 
 -- inputs
 --   inReal
+
 -- arguments
 --   optInTimePeriod (int)
 -- outputs
 --   outInteger (int[])
 
-ta_minindex :: V.Vector Double -> Int -> IO (Either Int (Int, Int, V.Vector Int))
+ta_minindex :: V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CInt))
 ta_minindex inReal optInTimePeriod = do
     _inReal <- V.unsafeThaw inReal
     _outInteger <- VM.new len
@@ -4629,7 +4630,7 @@ ta_minindex inReal optInTimePeriod = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_MINMAX"
-  c_ta_minmax :: CInt -> CInt -> Ptr Double -> CInt -> Ptr CInt -> Ptr CInt -> Ptr Double -> Ptr Double -> IO CInt
+  c_ta_minmax :: CInt -> CInt -> Ptr CDouble -> CInt -> Ptr CInt -> Ptr CInt -> Ptr CDouble -> Ptr CDouble -> IO CInt
 
 -- inputs
 --   inReal
@@ -4639,7 +4640,7 @@ foreign import ccall unsafe "ta_func.h TA_MINMAX"
 --   outMin (double[])
 --   outMax (double[])
 
-ta_minmax :: V.Vector Double -> Int -> IO (Either Int (Int, Int, V.Vector Double, V.Vector Double))
+ta_minmax :: V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble, V.Vector CDouble))
 ta_minmax inReal optInTimePeriod = do
     _inReal <- V.unsafeThaw inReal
     _outMin <- VM.new len
@@ -4668,7 +4669,7 @@ ta_minmax inReal optInTimePeriod = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_MINMAXINDEX"
-  c_ta_minmaxindex :: CInt -> CInt -> Ptr Double -> CInt -> Ptr CInt -> Ptr CInt -> Ptr Int -> Ptr Int -> IO CInt
+  c_ta_minmaxindex :: CInt -> CInt -> Ptr CDouble -> CInt -> Ptr CInt -> Ptr CInt -> Ptr CInt -> Ptr CInt -> IO CInt
 
 -- inputs
 --   inReal
@@ -4678,7 +4679,7 @@ foreign import ccall unsafe "ta_func.h TA_MINMAXINDEX"
 --   outMinIdx (int[])
 --   outMaxIdx (int[])
 
-ta_minmaxindex :: V.Vector Double -> Int -> IO (Either Int (Int, Int, V.Vector Int, V.Vector Int))
+ta_minmaxindex :: V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CInt, V.Vector CInt))
 ta_minmaxindex inReal optInTimePeriod = do
     _inReal <- V.unsafeThaw inReal
     _outMinIdx <- VM.new len
@@ -4707,7 +4708,7 @@ ta_minmaxindex inReal optInTimePeriod = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_MINUS_DI"
-  c_ta_minus_di :: CInt -> CInt -> Ptr Double -> Ptr Double -> Ptr Double -> CInt -> Ptr CInt -> Ptr CInt -> Ptr Double -> IO CInt
+  c_ta_minus_di :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> CInt -> Ptr CInt -> Ptr CInt -> Ptr CDouble -> IO CInt
 
 -- inputs
 --   inHigh
@@ -4718,7 +4719,7 @@ foreign import ccall unsafe "ta_func.h TA_MINUS_DI"
 -- outputs
 --   outReal (double[])
 
-ta_minus_di :: V.Vector Double -> V.Vector Double -> V.Vector Double -> Int -> IO (Either Int (Int, Int, V.Vector Double))
+ta_minus_di :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble))
 ta_minus_di inHigh inLow inClose optInTimePeriod = do
     _inHigh <- V.unsafeThaw inHigh
     _inLow <- V.unsafeThaw inLow
@@ -4747,7 +4748,7 @@ ta_minus_di inHigh inLow inClose optInTimePeriod = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_MINUS_DM"
-  c_ta_minus_dm :: CInt -> CInt -> Ptr Double -> Ptr Double -> CInt -> Ptr CInt -> Ptr CInt -> Ptr Double -> IO CInt
+  c_ta_minus_dm :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> CInt -> Ptr CInt -> Ptr CInt -> Ptr CDouble -> IO CInt
 
 -- inputs
 --   inHigh
@@ -4757,7 +4758,7 @@ foreign import ccall unsafe "ta_func.h TA_MINUS_DM"
 -- outputs
 --   outReal (double[])
 
-ta_minus_dm :: V.Vector Double -> V.Vector Double -> Int -> IO (Either Int (Int, Int, V.Vector Double))
+ta_minus_dm :: V.Vector CDouble -> V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble))
 ta_minus_dm inHigh inLow optInTimePeriod = do
     _inHigh <- V.unsafeThaw inHigh
     _inLow <- V.unsafeThaw inLow
@@ -4784,7 +4785,7 @@ ta_minus_dm inHigh inLow optInTimePeriod = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_MOM"
-  c_ta_mom :: CInt -> CInt -> Ptr Double -> CInt -> Ptr CInt -> Ptr CInt -> Ptr Double -> IO CInt
+  c_ta_mom :: CInt -> CInt -> Ptr CDouble -> CInt -> Ptr CInt -> Ptr CInt -> Ptr CDouble -> IO CInt
 
 -- inputs
 --   inReal
@@ -4793,7 +4794,7 @@ foreign import ccall unsafe "ta_func.h TA_MOM"
 -- outputs
 --   outReal (double[])
 
-ta_mom :: V.Vector Double -> Int -> IO (Either Int (Int, Int, V.Vector Double))
+ta_mom :: V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble))
 ta_mom inReal optInTimePeriod = do
     _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
@@ -4818,7 +4819,7 @@ ta_mom inReal optInTimePeriod = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_MULT"
-  c_ta_mult :: CInt -> CInt -> Ptr Double -> Ptr Double -> Ptr CInt -> Ptr CInt -> Ptr Double -> IO CInt
+  c_ta_mult :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> Ptr CInt -> Ptr CInt -> Ptr CDouble -> IO CInt
 
 -- inputs
 --   inReal0
@@ -4827,7 +4828,7 @@ foreign import ccall unsafe "ta_func.h TA_MULT"
 -- outputs
 --   outReal (double[])
 
-ta_mult :: V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Double))
+ta_mult :: V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CDouble))
 ta_mult inReal0 inReal1 = do
     _inReal0 <- V.unsafeThaw inReal0
     _inReal1 <- V.unsafeThaw inReal1
@@ -4854,7 +4855,7 @@ ta_mult inReal0 inReal1 = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_NATR"
-  c_ta_natr :: CInt -> CInt -> Ptr Double -> Ptr Double -> Ptr Double -> CInt -> Ptr CInt -> Ptr CInt -> Ptr Double -> IO CInt
+  c_ta_natr :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> CInt -> Ptr CInt -> Ptr CInt -> Ptr CDouble -> IO CInt
 
 -- inputs
 --   inHigh
@@ -4865,7 +4866,7 @@ foreign import ccall unsafe "ta_func.h TA_NATR"
 -- outputs
 --   outReal (double[])
 
-ta_natr :: V.Vector Double -> V.Vector Double -> V.Vector Double -> Int -> IO (Either Int (Int, Int, V.Vector Double))
+ta_natr :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble))
 ta_natr inHigh inLow inClose optInTimePeriod = do
     _inHigh <- V.unsafeThaw inHigh
     _inLow <- V.unsafeThaw inLow
@@ -4894,7 +4895,7 @@ ta_natr inHigh inLow inClose optInTimePeriod = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_OBV"
-  c_ta_obv :: CInt -> CInt -> Ptr Double -> Ptr Double -> Ptr CInt -> Ptr CInt -> Ptr Double -> IO CInt
+  c_ta_obv :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> Ptr CInt -> Ptr CInt -> Ptr CDouble -> IO CInt
 
 -- inputs
 --   inReal
@@ -4903,7 +4904,7 @@ foreign import ccall unsafe "ta_func.h TA_OBV"
 -- outputs
 --   outReal (double[])
 
-ta_obv :: V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Double))
+ta_obv :: V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CDouble))
 ta_obv inReal inVolume1 = do
     _inReal <- V.unsafeThaw inReal
     _inVolume1 <- V.unsafeThaw inVolume1
@@ -4930,7 +4931,7 @@ ta_obv inReal inVolume1 = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_PLUS_DI"
-  c_ta_plus_di :: CInt -> CInt -> Ptr Double -> Ptr Double -> Ptr Double -> CInt -> Ptr CInt -> Ptr CInt -> Ptr Double -> IO CInt
+  c_ta_plus_di :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> CInt -> Ptr CInt -> Ptr CInt -> Ptr CDouble -> IO CInt
 
 -- inputs
 --   inHigh
@@ -4941,7 +4942,7 @@ foreign import ccall unsafe "ta_func.h TA_PLUS_DI"
 -- outputs
 --   outReal (double[])
 
-ta_plus_di :: V.Vector Double -> V.Vector Double -> V.Vector Double -> Int -> IO (Either Int (Int, Int, V.Vector Double))
+ta_plus_di :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble))
 ta_plus_di inHigh inLow inClose optInTimePeriod = do
     _inHigh <- V.unsafeThaw inHigh
     _inLow <- V.unsafeThaw inLow
@@ -4970,7 +4971,7 @@ ta_plus_di inHigh inLow inClose optInTimePeriod = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_PLUS_DM"
-  c_ta_plus_dm :: CInt -> CInt -> Ptr Double -> Ptr Double -> CInt -> Ptr CInt -> Ptr CInt -> Ptr Double -> IO CInt
+  c_ta_plus_dm :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> CInt -> Ptr CInt -> Ptr CInt -> Ptr CDouble -> IO CInt
 
 -- inputs
 --   inHigh
@@ -4980,7 +4981,7 @@ foreign import ccall unsafe "ta_func.h TA_PLUS_DM"
 -- outputs
 --   outReal (double[])
 
-ta_plus_dm :: V.Vector Double -> V.Vector Double -> Int -> IO (Either Int (Int, Int, V.Vector Double))
+ta_plus_dm :: V.Vector CDouble -> V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble))
 ta_plus_dm inHigh inLow optInTimePeriod = do
     _inHigh <- V.unsafeThaw inHigh
     _inLow <- V.unsafeThaw inLow
@@ -5007,7 +5008,7 @@ ta_plus_dm inHigh inLow optInTimePeriod = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_PPO"
-  c_ta_ppo :: CInt -> CInt -> Ptr Double -> CInt -> CInt -> CInt -> Ptr CInt -> Ptr CInt -> Ptr Double -> IO CInt
+  c_ta_ppo :: CInt -> CInt -> Ptr CDouble -> CInt -> CInt -> CInt -> Ptr CInt -> Ptr CInt -> Ptr CDouble -> IO CInt
 
 -- inputs
 --   inReal
@@ -5018,7 +5019,7 @@ foreign import ccall unsafe "ta_func.h TA_PPO"
 -- outputs
 --   outReal (double[])
 
-ta_ppo :: V.Vector Double -> Int -> Int -> Int -> IO (Either Int (Int, Int, V.Vector Double))
+ta_ppo :: V.Vector CDouble -> Int -> Int -> Int -> IO (Either Int (Int, Int, V.Vector CDouble))
 ta_ppo inReal optInFastPeriod optInSlowPeriod optInMAType = do
     _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
@@ -5043,7 +5044,7 @@ ta_ppo inReal optInFastPeriod optInSlowPeriod optInMAType = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_ROC"
-  c_ta_roc :: CInt -> CInt -> Ptr Double -> CInt -> Ptr CInt -> Ptr CInt -> Ptr Double -> IO CInt
+  c_ta_roc :: CInt -> CInt -> Ptr CDouble -> CInt -> Ptr CInt -> Ptr CInt -> Ptr CDouble -> IO CInt
 
 -- inputs
 --   inReal
@@ -5052,7 +5053,7 @@ foreign import ccall unsafe "ta_func.h TA_ROC"
 -- outputs
 --   outReal (double[])
 
-ta_roc :: V.Vector Double -> Int -> IO (Either Int (Int, Int, V.Vector Double))
+ta_roc :: V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble))
 ta_roc inReal optInTimePeriod = do
     _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
@@ -5077,7 +5078,7 @@ ta_roc inReal optInTimePeriod = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_ROCP"
-  c_ta_rocp :: CInt -> CInt -> Ptr Double -> CInt -> Ptr CInt -> Ptr CInt -> Ptr Double -> IO CInt
+  c_ta_rocp :: CInt -> CInt -> Ptr CDouble -> CInt -> Ptr CInt -> Ptr CInt -> Ptr CDouble -> IO CInt
 
 -- inputs
 --   inReal
@@ -5086,7 +5087,7 @@ foreign import ccall unsafe "ta_func.h TA_ROCP"
 -- outputs
 --   outReal (double[])
 
-ta_rocp :: V.Vector Double -> Int -> IO (Either Int (Int, Int, V.Vector Double))
+ta_rocp :: V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble))
 ta_rocp inReal optInTimePeriod = do
     _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
@@ -5111,7 +5112,7 @@ ta_rocp inReal optInTimePeriod = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_ROCR"
-  c_ta_rocr :: CInt -> CInt -> Ptr Double -> CInt -> Ptr CInt -> Ptr CInt -> Ptr Double -> IO CInt
+  c_ta_rocr :: CInt -> CInt -> Ptr CDouble -> CInt -> Ptr CInt -> Ptr CInt -> Ptr CDouble -> IO CInt
 
 -- inputs
 --   inReal
@@ -5120,7 +5121,7 @@ foreign import ccall unsafe "ta_func.h TA_ROCR"
 -- outputs
 --   outReal (double[])
 
-ta_rocr :: V.Vector Double -> Int -> IO (Either Int (Int, Int, V.Vector Double))
+ta_rocr :: V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble))
 ta_rocr inReal optInTimePeriod = do
     _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
@@ -5145,7 +5146,7 @@ ta_rocr inReal optInTimePeriod = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_ROCR100"
-  c_ta_rocr100 :: CInt -> CInt -> Ptr Double -> CInt -> Ptr CInt -> Ptr CInt -> Ptr Double -> IO CInt
+  c_ta_rocr100 :: CInt -> CInt -> Ptr CDouble -> CInt -> Ptr CInt -> Ptr CInt -> Ptr CDouble -> IO CInt
 
 -- inputs
 --   inReal
@@ -5154,7 +5155,7 @@ foreign import ccall unsafe "ta_func.h TA_ROCR100"
 -- outputs
 --   outReal (double[])
 
-ta_rocr100 :: V.Vector Double -> Int -> IO (Either Int (Int, Int, V.Vector Double))
+ta_rocr100 :: V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble))
 ta_rocr100 inReal optInTimePeriod = do
     _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
@@ -5179,7 +5180,7 @@ ta_rocr100 inReal optInTimePeriod = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_RSI"
-  c_ta_rsi :: CInt -> CInt -> Ptr Double -> CInt -> Ptr CInt -> Ptr CInt -> Ptr Double -> IO CInt
+  c_ta_rsi :: CInt -> CInt -> Ptr CDouble -> CInt -> Ptr CInt -> Ptr CInt -> Ptr CDouble -> IO CInt
 
 -- inputs
 --   inReal
@@ -5188,7 +5189,7 @@ foreign import ccall unsafe "ta_func.h TA_RSI"
 -- outputs
 --   outReal (double[])
 
-ta_rsi :: V.Vector Double -> Int -> IO (Either Int (Int, Int, V.Vector Double))
+ta_rsi :: V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble))
 ta_rsi inReal optInTimePeriod = do
     _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
@@ -5213,7 +5214,7 @@ ta_rsi inReal optInTimePeriod = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_SAR"
-  c_ta_sar :: CInt -> CInt -> Ptr Double -> Ptr Double -> CDouble -> CDouble -> Ptr CInt -> Ptr CInt -> Ptr Double -> IO CInt
+  c_ta_sar :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> CDouble -> CDouble -> Ptr CInt -> Ptr CInt -> Ptr CDouble -> IO CInt
 
 -- inputs
 --   inHigh
@@ -5224,7 +5225,7 @@ foreign import ccall unsafe "ta_func.h TA_SAR"
 -- outputs
 --   outReal (double[])
 
-ta_sar :: V.Vector Double -> V.Vector Double -> Double -> Double -> IO (Either Int (Int, Int, V.Vector Double))
+ta_sar :: V.Vector CDouble -> V.Vector CDouble -> Double -> Double -> IO (Either Int (Int, Int, V.Vector CDouble))
 ta_sar inHigh inLow optInAcceleration optInMaximum = do
     _inHigh <- V.unsafeThaw inHigh
     _inLow <- V.unsafeThaw inLow
@@ -5251,7 +5252,7 @@ ta_sar inHigh inLow optInAcceleration optInMaximum = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_SAREXT"
-  c_ta_sarext :: CInt -> CInt -> Ptr Double -> Ptr Double -> CDouble -> CDouble -> CDouble -> CDouble -> CDouble -> CDouble -> CDouble -> CDouble -> Ptr CInt -> Ptr CInt -> Ptr Double -> IO CInt
+  c_ta_sarext :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> CDouble -> CDouble -> CDouble -> CDouble -> CDouble -> CDouble -> CDouble -> CDouble -> Ptr CInt -> Ptr CInt -> Ptr CDouble -> IO CInt
 
 -- inputs
 --   inHigh
@@ -5268,7 +5269,7 @@ foreign import ccall unsafe "ta_func.h TA_SAREXT"
 -- outputs
 --   outReal (double[])
 
-ta_sarext :: V.Vector Double -> V.Vector Double -> Double -> Double -> Double -> Double -> Double -> Double -> Double -> Double -> IO (Either Int (Int, Int, V.Vector Double))
+ta_sarext :: V.Vector CDouble -> V.Vector CDouble -> Double -> Double -> Double -> Double -> Double -> Double -> Double -> Double -> IO (Either Int (Int, Int, V.Vector CDouble))
 ta_sarext inHigh inLow optInStartValue optInOffsetOnReverse optInAccelerationInitLong optInAccelerationLong optInAccelerationMaxLong optInAccelerationInitShort optInAccelerationShort optInAccelerationMaxShort = do
     _inHigh <- V.unsafeThaw inHigh
     _inLow <- V.unsafeThaw inLow
@@ -5295,7 +5296,7 @@ ta_sarext inHigh inLow optInStartValue optInOffsetOnReverse optInAccelerationIni
 --
 
 foreign import ccall unsafe "ta_func.h TA_SIN"
-  c_ta_sin :: CInt -> CInt -> Ptr Double -> Ptr CInt -> Ptr CInt -> Ptr Double -> IO CInt
+  c_ta_sin :: CInt -> CInt -> Ptr CDouble -> Ptr CInt -> Ptr CInt -> Ptr CDouble -> IO CInt
 
 -- inputs
 --   inReal
@@ -5303,7 +5304,7 @@ foreign import ccall unsafe "ta_func.h TA_SIN"
 -- outputs
 --   outReal (double[])
 
-ta_sin :: V.Vector Double -> IO (Either Int (Int, Int, V.Vector Double))
+ta_sin :: V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CDouble))
 ta_sin inReal = do
     _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
@@ -5328,7 +5329,7 @@ ta_sin inReal = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_SINH"
-  c_ta_sinh :: CInt -> CInt -> Ptr Double -> Ptr CInt -> Ptr CInt -> Ptr Double -> IO CInt
+  c_ta_sinh :: CInt -> CInt -> Ptr CDouble -> Ptr CInt -> Ptr CInt -> Ptr CDouble -> IO CInt
 
 -- inputs
 --   inReal
@@ -5336,7 +5337,7 @@ foreign import ccall unsafe "ta_func.h TA_SINH"
 -- outputs
 --   outReal (double[])
 
-ta_sinh :: V.Vector Double -> IO (Either Int (Int, Int, V.Vector Double))
+ta_sinh :: V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CDouble))
 ta_sinh inReal = do
     _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
@@ -5361,7 +5362,7 @@ ta_sinh inReal = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_SMA"
-  c_ta_sma :: CInt -> CInt -> Ptr Double -> CInt -> Ptr CInt -> Ptr CInt -> Ptr Double -> IO CInt
+  c_ta_sma :: CInt -> CInt -> Ptr CDouble -> CInt -> Ptr CInt -> Ptr CInt -> Ptr CDouble -> IO CInt
 
 -- inputs
 --   inReal
@@ -5370,7 +5371,7 @@ foreign import ccall unsafe "ta_func.h TA_SMA"
 -- outputs
 --   outReal (double[])
 
-ta_sma :: V.Vector Double -> Int -> IO (Either Int (Int, Int, V.Vector Double))
+ta_sma :: V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble))
 ta_sma inReal optInTimePeriod = do
     _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
@@ -5395,7 +5396,7 @@ ta_sma inReal optInTimePeriod = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_SQRT"
-  c_ta_sqrt :: CInt -> CInt -> Ptr Double -> Ptr CInt -> Ptr CInt -> Ptr Double -> IO CInt
+  c_ta_sqrt :: CInt -> CInt -> Ptr CDouble -> Ptr CInt -> Ptr CInt -> Ptr CDouble -> IO CInt
 
 -- inputs
 --   inReal
@@ -5403,7 +5404,7 @@ foreign import ccall unsafe "ta_func.h TA_SQRT"
 -- outputs
 --   outReal (double[])
 
-ta_sqrt :: V.Vector Double -> IO (Either Int (Int, Int, V.Vector Double))
+ta_sqrt :: V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CDouble))
 ta_sqrt inReal = do
     _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
@@ -5428,7 +5429,7 @@ ta_sqrt inReal = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_STDDEV"
-  c_ta_stddev :: CInt -> CInt -> Ptr Double -> CInt -> CDouble -> Ptr CInt -> Ptr CInt -> Ptr Double -> IO CInt
+  c_ta_stddev :: CInt -> CInt -> Ptr CDouble -> CInt -> CDouble -> Ptr CInt -> Ptr CInt -> Ptr CDouble -> IO CInt
 
 -- inputs
 --   inReal
@@ -5438,7 +5439,7 @@ foreign import ccall unsafe "ta_func.h TA_STDDEV"
 -- outputs
 --   outReal (double[])
 
-ta_stddev :: V.Vector Double -> Int -> Double -> IO (Either Int (Int, Int, V.Vector Double))
+ta_stddev :: V.Vector CDouble -> Int -> Double -> IO (Either Int (Int, Int, V.Vector CDouble))
 ta_stddev inReal optInTimePeriod optInNbDev = do
     _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
@@ -5463,7 +5464,7 @@ ta_stddev inReal optInTimePeriod optInNbDev = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_STOCH"
-  c_ta_stoch :: CInt -> CInt -> Ptr Double -> Ptr Double -> Ptr Double -> CInt -> CInt -> CInt -> CInt -> CInt -> Ptr CInt -> Ptr CInt -> Ptr Double -> Ptr Double -> IO CInt
+  c_ta_stoch :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> CInt -> CInt -> CInt -> CInt -> CInt -> Ptr CInt -> Ptr CInt -> Ptr CDouble -> Ptr CDouble -> IO CInt
 
 -- inputs
 --   inHigh
@@ -5479,7 +5480,7 @@ foreign import ccall unsafe "ta_func.h TA_STOCH"
 --   outSlowK (double[])
 --   outSlowD (double[])
 
-ta_stoch :: V.Vector Double -> V.Vector Double -> V.Vector Double -> Int -> Int -> Int -> Int -> Int -> IO (Either Int (Int, Int, V.Vector Double, V.Vector Double))
+ta_stoch :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> Int -> Int -> Int -> Int -> Int -> IO (Either Int (Int, Int, V.Vector CDouble, V.Vector CDouble))
 ta_stoch inHigh inLow inClose optInFastK_Period optInSlowK_Period optInSlowK_MAType optInSlowD_Period optInSlowD_MAType = do
     _inHigh <- V.unsafeThaw inHigh
     _inLow <- V.unsafeThaw inLow
@@ -5512,7 +5513,7 @@ ta_stoch inHigh inLow inClose optInFastK_Period optInSlowK_Period optInSlowK_MAT
 --
 
 foreign import ccall unsafe "ta_func.h TA_STOCHF"
-  c_ta_stochf :: CInt -> CInt -> Ptr Double -> Ptr Double -> Ptr Double -> CInt -> CInt -> CInt -> Ptr CInt -> Ptr CInt -> Ptr Double -> Ptr Double -> IO CInt
+  c_ta_stochf :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> CInt -> CInt -> CInt -> Ptr CInt -> Ptr CInt -> Ptr CDouble -> Ptr CDouble -> IO CInt
 
 -- inputs
 --   inHigh
@@ -5526,7 +5527,7 @@ foreign import ccall unsafe "ta_func.h TA_STOCHF"
 --   outFastK (double[])
 --   outFastD (double[])
 
-ta_stochf :: V.Vector Double -> V.Vector Double -> V.Vector Double -> Int -> Int -> Int -> IO (Either Int (Int, Int, V.Vector Double, V.Vector Double))
+ta_stochf :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> Int -> Int -> Int -> IO (Either Int (Int, Int, V.Vector CDouble, V.Vector CDouble))
 ta_stochf inHigh inLow inClose optInFastK_Period optInFastD_Period optInFastD_MAType = do
     _inHigh <- V.unsafeThaw inHigh
     _inLow <- V.unsafeThaw inLow
@@ -5559,7 +5560,7 @@ ta_stochf inHigh inLow inClose optInFastK_Period optInFastD_Period optInFastD_MA
 --
 
 foreign import ccall unsafe "ta_func.h TA_STOCHRSI"
-  c_ta_stochrsi :: CInt -> CInt -> Ptr Double -> CInt -> CInt -> CInt -> CInt -> Ptr CInt -> Ptr CInt -> Ptr Double -> Ptr Double -> IO CInt
+  c_ta_stochrsi :: CInt -> CInt -> Ptr CDouble -> CInt -> CInt -> CInt -> CInt -> Ptr CInt -> Ptr CInt -> Ptr CDouble -> Ptr CDouble -> IO CInt
 
 -- inputs
 --   inReal
@@ -5572,7 +5573,7 @@ foreign import ccall unsafe "ta_func.h TA_STOCHRSI"
 --   outFastK (double[])
 --   outFastD (double[])
 
-ta_stochrsi :: V.Vector Double -> Int -> Int -> Int -> Int -> IO (Either Int (Int, Int, V.Vector Double, V.Vector Double))
+ta_stochrsi :: V.Vector CDouble -> Int -> Int -> Int -> Int -> IO (Either Int (Int, Int, V.Vector CDouble, V.Vector CDouble))
 ta_stochrsi inReal optInTimePeriod optInFastK_Period optInFastD_Period optInFastD_MAType = do
     _inReal <- V.unsafeThaw inReal
     _outFastK <- VM.new len
@@ -5601,7 +5602,7 @@ ta_stochrsi inReal optInTimePeriod optInFastK_Period optInFastD_Period optInFast
 --
 
 foreign import ccall unsafe "ta_func.h TA_SUB"
-  c_ta_sub :: CInt -> CInt -> Ptr Double -> Ptr Double -> Ptr CInt -> Ptr CInt -> Ptr Double -> IO CInt
+  c_ta_sub :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> Ptr CInt -> Ptr CInt -> Ptr CDouble -> IO CInt
 
 -- inputs
 --   inReal0
@@ -5610,7 +5611,7 @@ foreign import ccall unsafe "ta_func.h TA_SUB"
 -- outputs
 --   outReal (double[])
 
-ta_sub :: V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Double))
+ta_sub :: V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CDouble))
 ta_sub inReal0 inReal1 = do
     _inReal0 <- V.unsafeThaw inReal0
     _inReal1 <- V.unsafeThaw inReal1
@@ -5637,7 +5638,7 @@ ta_sub inReal0 inReal1 = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_SUM"
-  c_ta_sum :: CInt -> CInt -> Ptr Double -> CInt -> Ptr CInt -> Ptr CInt -> Ptr Double -> IO CInt
+  c_ta_sum :: CInt -> CInt -> Ptr CDouble -> CInt -> Ptr CInt -> Ptr CInt -> Ptr CDouble -> IO CInt
 
 -- inputs
 --   inReal
@@ -5646,7 +5647,7 @@ foreign import ccall unsafe "ta_func.h TA_SUM"
 -- outputs
 --   outReal (double[])
 
-ta_sum :: V.Vector Double -> Int -> IO (Either Int (Int, Int, V.Vector Double))
+ta_sum :: V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble))
 ta_sum inReal optInTimePeriod = do
     _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
@@ -5671,7 +5672,7 @@ ta_sum inReal optInTimePeriod = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_T3"
-  c_ta_t3 :: CInt -> CInt -> Ptr Double -> CInt -> CDouble -> Ptr CInt -> Ptr CInt -> Ptr Double -> IO CInt
+  c_ta_t3 :: CInt -> CInt -> Ptr CDouble -> CInt -> CDouble -> Ptr CInt -> Ptr CInt -> Ptr CDouble -> IO CInt
 
 -- inputs
 --   inReal
@@ -5681,7 +5682,7 @@ foreign import ccall unsafe "ta_func.h TA_T3"
 -- outputs
 --   outReal (double[])
 
-ta_t3 :: V.Vector Double -> Int -> Double -> IO (Either Int (Int, Int, V.Vector Double))
+ta_t3 :: V.Vector CDouble -> Int -> Double -> IO (Either Int (Int, Int, V.Vector CDouble))
 ta_t3 inReal optInTimePeriod optInVFactor = do
     _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
@@ -5706,7 +5707,7 @@ ta_t3 inReal optInTimePeriod optInVFactor = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_TAN"
-  c_ta_tan :: CInt -> CInt -> Ptr Double -> Ptr CInt -> Ptr CInt -> Ptr Double -> IO CInt
+  c_ta_tan :: CInt -> CInt -> Ptr CDouble -> Ptr CInt -> Ptr CInt -> Ptr CDouble -> IO CInt
 
 -- inputs
 --   inReal
@@ -5714,7 +5715,7 @@ foreign import ccall unsafe "ta_func.h TA_TAN"
 -- outputs
 --   outReal (double[])
 
-ta_tan :: V.Vector Double -> IO (Either Int (Int, Int, V.Vector Double))
+ta_tan :: V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CDouble))
 ta_tan inReal = do
     _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
@@ -5739,7 +5740,7 @@ ta_tan inReal = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_TANH"
-  c_ta_tanh :: CInt -> CInt -> Ptr Double -> Ptr CInt -> Ptr CInt -> Ptr Double -> IO CInt
+  c_ta_tanh :: CInt -> CInt -> Ptr CDouble -> Ptr CInt -> Ptr CInt -> Ptr CDouble -> IO CInt
 
 -- inputs
 --   inReal
@@ -5747,7 +5748,7 @@ foreign import ccall unsafe "ta_func.h TA_TANH"
 -- outputs
 --   outReal (double[])
 
-ta_tanh :: V.Vector Double -> IO (Either Int (Int, Int, V.Vector Double))
+ta_tanh :: V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CDouble))
 ta_tanh inReal = do
     _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
@@ -5772,7 +5773,7 @@ ta_tanh inReal = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_TEMA"
-  c_ta_tema :: CInt -> CInt -> Ptr Double -> CInt -> Ptr CInt -> Ptr CInt -> Ptr Double -> IO CInt
+  c_ta_tema :: CInt -> CInt -> Ptr CDouble -> CInt -> Ptr CInt -> Ptr CInt -> Ptr CDouble -> IO CInt
 
 -- inputs
 --   inReal
@@ -5781,7 +5782,7 @@ foreign import ccall unsafe "ta_func.h TA_TEMA"
 -- outputs
 --   outReal (double[])
 
-ta_tema :: V.Vector Double -> Int -> IO (Either Int (Int, Int, V.Vector Double))
+ta_tema :: V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble))
 ta_tema inReal optInTimePeriod = do
     _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
@@ -5806,7 +5807,7 @@ ta_tema inReal optInTimePeriod = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_TRANGE"
-  c_ta_trange :: CInt -> CInt -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr CInt -> Ptr CInt -> Ptr Double -> IO CInt
+  c_ta_trange :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CInt -> Ptr CInt -> Ptr CDouble -> IO CInt
 
 -- inputs
 --   inHigh
@@ -5816,7 +5817,7 @@ foreign import ccall unsafe "ta_func.h TA_TRANGE"
 -- outputs
 --   outReal (double[])
 
-ta_trange :: V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Double))
+ta_trange :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CDouble))
 ta_trange inHigh inLow inClose = do
     _inHigh <- V.unsafeThaw inHigh
     _inLow <- V.unsafeThaw inLow
@@ -5845,7 +5846,7 @@ ta_trange inHigh inLow inClose = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_TRIMA"
-  c_ta_trima :: CInt -> CInt -> Ptr Double -> CInt -> Ptr CInt -> Ptr CInt -> Ptr Double -> IO CInt
+  c_ta_trima :: CInt -> CInt -> Ptr CDouble -> CInt -> Ptr CInt -> Ptr CInt -> Ptr CDouble -> IO CInt
 
 -- inputs
 --   inReal
@@ -5854,7 +5855,7 @@ foreign import ccall unsafe "ta_func.h TA_TRIMA"
 -- outputs
 --   outReal (double[])
 
-ta_trima :: V.Vector Double -> Int -> IO (Either Int (Int, Int, V.Vector Double))
+ta_trima :: V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble))
 ta_trima inReal optInTimePeriod = do
     _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
@@ -5879,7 +5880,7 @@ ta_trima inReal optInTimePeriod = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_TRIX"
-  c_ta_trix :: CInt -> CInt -> Ptr Double -> CInt -> Ptr CInt -> Ptr CInt -> Ptr Double -> IO CInt
+  c_ta_trix :: CInt -> CInt -> Ptr CDouble -> CInt -> Ptr CInt -> Ptr CInt -> Ptr CDouble -> IO CInt
 
 -- inputs
 --   inReal
@@ -5888,7 +5889,7 @@ foreign import ccall unsafe "ta_func.h TA_TRIX"
 -- outputs
 --   outReal (double[])
 
-ta_trix :: V.Vector Double -> Int -> IO (Either Int (Int, Int, V.Vector Double))
+ta_trix :: V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble))
 ta_trix inReal optInTimePeriod = do
     _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
@@ -5913,7 +5914,7 @@ ta_trix inReal optInTimePeriod = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_TSF"
-  c_ta_tsf :: CInt -> CInt -> Ptr Double -> CInt -> Ptr CInt -> Ptr CInt -> Ptr Double -> IO CInt
+  c_ta_tsf :: CInt -> CInt -> Ptr CDouble -> CInt -> Ptr CInt -> Ptr CInt -> Ptr CDouble -> IO CInt
 
 -- inputs
 --   inReal
@@ -5922,7 +5923,7 @@ foreign import ccall unsafe "ta_func.h TA_TSF"
 -- outputs
 --   outReal (double[])
 
-ta_tsf :: V.Vector Double -> Int -> IO (Either Int (Int, Int, V.Vector Double))
+ta_tsf :: V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble))
 ta_tsf inReal optInTimePeriod = do
     _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
@@ -5947,7 +5948,7 @@ ta_tsf inReal optInTimePeriod = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_TYPPRICE"
-  c_ta_typprice :: CInt -> CInt -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr CInt -> Ptr CInt -> Ptr Double -> IO CInt
+  c_ta_typprice :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CInt -> Ptr CInt -> Ptr CDouble -> IO CInt
 
 -- inputs
 --   inHigh
@@ -5957,7 +5958,7 @@ foreign import ccall unsafe "ta_func.h TA_TYPPRICE"
 -- outputs
 --   outReal (double[])
 
-ta_typprice :: V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Double))
+ta_typprice :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CDouble))
 ta_typprice inHigh inLow inClose = do
     _inHigh <- V.unsafeThaw inHigh
     _inLow <- V.unsafeThaw inLow
@@ -5986,7 +5987,7 @@ ta_typprice inHigh inLow inClose = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_ULTOSC"
-  c_ta_ultosc :: CInt -> CInt -> Ptr Double -> Ptr Double -> Ptr Double -> CInt -> CInt -> CInt -> Ptr CInt -> Ptr CInt -> Ptr Double -> IO CInt
+  c_ta_ultosc :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> CInt -> CInt -> CInt -> Ptr CInt -> Ptr CInt -> Ptr CDouble -> IO CInt
 
 -- inputs
 --   inHigh
@@ -5999,7 +6000,7 @@ foreign import ccall unsafe "ta_func.h TA_ULTOSC"
 -- outputs
 --   outReal (double[])
 
-ta_ultosc :: V.Vector Double -> V.Vector Double -> V.Vector Double -> Int -> Int -> Int -> IO (Either Int (Int, Int, V.Vector Double))
+ta_ultosc :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> Int -> Int -> Int -> IO (Either Int (Int, Int, V.Vector CDouble))
 ta_ultosc inHigh inLow inClose optInTimePeriod1 optInTimePeriod2 optInTimePeriod3 = do
     _inHigh <- V.unsafeThaw inHigh
     _inLow <- V.unsafeThaw inLow
@@ -6028,7 +6029,7 @@ ta_ultosc inHigh inLow inClose optInTimePeriod1 optInTimePeriod2 optInTimePeriod
 --
 
 foreign import ccall unsafe "ta_func.h TA_VAR"
-  c_ta_var :: CInt -> CInt -> Ptr Double -> CInt -> CDouble -> Ptr CInt -> Ptr CInt -> Ptr Double -> IO CInt
+  c_ta_var :: CInt -> CInt -> Ptr CDouble -> CInt -> CDouble -> Ptr CInt -> Ptr CInt -> Ptr CDouble -> IO CInt
 
 -- inputs
 --   inReal
@@ -6038,7 +6039,7 @@ foreign import ccall unsafe "ta_func.h TA_VAR"
 -- outputs
 --   outReal (double[])
 
-ta_var :: V.Vector Double -> Int -> Double -> IO (Either Int (Int, Int, V.Vector Double))
+ta_var :: V.Vector CDouble -> Int -> Double -> IO (Either Int (Int, Int, V.Vector CDouble))
 ta_var inReal optInTimePeriod optInNbDev = do
     _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
@@ -6063,7 +6064,7 @@ ta_var inReal optInTimePeriod optInNbDev = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_WCLPRICE"
-  c_ta_wclprice :: CInt -> CInt -> Ptr Double -> Ptr Double -> Ptr Double -> Ptr CInt -> Ptr CInt -> Ptr Double -> IO CInt
+  c_ta_wclprice :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CInt -> Ptr CInt -> Ptr CDouble -> IO CInt
 
 -- inputs
 --   inHigh
@@ -6073,7 +6074,7 @@ foreign import ccall unsafe "ta_func.h TA_WCLPRICE"
 -- outputs
 --   outReal (double[])
 
-ta_wclprice :: V.Vector Double -> V.Vector Double -> V.Vector Double -> IO (Either Int (Int, Int, V.Vector Double))
+ta_wclprice :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CDouble))
 ta_wclprice inHigh inLow inClose = do
     _inHigh <- V.unsafeThaw inHigh
     _inLow <- V.unsafeThaw inLow
@@ -6102,7 +6103,7 @@ ta_wclprice inHigh inLow inClose = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_WILLR"
-  c_ta_willr :: CInt -> CInt -> Ptr Double -> Ptr Double -> Ptr Double -> CInt -> Ptr CInt -> Ptr CInt -> Ptr Double -> IO CInt
+  c_ta_willr :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> CInt -> Ptr CInt -> Ptr CInt -> Ptr CDouble -> IO CInt
 
 -- inputs
 --   inHigh
@@ -6113,7 +6114,7 @@ foreign import ccall unsafe "ta_func.h TA_WILLR"
 -- outputs
 --   outReal (double[])
 
-ta_willr :: V.Vector Double -> V.Vector Double -> V.Vector Double -> Int -> IO (Either Int (Int, Int, V.Vector Double))
+ta_willr :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble))
 ta_willr inHigh inLow inClose optInTimePeriod = do
     _inHigh <- V.unsafeThaw inHigh
     _inLow <- V.unsafeThaw inLow
@@ -6142,7 +6143,7 @@ ta_willr inHigh inLow inClose optInTimePeriod = do
 --
 
 foreign import ccall unsafe "ta_func.h TA_WMA"
-  c_ta_wma :: CInt -> CInt -> Ptr Double -> CInt -> Ptr CInt -> Ptr CInt -> Ptr Double -> IO CInt
+  c_ta_wma :: CInt -> CInt -> Ptr CDouble -> CInt -> Ptr CInt -> Ptr CInt -> Ptr CDouble -> IO CInt
 
 -- inputs
 --   inReal
@@ -6151,7 +6152,7 @@ foreign import ccall unsafe "ta_func.h TA_WMA"
 -- outputs
 --   outReal (double[])
 
-ta_wma :: V.Vector Double -> Int -> IO (Either Int (Int, Int, V.Vector Double))
+ta_wma :: V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble))
 ta_wma inReal optInTimePeriod = do
     _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
@@ -6180,85 +6181,121 @@ terpri = putStrLn ""
 
 main :: IO ()
 main = do
-  	c_ta_init
+    c_ta_init
+                    
+    -- Apple stock prices. April 1, 2015 through April 30, 2015.
         
-        let close = [91.500, 94.815, 94.375,
-                     95.095, 93.780, 94.625,
-                     92.530, 92.750, 90.315,
-                     92.470, 96.125, 97.250,
-                     98.500, 89.875, 91.000,
-                     92.815, 89.155, 89.345,
-                     91.625, 89.875, 88.375,
-                     87.625, 84.780, 83.000]
+    let open = [124.82, 125.03, 124.47, 127.64, 125.85,
+                125.85, 125.95, 128.37, 127.00, 126.41,
+                126.28, 125.55, 125.57, 128.10, 126.99,
+                128.30, 130.49, 132.31, 134.46, 130.16,
+                128.64]
+    
+    let high = [125.12, 125.56, 127.51, 128.12, 126.40,
+                126.58, 127.21, 128.57, 127.29, 127.13,
+                127.10, 126.14, 128.12, 128.20, 128.87,
+                130.42, 130.63, 133.13, 134.54, 131.59,
+                128.64]
         
-        putStrLn "close"
-        print close
-        terpri
+    let low = [123.10, 124.19, 124.33, 125.98, 124.97,
+               124.66, 125.26, 126.61, 125.91, 126.01,
+               126.11, 124.46, 125.17, 126.67, 126.32,
+               128.14, 129.23, 131.15, 129.57, 128.30,
+               124.58]
         
-        -- TODO: pass real data into some of these, rather than passing the same series multiple times
-        -- (as is, with unrealistic series, these are just testing that the C calls work and don't e.g. seg fault)
+    let close = [124.25, 125.32, 127.35, 126.01, 125.60,
+                 126.56, 127.10, 126.85, 126.30, 126.78,
+                 126.17, 124.75, 127.60, 126.91, 128.62,
+                 129.67, 130.28, 132.65, 130.56, 128.64,
+                 125.15]
         
-        let inReal = V.fromList(close)
-        let inOpen = V.fromList(map (3 +) close)
-        let inHigh = V.fromList(map (1 +) close)
-        let inLow = V.fromList(map (2 +) close)
-        let inClose = V.fromList(map (2 *) close)
-        let inVolume = V.fromList(map (fromIntegral . round . (4*)) close)
-        
-        putStrLn "Chaikin A/D Line"
-        result <- ta_ad inHigh inLow inClose inVolume
-        print result
-        terpri
-        
-        putStrLn "Chaikin A/D Oscillator"
-        result <- ta_adosc inHigh inLow inClose inVolume 6 7
-        print result
-        terpri
-        
-        putStrLn "Average Directional Movement Index"
-        result <- ta_adx inHigh inLow inClose 6
-        print result
-        terpri
-        
-        putStrLn "Aroon"
-        result <- ta_aroon inHigh inLow 5
-        print result
-        terpri
-        
-        putStrLn "Average True Range"
-        result <- ta_atr inHigh inLow inClose 14
-        print result
-        terpri
-        
-        putStrLn "All Moving Average"
-        result <- ta_ma inReal 5 taIntDefault
-        print result
-        terpri
-        
-        putStrLn "High-Wave Candle"
-        result <- ta_cdlhighwave inOpen inHigh inLow inClose
-        print result
-        terpri        
-        
-        putStrLn "Median Price"
-        result <- ta_medprice inHigh inLow
-        print result
-        terpri
-          
-        putStrLn "Money Flow Index"
-        result <- ta_mfi inHigh inLow inClose inVolume 7
-        print result
-        terpri
-        
-        putStrLn "On Balance Volume"
-        result <- ta_obv inReal inVolume
-        print result
-        terpri
-
-        putStrLn "Relative Strength Index"
-        result <- ta_rsi inReal 9
-        print result
-        terpri
+    let volume = [40621400, 32220100, 37194000, 35012300, 37329200,
+                  32484000, 40188000, 36365100, 25524600, 28970400,
+                  28369000, 51957000, 47054300, 32435100, 37654500,
+                  45770900, 44525900, 96954200, 118924000, 63386100,
+                  83195400]
+    
+    let adjclose = [123.73, 124.80, 126.82, 125.49, 125.08,
+                    126.03, 126.57, 126.32, 125.77, 126.25,
+                    125.65, 124.23, 127.07, 126.38, 128.08,
+                    129.13, 129.74, 132.10, 130.02, 128.10,
+                    124.63] :: [CDouble]
+                   
+    let vOpen = V.fromList(open)
+    let vHigh = V.fromList(high)
+    let vLow = V.fromList(low)
+    let vClose = V.fromList(close)
+    let vVolume = V.fromList(volume)
+    let vAdjclose = V.fromList(adjclose)
+    
+    putStrLn "close"
+    print close
+    terpri
+    
+    putStrLn "Chaikin A/D Line"
+    result <- ta_ad vHigh vLow vClose vVolume
+    print result
+    terpri
+      
+    putStrLn "Chaikin A/D Oscillator"
+    result <- ta_adosc vHigh vLow vClose vVolume 6 7
+    print result
+    terpri
+      
+    putStrLn "Average Directional Movement Index"
+    result <- ta_adx vHigh vLow vClose 6
+    print result
+    terpri
+    
+    putStrLn "Aroon"
+    result <- ta_aroon vHigh vLow 5
+    print result
+    terpri
+      
+    putStrLn "Average True Range"
+    result <- ta_atr vHigh vLow vClose 14
+    print result
+    terpri
+      
+    putStrLn "Moving Average"
+    result <- ta_ma vClose 5 taIntDefault
+    print result
+    terpri
+      
+    putStrLn "High-Wave Candle"
+    result <- ta_cdlhighwave vOpen vHigh vLow vClose
+    print result
+    terpri
+    
+    putStrLn "Hanging Man"
+    result <- ta_cdlhangingman vOpen vHigh vLow vClose
+    print result
+    terpri
+    
+    putStrLn "Median Price"
+    result <- ta_medprice vHigh vLow
+    print result
+    terpri
+      
+    putStrLn "Money Flow Index"
+    result <- ta_mfi vHigh vLow vClose vVolume 7
+    print result
+    terpri
+      
+    putStrLn "On Balance Volume"
+    result <- ta_obv vClose vVolume
+    print result
+    terpri
+    
+    putStrLn "Relative Strength Index"
+    result <- ta_rsi vClose 9
+    print result
+    terpri
+    
+    putStrLn "Simple Moving Average"
+    result <- ta_sma vClose 8
+    print result
+    terpri
         
         
         
