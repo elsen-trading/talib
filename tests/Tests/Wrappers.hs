@@ -88,7 +88,7 @@ simpleMovingAverage = do
         assert (cOutBegIdx == 7)
         assert (cOutNbElement == 14)  
         V.zipWithM_ (\e1 e2 -> do
-                        assert (abs (e1 - e2) < 0.000000000001))
+                        assert (abs (e1 - e2) < 1.0e-13))
           (V.take cOutNbElement output)
           (V.fromList [126.130000, 126.386250, 126.568750, 126.421250,
                        126.263750, 126.513750, 126.557500, 126.747500,
