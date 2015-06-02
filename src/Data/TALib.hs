@@ -6176,6 +6176,10 @@ ta_wma inReal optInTimePeriod = do
 -- *** End Auto-Generated Code ***
 -- *******************************
 
+-- For now, comment out main so it doesn't clash with another main when this lib is imported
+-- Alternative: export specific symbols, excluding main
+{-
+
 terpri :: IO ()
 terpri = putStrLn ""
 
@@ -6297,10 +6301,7 @@ main = do
     print result
     terpri
         
+-}    
         
         
-        
-        
-        
-        
-        
+    

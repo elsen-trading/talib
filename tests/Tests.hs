@@ -7,7 +7,6 @@ import Data.Vector -- TODO: should match Vector used for the api. .Storable? .Un
 import Test.QuickCheck
 import Test.HUnit
 
-import Tests.MovingAverage
 import Tests.Wrappers
 
 import qualified Data.TALib
@@ -19,6 +18,5 @@ main = do
 
 allTests :: TestTree
 allTests = testGroup "TALib Tests" [
-  movingAvgTests,
   wrapperTests
   ]
