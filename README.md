@@ -7,6 +7,8 @@ Function names match their ta-lib counterparts, but are lower case.
 
 The talib package requires ta-lib. See [ubuntuBuildDeps.sh](ubuntuBuildDeps.sh) for an example of how to install on Ubuntu.
 
+Before calling the exported ta-lib functions, you must make a single call to `c_ta_init`. Otherwise, the library may not function properly.
+
 ```bash
 $ wget http://prdownloads.sourceforge.net/ta-lib/ta-lib-0.4.0-src.tar.gz
 $ tar xzvf ta-lib-0.4.0-src.tar.gz
