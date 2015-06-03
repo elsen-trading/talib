@@ -12,3 +12,4 @@ includes
 *.agdai
 .history
 ace.log
+.DS_Store

@@ -5,113 +5,206 @@
 #include <ta-lib/ta_func.h>
 #include <ta-lib/ta_abstract.h>
 
-void printFuncInfo(const TA_FuncInfo *funcInfo, void *opaqueData) {
-    printf("%22s (%s)\n", funcInfo->name, funcInfo->group);
+void printArray(double arr[], int size) {
+    printf("[");
+    for (int i = 0; i < size; i++) {
+        if (i > 0)
+            printf(", ");
+        printf("%f", arr[i]);
+    }
+    printf("]");
 }
 
-int myLibTest() {
+void printIntArray(int arr[], int size) {
+    printf("[");
+    for (int i = 0; i < size; i++) {
+        if (i > 0)
+            printf(", ");
+        printf("%d", arr[i]);
+    }
+    printf("]");
+}
+
+void printBegNb(int outBegIdx, int outNbElement) {
+    printf("outBegIdx: %d\n", outBegIdx);
+    printf("outNbElement: %d\n", outNbElement);
+}
+
+void initArrayVal(double arr[], int size, double val) {
+    for (int i = 0; i < size; i++) {
+        arr[i] = val;
+    }
+}
+
+void initArray(double arr[], int size) {
+    initArrayVal(arr, size, -1);
+}
+
+void initIntArrayVal(int arr[], int size, int val) {
+    for (int i = 0; i < size; i++) {
+        arr[i] = val;
+    }
+}
+
+void initIntArray(int arr[], int size) {
+    initIntArrayVal(arr, size, -1);
+}
+
+int main() {
     TA_Initialize();
 
-    double inReal[] = {91.500000, 94.815000, 94.375000, 95.095000,
-            93.780000, 94.625000, 92.530000, 92.750000, 90.315000,
-            92.470000, 96.125000, 97.250000, 98.500000, 89.875000,
-            91.000000, 92.815000, 89.155000, 89.345000, 91.625000,
-            89.875000, 88.375000, 87.625000, 84.780000, 83.000000,
-            83.500000, 81.375000, 84.440000, 89.250000, 86.375000,
-            86.250000, 85.250000, 87.125000, 85.815000, 88.970000,
-            88.470000, 86.875000, 86.815000, 84.875000, 84.190000,
-            83.875000, 83.375000, 85.500000, 89.190000, 89.440000,
-            91.095000, 90.750000, 91.440000, 89.000000, 91.000000,
-            90.500000, 89.030000, 88.815000, 84.280000, 83.500000,
-            82.690000, 84.750000, 85.655000, 86.190000, 88.940000,
-            89.280000, 88.625000, 88.500000, 91.970000, 91.500000,
-            93.250000, 93.500000, 93.155000, 91.720000, 90.000000,
-            89.690000, 88.875000, 85.190000, 83.375000, 84.875000,
-            85.940000, 97.250000, 99.875000, 104.940000, 106.000000,
-            102.500000, 102.405000, 104.595000, 106.125000, 106.000000,
-            106.065000, 104.625000, 108.625000, 109.315000, 110.500000,
-            112.750000, 123.000000, 119.625000, 118.750000, 119.250000,
-            117.940000, 116.440000, 115.190000, 111.875000, 110.595000,
-            118.125000, 116.000000, 116.000000, 112.000000, 113.750000,
-            112.940000, 116.000000, 120.500000, 116.620000, 117.000000,
-            115.250000, 114.310000, 115.500000, 115.870000, 120.690000,
-            120.190000, 120.750000, 124.750000, 123.370000, 122.940000,
-            122.560000, 123.120000, 122.560000, 124.620000, 129.250000,
-            131.000000, 132.250000, 131.000000, 132.810000, 134.000000,
-            137.380000, 137.810000, 137.880000, 137.250000, 136.310000,
-            136.250000, 134.630000, 128.250000, 129.000000, 123.870000,
-            124.810000, 123.000000, 126.250000, 128.380000, 125.370000,
-            125.690000, 122.250000, 119.370000, 118.500000, 123.190000,
-            123.500000, 122.190000, 119.310000, 123.310000, 121.120000,
-            123.370000, 127.370000, 128.500000, 123.870000, 122.940000,
-            121.750000, 124.440000, 122.000000, 122.370000, 122.940000,
-            124.000000, 123.190000, 124.560000, 127.250000, 125.870000,
-            128.860000, 132.000000, 130.750000, 134.750000, 135.000000,
-            132.380000, 133.310000, 131.940000, 130.000000, 125.370000,
-            130.130000, 127.120000, 125.190000, 122.000000, 125.000000,
-            123.000000, 123.500000, 120.060000, 121.000000, 117.750000,
-            119.870000, 122.000000, 119.190000, 116.370000, 113.500000,
-            114.250000, 110.000000, 105.060000, 107.000000, 107.870000,
-            107.000000, 107.120000, 107.000000, 91.000000, 93.940000,
-            93.870000, 95.500000, 93.000000, 94.940000, 98.250000,
-            96.750000, 94.810000, 94.370000, 91.560000, 90.250000,
-            93.940000, 93.620000, 97.000000, 95.000000, 95.870000,
-            94.060000, 94.620000, 93.750000, 98.000000, 103.940000,
-            107.870000, 106.060000, 104.500000, 105.000000, 104.190000,
-            103.060000, 103.420000, 105.270000, 111.870000, 116.000000,
-            116.620000, 118.280000, 113.370000, 109.000000, 109.700000,
-            109.250000, 107.000000, 109.190000, 110.000000, 109.200000,
-            110.120000, 108.000000, 108.620000, 109.750000, 109.810000,
-            109.000000, 108.750000, 107.870000};
+    // Apple stock prices. April 1, 2015 through April 30, 2015.
 
-    int optInTimePeriod = TA_INTEGER_DEFAULT;
-    int optInMAType = TA_INTEGER_DEFAULT;
+    double open[] = {124.82, 125.03, 124.47, 127.64, 125.85,
+                     125.85, 125.95, 128.37, 127.00, 126.41,
+                     126.28, 125.55, 125.57, 128.10, 126.99,
+                     128.30, 130.49, 132.31, 134.46, 130.16,
+                     128.64};
 
-    optInTimePeriod = 30;
+    double high[] = {125.12, 125.56, 127.51, 128.12, 126.40,
+                     126.58, 127.21, 128.57, 127.29, 127.13,
+                     127.10, 126.14, 128.12, 128.20, 128.87,
+                     130.42, 130.63, 133.13, 134.54, 131.59,
+                     128.64};
 
-    int len = sizeof(inReal)/sizeof(inReal[0]);
+    double low[] = {123.10, 124.19, 124.33, 125.98, 124.97,
+                    124.66, 125.26, 126.61, 125.91, 126.01,
+                    126.11, 124.46, 125.17, 126.67, 126.32,
+                    128.14, 129.23, 131.15, 129.57, 128.30,
+                    124.58};
+
+    double close[] = {124.25, 125.32, 127.35, 126.01, 125.60,
+                     126.56, 127.10, 126.85, 126.30, 126.78,
+                     126.17, 124.75, 127.60, 126.91, 128.62,
+                     129.67, 130.28, 132.65, 130.56, 128.64,
+                     125.15};
+
+    double volume[] = {40621400, 32220100, 37194000, 35012300, 37329200,
+                       32484000, 40188000, 36365100, 25524600, 28970400,
+                       28369000, 51957000, 47054300, 32435100, 37654500,
+                       45770900, 44525900, 96954200, 118924000, 63386100,
+                       83195400};
+
+    double adjclose[] = {123.73, 124.80, 126.82, 125.49, 125.08,
+                         126.03, 126.57, 126.32, 125.77, 126.25,
+                         125.65, 124.23, 127.07, 126.38, 128.08,
+                         129.13, 129.74, 132.10, 130.02, 128.10,
+                         124.63};
+
+    int len = sizeof(open)/sizeof(open[0]);
 
     int startIdx = 0;
     int endIdx = len-1;
 
-    double outReal[len];
+    double outReal1[len];
+    double outReal2[len];
+    int outInt1[len];
+    for (int i = 0; i < len; i++) {
+        outInt1[i] = 3;
+    }
 
-    //    TA_RetCode TA_MA( int          startIdx,
-    //                      int          endIdx,
-    //                      const double inReal[],
-    //                      int          optInTimePeriod,
-    //                      int          optInMAType,
-    //                      int         *outBegIdx,
-    //                      int         *outNbElement,
-    //                      double       outReal[],
-    //                )
+    printIntArray(outInt1, len);
+    printf("\n");
+
+    initArray(outReal1, len);
+    initArray(outReal2, len);
+    initIntArray(outInt1, len);
+
+    printf("close\n\n");
+    printArray(close, len);
+    printf("\n\n");
 
     TA_Integer outBeg;
     TA_Integer outNbElement;
 
-    TA_RetCode code = TA_MA(startIdx, endIdx, inReal, optInTimePeriod, optInMAType, &outBeg, &outNbElement, outReal);
+    printf("Chaikin A/D Line\n");
+    initArray(outReal1, len);
+    TA_AD(startIdx, endIdx, high, low, close, volume, &outBeg, &outNbElement, outReal1);
+    printBegNb(outBeg, outNbElement);
+    printArray(outReal1, len);
+    printf("\n\n");
 
-    printf("length: %d\n", len);
-    printf("outBeg: %d\n", outBeg);
-    printf("outNbElement: %d\n", outNbElement);
-    printf("TA_INTEGER_DEFAULT: %d\n", TA_INTEGER_DEFAULT);
+    printf("Chaikin A/D Oscillator\n");
+    initArray(outReal1, len);
+    TA_ADOSC(startIdx, endIdx, high, low, close, volume, 6, 7, &outBeg, &outNbElement, outReal1);
+    printBegNb(outBeg, outNbElement);
+    printArray(outReal1, len);
+    printf("\n\n");
 
+    printf("Average Directional Movement Index\n");
+    initArray(outReal1, len);
+    TA_ADX(startIdx, endIdx, high, low, close, 6, &outBeg, &outNbElement, outReal1);
+    printBegNb(outBeg, outNbElement);
+    printArray(outReal1, len);
+    printf("\n\n");
+
+    printf("Aroon\n");
+    initArray(outReal1, len);
+    initArray(outReal2, len);
+    TA_AROON(startIdx, endIdx, high, low, 5, &outBeg, &outNbElement, outReal1, outReal2);
+    printBegNb(outBeg, outNbElement);
+    printArray(outReal1, len);
     printf("\n");
+    printArray(outReal2, len);
+    printf("\n\n");
 
-    printf("i    price \tindicator\n");
-    for (int i = 0; i < len; i++) {
-        printf("%-4d %.3f\t", i,inReal[i]);
-        if (outBeg > i || i-outBeg >= outNbElement)
-            printf("NA");
-        else
-            printf("%f", outReal[i-outBeg]);
+    printf("Average True Range\n");
+    initArray(outReal1, len);
+    TA_ATR(startIdx, endIdx, high, low, close, 14, &outBeg, &outNbElement, outReal1);
+    printBegNb(outBeg, outNbElement);
+    printArray(outReal1, len);
+    printf("\n\n");
 
-        printf("\n");
-    }
+    printf("Moving Average\n");
+    initArray(outReal1, len);
+    TA_MA(startIdx, endIdx, close, 5, TA_INTEGER_DEFAULT, &outBeg, &outNbElement, outReal1);
+    printBegNb(outBeg, outNbElement);
+    printArray(outReal1, len);
+    printf("\n\n");
 
-    printf("\n");
+    printf("High-Wave Candle\n");
+    initIntArray(outInt1, len);
+    TA_CDLHIGHWAVE(startIdx, endIdx, open, high, low, close, &outBeg, &outNbElement, outInt1);
+    printBegNb(outBeg, outNbElement);
+    printIntArray(outInt1, len);
+    printf("\n\n");
 
-    TA_ForEachFunc(printFuncInfo, NULL);
+    printf("Hanging Man\n");
+    initIntArray(outInt1, len);
+    TA_CDLHANGINGMAN(startIdx, endIdx, open, high, low, close, &outBeg, &outNbElement, outInt1);
+    printBegNb(outBeg, outNbElement);
+    printIntArray(outInt1, len);
+    printf("\n\n");
+
+    printf("Media Price\n");
+    initArray(outReal1, len);
+    TA_MEDPRICE(startIdx, endIdx, high, low, &outBeg, &outNbElement, outReal1);
+    printBegNb(outBeg, outNbElement);
+    printArray(outReal1, len);
+    printf("\n\n");
+
+    printf("Money Flow Index\n");
+    initArray(outReal1, len);
+    TA_MFI(startIdx, endIdx, high, low, close, volume, 7, &outBeg, &outNbElement, outReal1);
+    printBegNb(outBeg, outNbElement);
+    printArray(outReal1, len);
+    printf("\n\n");
+
+    printf("Relative Strength Index\n");
+    initArray(outReal1, len);
+    TA_RSI(startIdx, endIdx, close, 9, &outBeg, &outNbElement, outReal1);
+    printBegNb(outBeg, outNbElement);
+    printArray(outReal1, len);
+    printf("\n\n");
+
+    printf("Simple Moving Average\n");
+    initArray(outReal1, len);
+    TA_SMA(startIdx, endIdx, close, 8, &outBeg, &outNbElement, outReal1);
+    printBegNb(outBeg, outNbElement);
+    printArray(outReal1, len);
+    printf("\n\n");
 
     return EXIT_SUCCESS;
 }
+
+

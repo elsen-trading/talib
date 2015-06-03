@@ -1,13 +1,175 @@
-module Data.TALib where
+module Data.TALib (
+  c_ta_init,
+  ta_acos,
+  ta_ad,
+  ta_add,
+  ta_adosc,
+  ta_adx,
+  ta_adxr,
+  ta_apo,
+  ta_aroon,
+  ta_aroonosc,
+  ta_asin,
+  ta_atan,
+  ta_atr,
+  ta_avgprice,
+  ta_bbands,
+  ta_beta,
+  ta_bop,
+  ta_cci,
+  ta_cdl2crows,
+  ta_cdl3blackcrows,
+  ta_cdl3inside,
+  ta_cdl3linestrike,
+  ta_cdl3outside,
+  ta_cdl3starsinsouth,
+  ta_cdl3whitesoldiers,
+  ta_cdlabandonedbaby,
+  ta_cdladvanceblock,
+  ta_cdlbelthold,
+  ta_cdlbreakaway,
+  ta_cdlclosingmarubozu,
+  ta_cdlconcealbabyswall,
+  ta_cdlcounterattack,
+  ta_cdldarkcloudcover,
+  ta_cdldoji,
+  ta_cdldojistar,
+  ta_cdldragonflydoji,
+  ta_cdlengulfing,
+  ta_cdleveningdojistar,
+  ta_cdleveningstar,
+  ta_cdlgapsidesidewhite,
+  ta_cdlgravestonedoji,
+  ta_cdlhammer,
+  ta_cdlhangingman,
+  ta_cdlharami,
+  ta_cdlharamicross,
+  ta_cdlhighwave,
+  ta_cdlhikkake,
+  ta_cdlhikkakemod,
+  ta_cdlhomingpigeon,
+  ta_cdlidentical3crows,
+  ta_cdlinneck,
+  ta_cdlinvertedhammer,
+  ta_cdlkicking,
+  ta_cdlkickingbylength,
+  ta_cdlladderbottom,
+  ta_cdllongleggeddoji,
+  ta_cdllongline,
+  ta_cdlmarubozu,
+  ta_cdlmatchinglow,
+  ta_cdlmathold,
+  ta_cdlmorningdojistar,
+  ta_cdlmorningstar,
+  ta_cdlonneck,
+  ta_cdlpiercing,
+  ta_cdlrickshawman,
+  ta_cdlrisefall3methods,
+  ta_cdlseparatinglines,
+  ta_cdlshootingstar,
+  ta_cdlshortline,
+  ta_cdlspinningtop,
+  ta_cdlstalledpattern,
+  ta_cdlsticksandwich,
+  ta_cdltakuri,
+  ta_cdltasukigap,
+  ta_cdlthrusting,
+  ta_cdltristar,
+  ta_cdlunique3river,
+  ta_cdlupsidegap2crows,
+  ta_cdlxsidegap3methods,
+  ta_ceil,
+  ta_cmo,
+  ta_correl,
+  ta_cos,
+  ta_cosh,
+  ta_dema,
+  ta_div,
+  ta_dx,
+  ta_ema,
+  ta_exp,
+  ta_floor,
+  ta_ht_dcperiod,
+  ta_ht_dcphase,
+  ta_ht_phasor,
+  ta_ht_sine,
+  ta_ht_trendline,
+  ta_ht_trendmode,
+  ta_kama,
+  ta_linearreg,
+  ta_linearreg_angle,
+  ta_linearreg_intercept,
+  ta_linearreg_slope,
+  ta_ln,
+  ta_log10,
+  ta_ma,
+  ta_macd,
+  ta_macdext,
+  ta_macdfix,
+  ta_mama,
+  ta_mavp,
+  ta_max,
+  ta_maxindex,
+  ta_medprice,
+  ta_mfi,
+  ta_midpoint,
+  ta_midprice,
+  ta_min,
+  ta_minindex,
+  ta_minmax,
+  ta_minmaxindex,
+  ta_minus_di,
+  ta_minus_dm,
+  ta_mom,
+  ta_mult,
+  ta_natr,
+  ta_obv,
+  ta_plus_di,
+  ta_plus_dm,
+  ta_ppo,
+  ta_roc,
+  ta_rocp,
+  ta_rocr,
+  ta_rocr100,
+  ta_rsi,
+  ta_sar,
+  ta_sarext,
+  ta_sin,
+  ta_sinh,
+  ta_sma,
+  ta_sqrt,
+  ta_stddev,
+  ta_stoch,
+  ta_stochf,
+  ta_stochrsi,
+  ta_sub,
+  ta_sum,
+  ta_t3,
+  ta_tan,
+  ta_tanh,
+  ta_tema,
+  ta_trange,
+  ta_trima,
+  ta_trix,
+  ta_tsf,
+  ta_typprice,
+  ta_ultosc,
+  ta_var,
+  ta_wclprice,
+  ta_willr,
+  ta_wma
+) where
 
 import Foreign.C.Types
 import Foreign.Ptr
 import Foreign.Marshal.Array
 import Foreign.Marshal.Alloc
+import Foreign.ForeignPtr
+import Foreign.ForeignPtr.Unsafe
 import Foreign.Storable
 import System.IO.Unsafe
-import Data.List.Split
-import qualified Data.Vector as V
+import qualified Data.Vector.Storable as V
+import qualified Data.Vector.Storable.Mutable as VM
 
 -- TODO: C functions return an enum, not a CInt
 
@@ -17,6 +179,9 @@ taIntDefault = fromIntegral (minBound :: CInt)
 
 foreign import ccall unsafe "ta_common.h TA_Initialize"
   c_ta_init :: IO ()
+               
+vecPtr :: VM.Storable a => VM.MVector s a -> ForeignPtr a
+vecPtr = fst . VM.unsafeToForeignPtr0
 
 -- *********************************
 -- *** Start Auto-Generated Code ***
@@ -35,33 +200,25 @@ foreign import ccall unsafe "ta_func.h TA_ACOS"
 -- outputs
 --   outReal (double[])
 
-ta_acos :: [Double] -> IO (Either Int (Int, Int, [Double]))
-ta_acos inReal
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_acos startIdx endIdx (getInArrPtr 0) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inReal
-          len = fromIntegral $ length inReal
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_acos :: V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CDouble))
+ta_acos inReal = do
+    _inReal <- V.unsafeThaw inReal
+    _outReal <- VM.new len
+    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+      alloca $ \cOutBegIdx ->
+        alloca $ \cOutNbElement ->
+          withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+            do rc <- c_ta_acos 0 (fromIntegral $ len - 1) c_inReal cOutBegIdx cOutNbElement c_outReal
+               out_outReal <- V.unsafeFreeze _outReal
+               case rc of
+                 0 -> do outBegIdx <- peek cOutBegIdx
+                         outNbElement <- peek cOutNbElement
+                         return $ Right $ (fromIntegral outBegIdx,
+                                           fromIntegral outNbElement,
+                                           out_outReal)
+                 _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inReal
 
 --
 -- AD                   Chaikin A/D Line
@@ -79,33 +236,31 @@ foreign import ccall unsafe "ta_func.h TA_AD"
 -- outputs
 --   outReal (double[])
 
-ta_ad :: [Double] -> [Double] -> [Double] -> [Double] -> IO (Either Int (Int, Int, [Double]))
-ta_ad inHigh inLow inClose inVolume
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_ad startIdx endIdx (getInArrPtr 0) (getInArrPtr 1) (getInArrPtr 2) (getInArrPtr 3) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inHigh ++ inLow ++ inClose ++ inVolume
-          len = fromIntegral $ length inHigh
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_ad :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CDouble))
+ta_ad inHigh inLow inClose inVolume = do
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
+    _inVolume <- V.unsafeThaw inVolume
+    _outReal <- VM.new len
+    withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
+      withForeignPtr (vecPtr _inLow) $ \c_inLow ->
+        withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+          withForeignPtr (vecPtr _inVolume) $ \c_inVolume ->
+            alloca $ \cOutBegIdx ->
+              alloca $ \cOutNbElement ->
+                withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+                  do rc <- c_ta_ad 0 (fromIntegral $ len - 1) c_inHigh c_inLow c_inClose c_inVolume cOutBegIdx cOutNbElement c_outReal
+                     out_outReal <- V.unsafeFreeze _outReal
+                     case rc of
+                       0 -> do outBegIdx <- peek cOutBegIdx
+                               outNbElement <- peek cOutNbElement
+                               return $ Right $ (fromIntegral outBegIdx,
+                                                 fromIntegral outNbElement,
+                                                 out_outReal)
+                       _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inHigh
 
 --
 -- ADD                  Vector Arithmetic Add
@@ -121,33 +276,27 @@ foreign import ccall unsafe "ta_func.h TA_ADD"
 -- outputs
 --   outReal (double[])
 
-ta_add :: [Double] -> [Double] -> IO (Either Int (Int, Int, [Double]))
-ta_add inReal0 inReal1
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_add startIdx endIdx (getInArrPtr 0) (getInArrPtr 1) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inReal0 ++ inReal1
-          len = fromIntegral $ length inReal0
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_add :: V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CDouble))
+ta_add inReal0 inReal1 = do
+    _inReal0 <- V.unsafeThaw inReal0
+    _inReal1 <- V.unsafeThaw inReal1
+    _outReal <- VM.new len
+    withForeignPtr (vecPtr _inReal0) $ \c_inReal0 ->
+      withForeignPtr (vecPtr _inReal1) $ \c_inReal1 ->
+        alloca $ \cOutBegIdx ->
+          alloca $ \cOutNbElement ->
+            withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+              do rc <- c_ta_add 0 (fromIntegral $ len - 1) c_inReal0 c_inReal1 cOutBegIdx cOutNbElement c_outReal
+                 out_outReal <- V.unsafeFreeze _outReal
+                 case rc of
+                   0 -> do outBegIdx <- peek cOutBegIdx
+                           outNbElement <- peek cOutNbElement
+                           return $ Right $ (fromIntegral outBegIdx,
+                                             fromIntegral outNbElement,
+                                             out_outReal)
+                   _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inReal0
 
 --
 -- ADOSC                Chaikin A/D Oscillator
@@ -167,33 +316,31 @@ foreign import ccall unsafe "ta_func.h TA_ADOSC"
 -- outputs
 --   outReal (double[])
 
-ta_adosc :: [Double] -> [Double] -> [Double] -> [Double] -> Int -> Int -> IO (Either Int (Int, Int, [Double]))
-ta_adosc inHigh inLow inClose inVolume optInFastPeriod optInSlowPeriod
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_adosc startIdx endIdx (getInArrPtr 0) (getInArrPtr 1) (getInArrPtr 2) (getInArrPtr 3) (fromIntegral optInFastPeriod) (fromIntegral optInSlowPeriod) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inHigh ++ inLow ++ inClose ++ inVolume
-          len = fromIntegral $ length inHigh
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_adosc :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> Int -> Int -> IO (Either Int (Int, Int, V.Vector CDouble))
+ta_adosc inHigh inLow inClose inVolume optInFastPeriod optInSlowPeriod = do
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
+    _inVolume <- V.unsafeThaw inVolume
+    _outReal <- VM.new len
+    withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
+      withForeignPtr (vecPtr _inLow) $ \c_inLow ->
+        withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+          withForeignPtr (vecPtr _inVolume) $ \c_inVolume ->
+            alloca $ \cOutBegIdx ->
+              alloca $ \cOutNbElement ->
+                withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+                  do rc <- c_ta_adosc 0 (fromIntegral $ len - 1) c_inHigh c_inLow c_inClose c_inVolume (fromIntegral optInFastPeriod) (fromIntegral optInSlowPeriod) cOutBegIdx cOutNbElement c_outReal
+                     out_outReal <- V.unsafeFreeze _outReal
+                     case rc of
+                       0 -> do outBegIdx <- peek cOutBegIdx
+                               outNbElement <- peek cOutNbElement
+                               return $ Right $ (fromIntegral outBegIdx,
+                                                 fromIntegral outNbElement,
+                                                 out_outReal)
+                       _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inHigh
 
 --
 -- ADX                  Average Directional Movement Index
@@ -211,33 +358,29 @@ foreign import ccall unsafe "ta_func.h TA_ADX"
 -- outputs
 --   outReal (double[])
 
-ta_adx :: [Double] -> [Double] -> [Double] -> Int -> IO (Either Int (Int, Int, [Double]))
-ta_adx inHigh inLow inClose optInTimePeriod
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_adx startIdx endIdx (getInArrPtr 0) (getInArrPtr 1) (getInArrPtr 2) (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inHigh ++ inLow ++ inClose
-          len = fromIntegral $ length inHigh
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_adx :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble))
+ta_adx inHigh inLow inClose optInTimePeriod = do
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
+    _outReal <- VM.new len
+    withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
+      withForeignPtr (vecPtr _inLow) $ \c_inLow ->
+        withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+          alloca $ \cOutBegIdx ->
+            alloca $ \cOutNbElement ->
+              withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+                do rc <- c_ta_adx 0 (fromIntegral $ len - 1) c_inHigh c_inLow c_inClose (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
+                   out_outReal <- V.unsafeFreeze _outReal
+                   case rc of
+                     0 -> do outBegIdx <- peek cOutBegIdx
+                             outNbElement <- peek cOutNbElement
+                             return $ Right $ (fromIntegral outBegIdx,
+                                               fromIntegral outNbElement,
+                                               out_outReal)
+                     _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inHigh
 
 --
 -- ADXR                 Average Directional Movement Index Rating
@@ -255,33 +398,29 @@ foreign import ccall unsafe "ta_func.h TA_ADXR"
 -- outputs
 --   outReal (double[])
 
-ta_adxr :: [Double] -> [Double] -> [Double] -> Int -> IO (Either Int (Int, Int, [Double]))
-ta_adxr inHigh inLow inClose optInTimePeriod
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_adxr startIdx endIdx (getInArrPtr 0) (getInArrPtr 1) (getInArrPtr 2) (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inHigh ++ inLow ++ inClose
-          len = fromIntegral $ length inHigh
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_adxr :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble))
+ta_adxr inHigh inLow inClose optInTimePeriod = do
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
+    _outReal <- VM.new len
+    withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
+      withForeignPtr (vecPtr _inLow) $ \c_inLow ->
+        withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+          alloca $ \cOutBegIdx ->
+            alloca $ \cOutNbElement ->
+              withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+                do rc <- c_ta_adxr 0 (fromIntegral $ len - 1) c_inHigh c_inLow c_inClose (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
+                   out_outReal <- V.unsafeFreeze _outReal
+                   case rc of
+                     0 -> do outBegIdx <- peek cOutBegIdx
+                             outNbElement <- peek cOutNbElement
+                             return $ Right $ (fromIntegral outBegIdx,
+                                               fromIntegral outNbElement,
+                                               out_outReal)
+                     _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inHigh
 
 --
 -- APO                  Absolute Price Oscillator
@@ -299,33 +438,25 @@ foreign import ccall unsafe "ta_func.h TA_APO"
 -- outputs
 --   outReal (double[])
 
-ta_apo :: [Double] -> Int -> Int -> Int -> IO (Either Int (Int, Int, [Double]))
-ta_apo inReal optInFastPeriod optInSlowPeriod optInMAType
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_apo startIdx endIdx (getInArrPtr 0) (fromIntegral optInFastPeriod) (fromIntegral optInSlowPeriod) (fromIntegral optInMAType) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inReal
-          len = fromIntegral $ length inReal
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_apo :: V.Vector CDouble -> Int -> Int -> Int -> IO (Either Int (Int, Int, V.Vector CDouble))
+ta_apo inReal optInFastPeriod optInSlowPeriod optInMAType = do
+    _inReal <- V.unsafeThaw inReal
+    _outReal <- VM.new len
+    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+      alloca $ \cOutBegIdx ->
+        alloca $ \cOutNbElement ->
+          withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+            do rc <- c_ta_apo 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInFastPeriod) (fromIntegral optInSlowPeriod) (fromIntegral optInMAType) cOutBegIdx cOutNbElement c_outReal
+               out_outReal <- V.unsafeFreeze _outReal
+               case rc of
+                 0 -> do outBegIdx <- peek cOutBegIdx
+                         outNbElement <- peek cOutNbElement
+                         return $ Right $ (fromIntegral outBegIdx,
+                                           fromIntegral outNbElement,
+                                           out_outReal)
+                 _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inReal
 
 --
 -- AROON                Aroon
@@ -343,34 +474,31 @@ foreign import ccall unsafe "ta_func.h TA_AROON"
 --   outAroonDown (double[])
 --   outAroonUp (double[])
 
-ta_aroon :: [Double] -> [Double] -> Int -> IO (Either Int (Int, Int, [Double], [Double]))
-ta_aroon inHigh inLow optInTimePeriod
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_aroon startIdx endIdx (getInArrPtr 0) (getInArrPtr 1) (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement (getOutArrPtr 0) (getOutArrPtr 1)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0,
-                                 chunks !! 1
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inHigh ++ inLow
-          len = fromIntegral $ length inHigh
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 2
+ta_aroon :: V.Vector CDouble -> V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble, V.Vector CDouble))
+ta_aroon inHigh inLow optInTimePeriod = do
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _outAroonDown <- VM.new len
+    _outAroonUp <- VM.new len
+    withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
+      withForeignPtr (vecPtr _inLow) $ \c_inLow ->
+        alloca $ \cOutBegIdx ->
+          alloca $ \cOutNbElement ->
+            withForeignPtr (vecPtr _outAroonDown) $ \c_outAroonDown ->
+              withForeignPtr (vecPtr _outAroonUp) $ \c_outAroonUp ->
+                do rc <- c_ta_aroon 0 (fromIntegral $ len - 1) c_inHigh c_inLow (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outAroonDown c_outAroonUp
+                   out_outAroonDown <- V.unsafeFreeze _outAroonDown
+                   out_outAroonUp <- V.unsafeFreeze _outAroonUp
+                   case rc of
+                     0 -> do outBegIdx <- peek cOutBegIdx
+                             outNbElement <- peek cOutNbElement
+                             return $ Right $ (fromIntegral outBegIdx,
+                                               fromIntegral outNbElement,
+                                               out_outAroonDown,
+                                               out_outAroonUp)
+                     _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inHigh
 
 --
 -- AROONOSC             Aroon Oscillator
@@ -387,33 +515,27 @@ foreign import ccall unsafe "ta_func.h TA_AROONOSC"
 -- outputs
 --   outReal (double[])
 
-ta_aroonosc :: [Double] -> [Double] -> Int -> IO (Either Int (Int, Int, [Double]))
-ta_aroonosc inHigh inLow optInTimePeriod
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_aroonosc startIdx endIdx (getInArrPtr 0) (getInArrPtr 1) (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inHigh ++ inLow
-          len = fromIntegral $ length inHigh
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_aroonosc :: V.Vector CDouble -> V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble))
+ta_aroonosc inHigh inLow optInTimePeriod = do
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _outReal <- VM.new len
+    withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
+      withForeignPtr (vecPtr _inLow) $ \c_inLow ->
+        alloca $ \cOutBegIdx ->
+          alloca $ \cOutNbElement ->
+            withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+              do rc <- c_ta_aroonosc 0 (fromIntegral $ len - 1) c_inHigh c_inLow (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
+                 out_outReal <- V.unsafeFreeze _outReal
+                 case rc of
+                   0 -> do outBegIdx <- peek cOutBegIdx
+                           outNbElement <- peek cOutNbElement
+                           return $ Right $ (fromIntegral outBegIdx,
+                                             fromIntegral outNbElement,
+                                             out_outReal)
+                   _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inHigh
 
 --
 -- ASIN                 Vector Trigonometric ASin
@@ -428,33 +550,25 @@ foreign import ccall unsafe "ta_func.h TA_ASIN"
 -- outputs
 --   outReal (double[])
 
-ta_asin :: [Double] -> IO (Either Int (Int, Int, [Double]))
-ta_asin inReal
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_asin startIdx endIdx (getInArrPtr 0) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inReal
-          len = fromIntegral $ length inReal
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_asin :: V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CDouble))
+ta_asin inReal = do
+    _inReal <- V.unsafeThaw inReal
+    _outReal <- VM.new len
+    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+      alloca $ \cOutBegIdx ->
+        alloca $ \cOutNbElement ->
+          withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+            do rc <- c_ta_asin 0 (fromIntegral $ len - 1) c_inReal cOutBegIdx cOutNbElement c_outReal
+               out_outReal <- V.unsafeFreeze _outReal
+               case rc of
+                 0 -> do outBegIdx <- peek cOutBegIdx
+                         outNbElement <- peek cOutNbElement
+                         return $ Right $ (fromIntegral outBegIdx,
+                                           fromIntegral outNbElement,
+                                           out_outReal)
+                 _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inReal
 
 --
 -- ATAN                 Vector Trigonometric ATan
@@ -469,33 +583,25 @@ foreign import ccall unsafe "ta_func.h TA_ATAN"
 -- outputs
 --   outReal (double[])
 
-ta_atan :: [Double] -> IO (Either Int (Int, Int, [Double]))
-ta_atan inReal
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_atan startIdx endIdx (getInArrPtr 0) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inReal
-          len = fromIntegral $ length inReal
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_atan :: V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CDouble))
+ta_atan inReal = do
+    _inReal <- V.unsafeThaw inReal
+    _outReal <- VM.new len
+    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+      alloca $ \cOutBegIdx ->
+        alloca $ \cOutNbElement ->
+          withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+            do rc <- c_ta_atan 0 (fromIntegral $ len - 1) c_inReal cOutBegIdx cOutNbElement c_outReal
+               out_outReal <- V.unsafeFreeze _outReal
+               case rc of
+                 0 -> do outBegIdx <- peek cOutBegIdx
+                         outNbElement <- peek cOutNbElement
+                         return $ Right $ (fromIntegral outBegIdx,
+                                           fromIntegral outNbElement,
+                                           out_outReal)
+                 _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inReal
 
 --
 -- ATR                  Average True Range
@@ -513,33 +619,29 @@ foreign import ccall unsafe "ta_func.h TA_ATR"
 -- outputs
 --   outReal (double[])
 
-ta_atr :: [Double] -> [Double] -> [Double] -> Int -> IO (Either Int (Int, Int, [Double]))
-ta_atr inHigh inLow inClose optInTimePeriod
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_atr startIdx endIdx (getInArrPtr 0) (getInArrPtr 1) (getInArrPtr 2) (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inHigh ++ inLow ++ inClose
-          len = fromIntegral $ length inHigh
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_atr :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble))
+ta_atr inHigh inLow inClose optInTimePeriod = do
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
+    _outReal <- VM.new len
+    withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
+      withForeignPtr (vecPtr _inLow) $ \c_inLow ->
+        withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+          alloca $ \cOutBegIdx ->
+            alloca $ \cOutNbElement ->
+              withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+                do rc <- c_ta_atr 0 (fromIntegral $ len - 1) c_inHigh c_inLow c_inClose (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
+                   out_outReal <- V.unsafeFreeze _outReal
+                   case rc of
+                     0 -> do outBegIdx <- peek cOutBegIdx
+                             outNbElement <- peek cOutNbElement
+                             return $ Right $ (fromIntegral outBegIdx,
+                                               fromIntegral outNbElement,
+                                               out_outReal)
+                     _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inHigh
 
 --
 -- AVGPRICE             Average Price
@@ -557,33 +659,31 @@ foreign import ccall unsafe "ta_func.h TA_AVGPRICE"
 -- outputs
 --   outReal (double[])
 
-ta_avgprice :: [Double] -> [Double] -> [Double] -> [Double] -> IO (Either Int (Int, Int, [Double]))
-ta_avgprice inOpen inHigh inLow inClose
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_avgprice startIdx endIdx (getInArrPtr 0) (getInArrPtr 1) (getInArrPtr 2) (getInArrPtr 3) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inOpen ++ inHigh ++ inLow ++ inClose
-          len = fromIntegral $ length inOpen
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_avgprice :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CDouble))
+ta_avgprice inOpen inHigh inLow inClose = do
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
+    _outReal <- VM.new len
+    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
+      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
+        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
+          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+            alloca $ \cOutBegIdx ->
+              alloca $ \cOutNbElement ->
+                withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+                  do rc <- c_ta_avgprice 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outReal
+                     out_outReal <- V.unsafeFreeze _outReal
+                     case rc of
+                       0 -> do outBegIdx <- peek cOutBegIdx
+                               outNbElement <- peek cOutNbElement
+                               return $ Right $ (fromIntegral outBegIdx,
+                                                 fromIntegral outNbElement,
+                                                 out_outReal)
+                       _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inOpen
 
 --
 -- BBANDS               Bollinger Bands
@@ -604,35 +704,33 @@ foreign import ccall unsafe "ta_func.h TA_BBANDS"
 --   outRealMiddleBand (double[])
 --   outRealLowerBand (double[])
 
-ta_bbands :: [Double] -> Int -> Double -> Double -> Int -> IO (Either Int (Int, Int, [Double], [Double], [Double]))
-ta_bbands inReal optInTimePeriod optInNbDevUp optInNbDevDn optInMAType
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_bbands startIdx endIdx (getInArrPtr 0) (fromIntegral optInTimePeriod) (realToFrac optInNbDevUp) (realToFrac optInNbDevDn) (fromIntegral optInMAType) cOutBegIdx cOutNbElement (getOutArrPtr 0) (getOutArrPtr 1) (getOutArrPtr 2)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0,
-                                 chunks !! 1,
-                                 chunks !! 2
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inReal
-          len = fromIntegral $ length inReal
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 3
+ta_bbands :: V.Vector CDouble -> Int -> Double -> Double -> Int -> IO (Either Int (Int, Int, V.Vector CDouble, V.Vector CDouble, V.Vector CDouble))
+ta_bbands inReal optInTimePeriod optInNbDevUp optInNbDevDn optInMAType = do
+    _inReal <- V.unsafeThaw inReal
+    _outRealUpperBand <- VM.new len
+    _outRealMiddleBand <- VM.new len
+    _outRealLowerBand <- VM.new len
+    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+      alloca $ \cOutBegIdx ->
+        alloca $ \cOutNbElement ->
+          withForeignPtr (vecPtr _outRealUpperBand) $ \c_outRealUpperBand ->
+            withForeignPtr (vecPtr _outRealMiddleBand) $ \c_outRealMiddleBand ->
+              withForeignPtr (vecPtr _outRealLowerBand) $ \c_outRealLowerBand ->
+                do rc <- c_ta_bbands 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) (realToFrac optInNbDevUp) (realToFrac optInNbDevDn) (fromIntegral optInMAType) cOutBegIdx cOutNbElement c_outRealUpperBand c_outRealMiddleBand c_outRealLowerBand
+                   out_outRealUpperBand <- V.unsafeFreeze _outRealUpperBand
+                   out_outRealMiddleBand <- V.unsafeFreeze _outRealMiddleBand
+                   out_outRealLowerBand <- V.unsafeFreeze _outRealLowerBand
+                   case rc of
+                     0 -> do outBegIdx <- peek cOutBegIdx
+                             outNbElement <- peek cOutNbElement
+                             return $ Right $ (fromIntegral outBegIdx,
+                                               fromIntegral outNbElement,
+                                               out_outRealUpperBand,
+                                               out_outRealMiddleBand,
+                                               out_outRealLowerBand)
+                     _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inReal
 
 --
 -- BETA                 Beta
@@ -649,33 +747,27 @@ foreign import ccall unsafe "ta_func.h TA_BETA"
 -- outputs
 --   outReal (double[])
 
-ta_beta :: [Double] -> [Double] -> Int -> IO (Either Int (Int, Int, [Double]))
-ta_beta inReal0 inReal1 optInTimePeriod
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_beta startIdx endIdx (getInArrPtr 0) (getInArrPtr 1) (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inReal0 ++ inReal1
-          len = fromIntegral $ length inReal0
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_beta :: V.Vector CDouble -> V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble))
+ta_beta inReal0 inReal1 optInTimePeriod = do
+    _inReal0 <- V.unsafeThaw inReal0
+    _inReal1 <- V.unsafeThaw inReal1
+    _outReal <- VM.new len
+    withForeignPtr (vecPtr _inReal0) $ \c_inReal0 ->
+      withForeignPtr (vecPtr _inReal1) $ \c_inReal1 ->
+        alloca $ \cOutBegIdx ->
+          alloca $ \cOutNbElement ->
+            withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+              do rc <- c_ta_beta 0 (fromIntegral $ len - 1) c_inReal0 c_inReal1 (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
+                 out_outReal <- V.unsafeFreeze _outReal
+                 case rc of
+                   0 -> do outBegIdx <- peek cOutBegIdx
+                           outNbElement <- peek cOutNbElement
+                           return $ Right $ (fromIntegral outBegIdx,
+                                             fromIntegral outNbElement,
+                                             out_outReal)
+                   _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inReal0
 
 --
 -- BOP                  Balance Of Power
@@ -693,33 +785,31 @@ foreign import ccall unsafe "ta_func.h TA_BOP"
 -- outputs
 --   outReal (double[])
 
-ta_bop :: [Double] -> [Double] -> [Double] -> [Double] -> IO (Either Int (Int, Int, [Double]))
-ta_bop inOpen inHigh inLow inClose
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_bop startIdx endIdx (getInArrPtr 0) (getInArrPtr 1) (getInArrPtr 2) (getInArrPtr 3) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inOpen ++ inHigh ++ inLow ++ inClose
-          len = fromIntegral $ length inOpen
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_bop :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CDouble))
+ta_bop inOpen inHigh inLow inClose = do
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
+    _outReal <- VM.new len
+    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
+      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
+        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
+          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+            alloca $ \cOutBegIdx ->
+              alloca $ \cOutNbElement ->
+                withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+                  do rc <- c_ta_bop 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outReal
+                     out_outReal <- V.unsafeFreeze _outReal
+                     case rc of
+                       0 -> do outBegIdx <- peek cOutBegIdx
+                               outNbElement <- peek cOutNbElement
+                               return $ Right $ (fromIntegral outBegIdx,
+                                                 fromIntegral outNbElement,
+                                                 out_outReal)
+                       _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inOpen
 
 --
 -- CCI                  Commodity Channel Index
@@ -737,33 +827,29 @@ foreign import ccall unsafe "ta_func.h TA_CCI"
 -- outputs
 --   outReal (double[])
 
-ta_cci :: [Double] -> [Double] -> [Double] -> Int -> IO (Either Int (Int, Int, [Double]))
-ta_cci inHigh inLow inClose optInTimePeriod
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_cci startIdx endIdx (getInArrPtr 0) (getInArrPtr 1) (getInArrPtr 2) (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inHigh ++ inLow ++ inClose
-          len = fromIntegral $ length inHigh
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_cci :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble))
+ta_cci inHigh inLow inClose optInTimePeriod = do
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
+    _outReal <- VM.new len
+    withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
+      withForeignPtr (vecPtr _inLow) $ \c_inLow ->
+        withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+          alloca $ \cOutBegIdx ->
+            alloca $ \cOutNbElement ->
+              withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+                do rc <- c_ta_cci 0 (fromIntegral $ len - 1) c_inHigh c_inLow c_inClose (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
+                   out_outReal <- V.unsafeFreeze _outReal
+                   case rc of
+                     0 -> do outBegIdx <- peek cOutBegIdx
+                             outNbElement <- peek cOutNbElement
+                             return $ Right $ (fromIntegral outBegIdx,
+                                               fromIntegral outNbElement,
+                                               out_outReal)
+                     _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inHigh
 
 --
 -- CDL2CROWS            Two Crows
@@ -781,33 +867,31 @@ foreign import ccall unsafe "ta_func.h TA_CDL2CROWS"
 -- outputs
 --   outInteger (int[])
 
-ta_cdl2crows :: [Double] -> [Double] -> [Double] -> [Double] -> IO (Either Int (Int, Int, [Int]))
-ta_cdl2crows inOpen inHigh inLow inClose
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_cdl2crows startIdx endIdx (getInArrPtr 0) (getInArrPtr 1) (getInArrPtr 2) (getInArrPtr 3) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inOpen ++ inHigh ++ inLow ++ inClose
-          len = fromIntegral $ length inOpen
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_cdl2crows :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
+ta_cdl2crows inOpen inHigh inLow inClose = do
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
+    _outInteger <- VM.new len
+    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
+      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
+        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
+          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+            alloca $ \cOutBegIdx ->
+              alloca $ \cOutNbElement ->
+                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                  do rc <- c_ta_cdl2crows 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
+                     case rc of
+                       0 -> do outBegIdx <- peek cOutBegIdx
+                               outNbElement <- peek cOutNbElement
+                               return $ Right $ (fromIntegral outBegIdx,
+                                                 fromIntegral outNbElement,
+                                                 out_outInteger)
+                       _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inOpen
 
 --
 -- CDL3BLACKCROWS       Three Black Crows
@@ -825,33 +909,31 @@ foreign import ccall unsafe "ta_func.h TA_CDL3BLACKCROWS"
 -- outputs
 --   outInteger (int[])
 
-ta_cdl3blackcrows :: [Double] -> [Double] -> [Double] -> [Double] -> IO (Either Int (Int, Int, [Int]))
-ta_cdl3blackcrows inOpen inHigh inLow inClose
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_cdl3blackcrows startIdx endIdx (getInArrPtr 0) (getInArrPtr 1) (getInArrPtr 2) (getInArrPtr 3) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inOpen ++ inHigh ++ inLow ++ inClose
-          len = fromIntegral $ length inOpen
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_cdl3blackcrows :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
+ta_cdl3blackcrows inOpen inHigh inLow inClose = do
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
+    _outInteger <- VM.new len
+    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
+      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
+        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
+          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+            alloca $ \cOutBegIdx ->
+              alloca $ \cOutNbElement ->
+                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                  do rc <- c_ta_cdl3blackcrows 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
+                     case rc of
+                       0 -> do outBegIdx <- peek cOutBegIdx
+                               outNbElement <- peek cOutNbElement
+                               return $ Right $ (fromIntegral outBegIdx,
+                                                 fromIntegral outNbElement,
+                                                 out_outInteger)
+                       _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inOpen
 
 --
 -- CDL3INSIDE           Three Inside Up/Down
@@ -869,33 +951,31 @@ foreign import ccall unsafe "ta_func.h TA_CDL3INSIDE"
 -- outputs
 --   outInteger (int[])
 
-ta_cdl3inside :: [Double] -> [Double] -> [Double] -> [Double] -> IO (Either Int (Int, Int, [Int]))
-ta_cdl3inside inOpen inHigh inLow inClose
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_cdl3inside startIdx endIdx (getInArrPtr 0) (getInArrPtr 1) (getInArrPtr 2) (getInArrPtr 3) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inOpen ++ inHigh ++ inLow ++ inClose
-          len = fromIntegral $ length inOpen
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_cdl3inside :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
+ta_cdl3inside inOpen inHigh inLow inClose = do
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
+    _outInteger <- VM.new len
+    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
+      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
+        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
+          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+            alloca $ \cOutBegIdx ->
+              alloca $ \cOutNbElement ->
+                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                  do rc <- c_ta_cdl3inside 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
+                     case rc of
+                       0 -> do outBegIdx <- peek cOutBegIdx
+                               outNbElement <- peek cOutNbElement
+                               return $ Right $ (fromIntegral outBegIdx,
+                                                 fromIntegral outNbElement,
+                                                 out_outInteger)
+                       _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inOpen
 
 --
 -- CDL3LINESTRIKE       Three-Line Strike 
@@ -913,33 +993,31 @@ foreign import ccall unsafe "ta_func.h TA_CDL3LINESTRIKE"
 -- outputs
 --   outInteger (int[])
 
-ta_cdl3linestrike :: [Double] -> [Double] -> [Double] -> [Double] -> IO (Either Int (Int, Int, [Int]))
-ta_cdl3linestrike inOpen inHigh inLow inClose
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_cdl3linestrike startIdx endIdx (getInArrPtr 0) (getInArrPtr 1) (getInArrPtr 2) (getInArrPtr 3) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inOpen ++ inHigh ++ inLow ++ inClose
-          len = fromIntegral $ length inOpen
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_cdl3linestrike :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
+ta_cdl3linestrike inOpen inHigh inLow inClose = do
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
+    _outInteger <- VM.new len
+    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
+      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
+        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
+          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+            alloca $ \cOutBegIdx ->
+              alloca $ \cOutNbElement ->
+                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                  do rc <- c_ta_cdl3linestrike 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
+                     case rc of
+                       0 -> do outBegIdx <- peek cOutBegIdx
+                               outNbElement <- peek cOutNbElement
+                               return $ Right $ (fromIntegral outBegIdx,
+                                                 fromIntegral outNbElement,
+                                                 out_outInteger)
+                       _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inOpen
 
 --
 -- CDL3OUTSIDE          Three Outside Up/Down
@@ -957,33 +1035,31 @@ foreign import ccall unsafe "ta_func.h TA_CDL3OUTSIDE"
 -- outputs
 --   outInteger (int[])
 
-ta_cdl3outside :: [Double] -> [Double] -> [Double] -> [Double] -> IO (Either Int (Int, Int, [Int]))
-ta_cdl3outside inOpen inHigh inLow inClose
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_cdl3outside startIdx endIdx (getInArrPtr 0) (getInArrPtr 1) (getInArrPtr 2) (getInArrPtr 3) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inOpen ++ inHigh ++ inLow ++ inClose
-          len = fromIntegral $ length inOpen
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_cdl3outside :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
+ta_cdl3outside inOpen inHigh inLow inClose = do
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
+    _outInteger <- VM.new len
+    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
+      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
+        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
+          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+            alloca $ \cOutBegIdx ->
+              alloca $ \cOutNbElement ->
+                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                  do rc <- c_ta_cdl3outside 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
+                     case rc of
+                       0 -> do outBegIdx <- peek cOutBegIdx
+                               outNbElement <- peek cOutNbElement
+                               return $ Right $ (fromIntegral outBegIdx,
+                                                 fromIntegral outNbElement,
+                                                 out_outInteger)
+                       _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inOpen
 
 --
 -- CDL3STARSINSOUTH     Three Stars In The South
@@ -1001,33 +1077,31 @@ foreign import ccall unsafe "ta_func.h TA_CDL3STARSINSOUTH"
 -- outputs
 --   outInteger (int[])
 
-ta_cdl3starsinsouth :: [Double] -> [Double] -> [Double] -> [Double] -> IO (Either Int (Int, Int, [Int]))
-ta_cdl3starsinsouth inOpen inHigh inLow inClose
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_cdl3starsinsouth startIdx endIdx (getInArrPtr 0) (getInArrPtr 1) (getInArrPtr 2) (getInArrPtr 3) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inOpen ++ inHigh ++ inLow ++ inClose
-          len = fromIntegral $ length inOpen
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_cdl3starsinsouth :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
+ta_cdl3starsinsouth inOpen inHigh inLow inClose = do
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
+    _outInteger <- VM.new len
+    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
+      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
+        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
+          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+            alloca $ \cOutBegIdx ->
+              alloca $ \cOutNbElement ->
+                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                  do rc <- c_ta_cdl3starsinsouth 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
+                     case rc of
+                       0 -> do outBegIdx <- peek cOutBegIdx
+                               outNbElement <- peek cOutNbElement
+                               return $ Right $ (fromIntegral outBegIdx,
+                                                 fromIntegral outNbElement,
+                                                 out_outInteger)
+                       _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inOpen
 
 --
 -- CDL3WHITESOLDIERS    Three Advancing White Soldiers
@@ -1045,33 +1119,31 @@ foreign import ccall unsafe "ta_func.h TA_CDL3WHITESOLDIERS"
 -- outputs
 --   outInteger (int[])
 
-ta_cdl3whitesoldiers :: [Double] -> [Double] -> [Double] -> [Double] -> IO (Either Int (Int, Int, [Int]))
-ta_cdl3whitesoldiers inOpen inHigh inLow inClose
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_cdl3whitesoldiers startIdx endIdx (getInArrPtr 0) (getInArrPtr 1) (getInArrPtr 2) (getInArrPtr 3) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inOpen ++ inHigh ++ inLow ++ inClose
-          len = fromIntegral $ length inOpen
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_cdl3whitesoldiers :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
+ta_cdl3whitesoldiers inOpen inHigh inLow inClose = do
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
+    _outInteger <- VM.new len
+    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
+      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
+        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
+          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+            alloca $ \cOutBegIdx ->
+              alloca $ \cOutNbElement ->
+                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                  do rc <- c_ta_cdl3whitesoldiers 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
+                     case rc of
+                       0 -> do outBegIdx <- peek cOutBegIdx
+                               outNbElement <- peek cOutNbElement
+                               return $ Right $ (fromIntegral outBegIdx,
+                                                 fromIntegral outNbElement,
+                                                 out_outInteger)
+                       _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inOpen
 
 --
 -- CDLABANDONEDBABY     Abandoned Baby
@@ -1090,33 +1162,31 @@ foreign import ccall unsafe "ta_func.h TA_CDLABANDONEDBABY"
 -- outputs
 --   outInteger (int[])
 
-ta_cdlabandonedbaby :: [Double] -> [Double] -> [Double] -> [Double] -> Double -> IO (Either Int (Int, Int, [Int]))
-ta_cdlabandonedbaby inOpen inHigh inLow inClose optInPenetration
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_cdlabandonedbaby startIdx endIdx (getInArrPtr 0) (getInArrPtr 1) (getInArrPtr 2) (getInArrPtr 3) (realToFrac optInPenetration) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inOpen ++ inHigh ++ inLow ++ inClose
-          len = fromIntegral $ length inOpen
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_cdlabandonedbaby :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> Double -> IO (Either Int (Int, Int, V.Vector CInt))
+ta_cdlabandonedbaby inOpen inHigh inLow inClose optInPenetration = do
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
+    _outInteger <- VM.new len
+    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
+      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
+        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
+          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+            alloca $ \cOutBegIdx ->
+              alloca $ \cOutNbElement ->
+                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                  do rc <- c_ta_cdlabandonedbaby 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose (realToFrac optInPenetration) cOutBegIdx cOutNbElement c_outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
+                     case rc of
+                       0 -> do outBegIdx <- peek cOutBegIdx
+                               outNbElement <- peek cOutNbElement
+                               return $ Right $ (fromIntegral outBegIdx,
+                                                 fromIntegral outNbElement,
+                                                 out_outInteger)
+                       _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inOpen
 
 --
 -- CDLADVANCEBLOCK      Advance Block
@@ -1134,33 +1204,31 @@ foreign import ccall unsafe "ta_func.h TA_CDLADVANCEBLOCK"
 -- outputs
 --   outInteger (int[])
 
-ta_cdladvanceblock :: [Double] -> [Double] -> [Double] -> [Double] -> IO (Either Int (Int, Int, [Int]))
-ta_cdladvanceblock inOpen inHigh inLow inClose
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_cdladvanceblock startIdx endIdx (getInArrPtr 0) (getInArrPtr 1) (getInArrPtr 2) (getInArrPtr 3) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inOpen ++ inHigh ++ inLow ++ inClose
-          len = fromIntegral $ length inOpen
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_cdladvanceblock :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
+ta_cdladvanceblock inOpen inHigh inLow inClose = do
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
+    _outInteger <- VM.new len
+    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
+      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
+        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
+          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+            alloca $ \cOutBegIdx ->
+              alloca $ \cOutNbElement ->
+                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                  do rc <- c_ta_cdladvanceblock 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
+                     case rc of
+                       0 -> do outBegIdx <- peek cOutBegIdx
+                               outNbElement <- peek cOutNbElement
+                               return $ Right $ (fromIntegral outBegIdx,
+                                                 fromIntegral outNbElement,
+                                                 out_outInteger)
+                       _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inOpen
 
 --
 -- CDLBELTHOLD          Belt-hold
@@ -1178,33 +1246,31 @@ foreign import ccall unsafe "ta_func.h TA_CDLBELTHOLD"
 -- outputs
 --   outInteger (int[])
 
-ta_cdlbelthold :: [Double] -> [Double] -> [Double] -> [Double] -> IO (Either Int (Int, Int, [Int]))
-ta_cdlbelthold inOpen inHigh inLow inClose
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_cdlbelthold startIdx endIdx (getInArrPtr 0) (getInArrPtr 1) (getInArrPtr 2) (getInArrPtr 3) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inOpen ++ inHigh ++ inLow ++ inClose
-          len = fromIntegral $ length inOpen
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_cdlbelthold :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
+ta_cdlbelthold inOpen inHigh inLow inClose = do
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
+    _outInteger <- VM.new len
+    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
+      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
+        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
+          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+            alloca $ \cOutBegIdx ->
+              alloca $ \cOutNbElement ->
+                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                  do rc <- c_ta_cdlbelthold 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
+                     case rc of
+                       0 -> do outBegIdx <- peek cOutBegIdx
+                               outNbElement <- peek cOutNbElement
+                               return $ Right $ (fromIntegral outBegIdx,
+                                                 fromIntegral outNbElement,
+                                                 out_outInteger)
+                       _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inOpen
 
 --
 -- CDLBREAKAWAY         Breakaway
@@ -1222,33 +1288,31 @@ foreign import ccall unsafe "ta_func.h TA_CDLBREAKAWAY"
 -- outputs
 --   outInteger (int[])
 
-ta_cdlbreakaway :: [Double] -> [Double] -> [Double] -> [Double] -> IO (Either Int (Int, Int, [Int]))
-ta_cdlbreakaway inOpen inHigh inLow inClose
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_cdlbreakaway startIdx endIdx (getInArrPtr 0) (getInArrPtr 1) (getInArrPtr 2) (getInArrPtr 3) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inOpen ++ inHigh ++ inLow ++ inClose
-          len = fromIntegral $ length inOpen
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_cdlbreakaway :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
+ta_cdlbreakaway inOpen inHigh inLow inClose = do
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
+    _outInteger <- VM.new len
+    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
+      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
+        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
+          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+            alloca $ \cOutBegIdx ->
+              alloca $ \cOutNbElement ->
+                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                  do rc <- c_ta_cdlbreakaway 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
+                     case rc of
+                       0 -> do outBegIdx <- peek cOutBegIdx
+                               outNbElement <- peek cOutNbElement
+                               return $ Right $ (fromIntegral outBegIdx,
+                                                 fromIntegral outNbElement,
+                                                 out_outInteger)
+                       _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inOpen
 
 --
 -- CDLCLOSINGMARUBOZU   Closing Marubozu
@@ -1266,33 +1330,31 @@ foreign import ccall unsafe "ta_func.h TA_CDLCLOSINGMARUBOZU"
 -- outputs
 --   outInteger (int[])
 
-ta_cdlclosingmarubozu :: [Double] -> [Double] -> [Double] -> [Double] -> IO (Either Int (Int, Int, [Int]))
-ta_cdlclosingmarubozu inOpen inHigh inLow inClose
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_cdlclosingmarubozu startIdx endIdx (getInArrPtr 0) (getInArrPtr 1) (getInArrPtr 2) (getInArrPtr 3) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inOpen ++ inHigh ++ inLow ++ inClose
-          len = fromIntegral $ length inOpen
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_cdlclosingmarubozu :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
+ta_cdlclosingmarubozu inOpen inHigh inLow inClose = do
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
+    _outInteger <- VM.new len
+    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
+      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
+        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
+          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+            alloca $ \cOutBegIdx ->
+              alloca $ \cOutNbElement ->
+                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                  do rc <- c_ta_cdlclosingmarubozu 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
+                     case rc of
+                       0 -> do outBegIdx <- peek cOutBegIdx
+                               outNbElement <- peek cOutNbElement
+                               return $ Right $ (fromIntegral outBegIdx,
+                                                 fromIntegral outNbElement,
+                                                 out_outInteger)
+                       _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inOpen
 
 --
 -- CDLCONCEALBABYSWALL  Concealing Baby Swallow
@@ -1310,33 +1372,31 @@ foreign import ccall unsafe "ta_func.h TA_CDLCONCEALBABYSWALL"
 -- outputs
 --   outInteger (int[])
 
-ta_cdlconcealbabyswall :: [Double] -> [Double] -> [Double] -> [Double] -> IO (Either Int (Int, Int, [Int]))
-ta_cdlconcealbabyswall inOpen inHigh inLow inClose
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_cdlconcealbabyswall startIdx endIdx (getInArrPtr 0) (getInArrPtr 1) (getInArrPtr 2) (getInArrPtr 3) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inOpen ++ inHigh ++ inLow ++ inClose
-          len = fromIntegral $ length inOpen
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_cdlconcealbabyswall :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
+ta_cdlconcealbabyswall inOpen inHigh inLow inClose = do
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
+    _outInteger <- VM.new len
+    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
+      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
+        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
+          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+            alloca $ \cOutBegIdx ->
+              alloca $ \cOutNbElement ->
+                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                  do rc <- c_ta_cdlconcealbabyswall 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
+                     case rc of
+                       0 -> do outBegIdx <- peek cOutBegIdx
+                               outNbElement <- peek cOutNbElement
+                               return $ Right $ (fromIntegral outBegIdx,
+                                                 fromIntegral outNbElement,
+                                                 out_outInteger)
+                       _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inOpen
 
 --
 -- CDLCOUNTERATTACK     Counterattack
@@ -1354,33 +1414,31 @@ foreign import ccall unsafe "ta_func.h TA_CDLCOUNTERATTACK"
 -- outputs
 --   outInteger (int[])
 
-ta_cdlcounterattack :: [Double] -> [Double] -> [Double] -> [Double] -> IO (Either Int (Int, Int, [Int]))
-ta_cdlcounterattack inOpen inHigh inLow inClose
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_cdlcounterattack startIdx endIdx (getInArrPtr 0) (getInArrPtr 1) (getInArrPtr 2) (getInArrPtr 3) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inOpen ++ inHigh ++ inLow ++ inClose
-          len = fromIntegral $ length inOpen
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_cdlcounterattack :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
+ta_cdlcounterattack inOpen inHigh inLow inClose = do
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
+    _outInteger <- VM.new len
+    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
+      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
+        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
+          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+            alloca $ \cOutBegIdx ->
+              alloca $ \cOutNbElement ->
+                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                  do rc <- c_ta_cdlcounterattack 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
+                     case rc of
+                       0 -> do outBegIdx <- peek cOutBegIdx
+                               outNbElement <- peek cOutNbElement
+                               return $ Right $ (fromIntegral outBegIdx,
+                                                 fromIntegral outNbElement,
+                                                 out_outInteger)
+                       _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inOpen
 
 --
 -- CDLDARKCLOUDCOVER    Dark Cloud Cover
@@ -1399,33 +1457,31 @@ foreign import ccall unsafe "ta_func.h TA_CDLDARKCLOUDCOVER"
 -- outputs
 --   outInteger (int[])
 
-ta_cdldarkcloudcover :: [Double] -> [Double] -> [Double] -> [Double] -> Double -> IO (Either Int (Int, Int, [Int]))
-ta_cdldarkcloudcover inOpen inHigh inLow inClose optInPenetration
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_cdldarkcloudcover startIdx endIdx (getInArrPtr 0) (getInArrPtr 1) (getInArrPtr 2) (getInArrPtr 3) (realToFrac optInPenetration) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inOpen ++ inHigh ++ inLow ++ inClose
-          len = fromIntegral $ length inOpen
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_cdldarkcloudcover :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> Double -> IO (Either Int (Int, Int, V.Vector CInt))
+ta_cdldarkcloudcover inOpen inHigh inLow inClose optInPenetration = do
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
+    _outInteger <- VM.new len
+    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
+      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
+        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
+          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+            alloca $ \cOutBegIdx ->
+              alloca $ \cOutNbElement ->
+                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                  do rc <- c_ta_cdldarkcloudcover 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose (realToFrac optInPenetration) cOutBegIdx cOutNbElement c_outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
+                     case rc of
+                       0 -> do outBegIdx <- peek cOutBegIdx
+                               outNbElement <- peek cOutNbElement
+                               return $ Right $ (fromIntegral outBegIdx,
+                                                 fromIntegral outNbElement,
+                                                 out_outInteger)
+                       _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inOpen
 
 --
 -- CDLDOJI              Doji
@@ -1443,33 +1499,31 @@ foreign import ccall unsafe "ta_func.h TA_CDLDOJI"
 -- outputs
 --   outInteger (int[])
 
-ta_cdldoji :: [Double] -> [Double] -> [Double] -> [Double] -> IO (Either Int (Int, Int, [Int]))
-ta_cdldoji inOpen inHigh inLow inClose
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_cdldoji startIdx endIdx (getInArrPtr 0) (getInArrPtr 1) (getInArrPtr 2) (getInArrPtr 3) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inOpen ++ inHigh ++ inLow ++ inClose
-          len = fromIntegral $ length inOpen
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_cdldoji :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
+ta_cdldoji inOpen inHigh inLow inClose = do
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
+    _outInteger <- VM.new len
+    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
+      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
+        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
+          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+            alloca $ \cOutBegIdx ->
+              alloca $ \cOutNbElement ->
+                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                  do rc <- c_ta_cdldoji 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
+                     case rc of
+                       0 -> do outBegIdx <- peek cOutBegIdx
+                               outNbElement <- peek cOutNbElement
+                               return $ Right $ (fromIntegral outBegIdx,
+                                                 fromIntegral outNbElement,
+                                                 out_outInteger)
+                       _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inOpen
 
 --
 -- CDLDOJISTAR          Doji Star
@@ -1487,33 +1541,31 @@ foreign import ccall unsafe "ta_func.h TA_CDLDOJISTAR"
 -- outputs
 --   outInteger (int[])
 
-ta_cdldojistar :: [Double] -> [Double] -> [Double] -> [Double] -> IO (Either Int (Int, Int, [Int]))
-ta_cdldojistar inOpen inHigh inLow inClose
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_cdldojistar startIdx endIdx (getInArrPtr 0) (getInArrPtr 1) (getInArrPtr 2) (getInArrPtr 3) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inOpen ++ inHigh ++ inLow ++ inClose
-          len = fromIntegral $ length inOpen
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_cdldojistar :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
+ta_cdldojistar inOpen inHigh inLow inClose = do
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
+    _outInteger <- VM.new len
+    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
+      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
+        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
+          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+            alloca $ \cOutBegIdx ->
+              alloca $ \cOutNbElement ->
+                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                  do rc <- c_ta_cdldojistar 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
+                     case rc of
+                       0 -> do outBegIdx <- peek cOutBegIdx
+                               outNbElement <- peek cOutNbElement
+                               return $ Right $ (fromIntegral outBegIdx,
+                                                 fromIntegral outNbElement,
+                                                 out_outInteger)
+                       _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inOpen
 
 --
 -- CDLDRAGONFLYDOJI     Dragonfly Doji
@@ -1531,33 +1583,31 @@ foreign import ccall unsafe "ta_func.h TA_CDLDRAGONFLYDOJI"
 -- outputs
 --   outInteger (int[])
 
-ta_cdldragonflydoji :: [Double] -> [Double] -> [Double] -> [Double] -> IO (Either Int (Int, Int, [Int]))
-ta_cdldragonflydoji inOpen inHigh inLow inClose
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_cdldragonflydoji startIdx endIdx (getInArrPtr 0) (getInArrPtr 1) (getInArrPtr 2) (getInArrPtr 3) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inOpen ++ inHigh ++ inLow ++ inClose
-          len = fromIntegral $ length inOpen
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_cdldragonflydoji :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
+ta_cdldragonflydoji inOpen inHigh inLow inClose = do
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
+    _outInteger <- VM.new len
+    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
+      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
+        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
+          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+            alloca $ \cOutBegIdx ->
+              alloca $ \cOutNbElement ->
+                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                  do rc <- c_ta_cdldragonflydoji 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
+                     case rc of
+                       0 -> do outBegIdx <- peek cOutBegIdx
+                               outNbElement <- peek cOutNbElement
+                               return $ Right $ (fromIntegral outBegIdx,
+                                                 fromIntegral outNbElement,
+                                                 out_outInteger)
+                       _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inOpen
 
 --
 -- CDLENGULFING         Engulfing Pattern
@@ -1575,33 +1625,31 @@ foreign import ccall unsafe "ta_func.h TA_CDLENGULFING"
 -- outputs
 --   outInteger (int[])
 
-ta_cdlengulfing :: [Double] -> [Double] -> [Double] -> [Double] -> IO (Either Int (Int, Int, [Int]))
-ta_cdlengulfing inOpen inHigh inLow inClose
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_cdlengulfing startIdx endIdx (getInArrPtr 0) (getInArrPtr 1) (getInArrPtr 2) (getInArrPtr 3) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inOpen ++ inHigh ++ inLow ++ inClose
-          len = fromIntegral $ length inOpen
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_cdlengulfing :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
+ta_cdlengulfing inOpen inHigh inLow inClose = do
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
+    _outInteger <- VM.new len
+    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
+      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
+        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
+          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+            alloca $ \cOutBegIdx ->
+              alloca $ \cOutNbElement ->
+                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                  do rc <- c_ta_cdlengulfing 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
+                     case rc of
+                       0 -> do outBegIdx <- peek cOutBegIdx
+                               outNbElement <- peek cOutNbElement
+                               return $ Right $ (fromIntegral outBegIdx,
+                                                 fromIntegral outNbElement,
+                                                 out_outInteger)
+                       _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inOpen
 
 --
 -- CDLEVENINGDOJISTAR   Evening Doji Star
@@ -1620,33 +1668,31 @@ foreign import ccall unsafe "ta_func.h TA_CDLEVENINGDOJISTAR"
 -- outputs
 --   outInteger (int[])
 
-ta_cdleveningdojistar :: [Double] -> [Double] -> [Double] -> [Double] -> Double -> IO (Either Int (Int, Int, [Int]))
-ta_cdleveningdojistar inOpen inHigh inLow inClose optInPenetration
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_cdleveningdojistar startIdx endIdx (getInArrPtr 0) (getInArrPtr 1) (getInArrPtr 2) (getInArrPtr 3) (realToFrac optInPenetration) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inOpen ++ inHigh ++ inLow ++ inClose
-          len = fromIntegral $ length inOpen
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_cdleveningdojistar :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> Double -> IO (Either Int (Int, Int, V.Vector CInt))
+ta_cdleveningdojistar inOpen inHigh inLow inClose optInPenetration = do
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
+    _outInteger <- VM.new len
+    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
+      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
+        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
+          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+            alloca $ \cOutBegIdx ->
+              alloca $ \cOutNbElement ->
+                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                  do rc <- c_ta_cdleveningdojistar 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose (realToFrac optInPenetration) cOutBegIdx cOutNbElement c_outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
+                     case rc of
+                       0 -> do outBegIdx <- peek cOutBegIdx
+                               outNbElement <- peek cOutNbElement
+                               return $ Right $ (fromIntegral outBegIdx,
+                                                 fromIntegral outNbElement,
+                                                 out_outInteger)
+                       _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inOpen
 
 --
 -- CDLEVENINGSTAR       Evening Star
@@ -1665,33 +1711,31 @@ foreign import ccall unsafe "ta_func.h TA_CDLEVENINGSTAR"
 -- outputs
 --   outInteger (int[])
 
-ta_cdleveningstar :: [Double] -> [Double] -> [Double] -> [Double] -> Double -> IO (Either Int (Int, Int, [Int]))
-ta_cdleveningstar inOpen inHigh inLow inClose optInPenetration
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_cdleveningstar startIdx endIdx (getInArrPtr 0) (getInArrPtr 1) (getInArrPtr 2) (getInArrPtr 3) (realToFrac optInPenetration) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inOpen ++ inHigh ++ inLow ++ inClose
-          len = fromIntegral $ length inOpen
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_cdleveningstar :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> Double -> IO (Either Int (Int, Int, V.Vector CInt))
+ta_cdleveningstar inOpen inHigh inLow inClose optInPenetration = do
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
+    _outInteger <- VM.new len
+    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
+      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
+        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
+          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+            alloca $ \cOutBegIdx ->
+              alloca $ \cOutNbElement ->
+                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                  do rc <- c_ta_cdleveningstar 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose (realToFrac optInPenetration) cOutBegIdx cOutNbElement c_outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
+                     case rc of
+                       0 -> do outBegIdx <- peek cOutBegIdx
+                               outNbElement <- peek cOutNbElement
+                               return $ Right $ (fromIntegral outBegIdx,
+                                                 fromIntegral outNbElement,
+                                                 out_outInteger)
+                       _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inOpen
 
 --
 -- CDLGAPSIDESIDEWHITE  Up/Down-gap side-by-side white lines
@@ -1699,6 +1743,7 @@ ta_cdleveningstar inOpen inHigh inLow inClose optInPenetration
 
 foreign import ccall unsafe "ta_func.h TA_CDLGAPSIDESIDEWHITE"
   c_ta_cdlgapsidesidewhite :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CInt -> Ptr CInt -> Ptr CInt -> IO CInt
+
 
 -- inputs
 --   inOpen
@@ -1709,33 +1754,31 @@ foreign import ccall unsafe "ta_func.h TA_CDLGAPSIDESIDEWHITE"
 -- outputs
 --   outInteger (int[])
 
-ta_cdlgapsidesidewhite :: [Double] -> [Double] -> [Double] -> [Double] -> IO (Either Int (Int, Int, [Int]))
-ta_cdlgapsidesidewhite inOpen inHigh inLow inClose
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_cdlgapsidesidewhite startIdx endIdx (getInArrPtr 0) (getInArrPtr 1) (getInArrPtr 2) (getInArrPtr 3) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inOpen ++ inHigh ++ inLow ++ inClose
-          len = fromIntegral $ length inOpen
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_cdlgapsidesidewhite :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
+ta_cdlgapsidesidewhite inOpen inHigh inLow inClose = do
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
+    _outInteger <- VM.new len
+    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
+      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
+        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
+          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+            alloca $ \cOutBegIdx ->
+              alloca $ \cOutNbElement ->
+                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                  do rc <- c_ta_cdlgapsidesidewhite 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
+                     case rc of
+                       0 -> do outBegIdx <- peek cOutBegIdx
+                               outNbElement <- peek cOutNbElement
+                               return $ Right $ (fromIntegral outBegIdx,
+                                                 fromIntegral outNbElement,
+                                                 out_outInteger)
+                       _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inOpen
 
 --
 -- CDLGRAVESTONEDOJI    Gravestone Doji
@@ -1753,33 +1796,31 @@ foreign import ccall unsafe "ta_func.h TA_CDLGRAVESTONEDOJI"
 -- outputs
 --   outInteger (int[])
 
-ta_cdlgravestonedoji :: [Double] -> [Double] -> [Double] -> [Double] -> IO (Either Int (Int, Int, [Int]))
-ta_cdlgravestonedoji inOpen inHigh inLow inClose
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_cdlgravestonedoji startIdx endIdx (getInArrPtr 0) (getInArrPtr 1) (getInArrPtr 2) (getInArrPtr 3) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inOpen ++ inHigh ++ inLow ++ inClose
-          len = fromIntegral $ length inOpen
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_cdlgravestonedoji :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
+ta_cdlgravestonedoji inOpen inHigh inLow inClose = do
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
+    _outInteger <- VM.new len
+    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
+      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
+        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
+          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+            alloca $ \cOutBegIdx ->
+              alloca $ \cOutNbElement ->
+                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                  do rc <- c_ta_cdlgravestonedoji 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
+                     case rc of
+                       0 -> do outBegIdx <- peek cOutBegIdx
+                               outNbElement <- peek cOutNbElement
+                               return $ Right $ (fromIntegral outBegIdx,
+                                                 fromIntegral outNbElement,
+                                                 out_outInteger)
+                       _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inOpen
 
 --
 -- CDLHAMMER            Hammer
@@ -1797,33 +1838,31 @@ foreign import ccall unsafe "ta_func.h TA_CDLHAMMER"
 -- outputs
 --   outInteger (int[])
 
-ta_cdlhammer :: [Double] -> [Double] -> [Double] -> [Double] -> IO (Either Int (Int, Int, [Int]))
-ta_cdlhammer inOpen inHigh inLow inClose
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_cdlhammer startIdx endIdx (getInArrPtr 0) (getInArrPtr 1) (getInArrPtr 2) (getInArrPtr 3) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inOpen ++ inHigh ++ inLow ++ inClose
-          len = fromIntegral $ length inOpen
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_cdlhammer :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
+ta_cdlhammer inOpen inHigh inLow inClose = do
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
+    _outInteger <- VM.new len
+    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
+      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
+        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
+          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+            alloca $ \cOutBegIdx ->
+              alloca $ \cOutNbElement ->
+                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                  do rc <- c_ta_cdlhammer 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
+                     case rc of
+                       0 -> do outBegIdx <- peek cOutBegIdx
+                               outNbElement <- peek cOutNbElement
+                               return $ Right $ (fromIntegral outBegIdx,
+                                                 fromIntegral outNbElement,
+                                                 out_outInteger)
+                       _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inOpen
 
 --
 -- CDLHANGINGMAN        Hanging Man
@@ -1841,33 +1880,31 @@ foreign import ccall unsafe "ta_func.h TA_CDLHANGINGMAN"
 -- outputs
 --   outInteger (int[])
 
-ta_cdlhangingman :: [Double] -> [Double] -> [Double] -> [Double] -> IO (Either Int (Int, Int, [Int]))
-ta_cdlhangingman inOpen inHigh inLow inClose
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_cdlhangingman startIdx endIdx (getInArrPtr 0) (getInArrPtr 1) (getInArrPtr 2) (getInArrPtr 3) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inOpen ++ inHigh ++ inLow ++ inClose
-          len = fromIntegral $ length inOpen
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_cdlhangingman :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
+ta_cdlhangingman inOpen inHigh inLow inClose = do
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
+    _outInteger <- VM.new len
+    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
+      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
+        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
+          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+            alloca $ \cOutBegIdx ->
+              alloca $ \cOutNbElement ->
+                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                  do rc <- c_ta_cdlhangingman 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
+                     case rc of
+                       0 -> do outBegIdx <- peek cOutBegIdx
+                               outNbElement <- peek cOutNbElement
+                               return $ Right $ (fromIntegral outBegIdx,
+                                                 fromIntegral outNbElement,
+                                                 out_outInteger)
+                       _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inOpen
 
 --
 -- CDLHARAMI            Harami Pattern
@@ -1885,33 +1922,31 @@ foreign import ccall unsafe "ta_func.h TA_CDLHARAMI"
 -- outputs
 --   outInteger (int[])
 
-ta_cdlharami :: [Double] -> [Double] -> [Double] -> [Double] -> IO (Either Int (Int, Int, [Int]))
-ta_cdlharami inOpen inHigh inLow inClose
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_cdlharami startIdx endIdx (getInArrPtr 0) (getInArrPtr 1) (getInArrPtr 2) (getInArrPtr 3) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inOpen ++ inHigh ++ inLow ++ inClose
-          len = fromIntegral $ length inOpen
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_cdlharami :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
+ta_cdlharami inOpen inHigh inLow inClose = do
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
+    _outInteger <- VM.new len
+    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
+      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
+        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
+          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+            alloca $ \cOutBegIdx ->
+              alloca $ \cOutNbElement ->
+                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                  do rc <- c_ta_cdlharami 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
+                     case rc of
+                       0 -> do outBegIdx <- peek cOutBegIdx
+                               outNbElement <- peek cOutNbElement
+                               return $ Right $ (fromIntegral outBegIdx,
+                                                 fromIntegral outNbElement,
+                                                 out_outInteger)
+                       _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inOpen
 
 --
 -- CDLHARAMICROSS       Harami Cross Pattern
@@ -1929,33 +1964,31 @@ foreign import ccall unsafe "ta_func.h TA_CDLHARAMICROSS"
 -- outputs
 --   outInteger (int[])
 
-ta_cdlharamicross :: [Double] -> [Double] -> [Double] -> [Double] -> IO (Either Int (Int, Int, [Int]))
-ta_cdlharamicross inOpen inHigh inLow inClose
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_cdlharamicross startIdx endIdx (getInArrPtr 0) (getInArrPtr 1) (getInArrPtr 2) (getInArrPtr 3) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inOpen ++ inHigh ++ inLow ++ inClose
-          len = fromIntegral $ length inOpen
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_cdlharamicross :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
+ta_cdlharamicross inOpen inHigh inLow inClose = do
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
+    _outInteger <- VM.new len
+    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
+      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
+        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
+          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+            alloca $ \cOutBegIdx ->
+              alloca $ \cOutNbElement ->
+                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                  do rc <- c_ta_cdlharamicross 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
+                     case rc of
+                       0 -> do outBegIdx <- peek cOutBegIdx
+                               outNbElement <- peek cOutNbElement
+                               return $ Right $ (fromIntegral outBegIdx,
+                                                 fromIntegral outNbElement,
+                                                 out_outInteger)
+                       _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inOpen
 
 --
 -- CDLHIGHWAVE          High-Wave Candle
@@ -1973,33 +2006,31 @@ foreign import ccall unsafe "ta_func.h TA_CDLHIGHWAVE"
 -- outputs
 --   outInteger (int[])
 
-ta_cdlhighwave :: [Double] -> [Double] -> [Double] -> [Double] -> IO (Either Int (Int, Int, [Int]))
-ta_cdlhighwave inOpen inHigh inLow inClose
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_cdlhighwave startIdx endIdx (getInArrPtr 0) (getInArrPtr 1) (getInArrPtr 2) (getInArrPtr 3) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inOpen ++ inHigh ++ inLow ++ inClose
-          len = fromIntegral $ length inOpen
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_cdlhighwave :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
+ta_cdlhighwave inOpen inHigh inLow inClose = do
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
+    _outInteger <- VM.new len
+    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
+      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
+        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
+          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+            alloca $ \cOutBegIdx ->
+              alloca $ \cOutNbElement ->
+                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                  do rc <- c_ta_cdlhighwave 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
+                     case rc of
+                       0 -> do outBegIdx <- peek cOutBegIdx
+                               outNbElement <- peek cOutNbElement
+                               return $ Right $ (fromIntegral outBegIdx,
+                                                 fromIntegral outNbElement,
+                                                 out_outInteger)
+                       _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inOpen
 
 --
 -- CDLHIKKAKE           Hikkake Pattern
@@ -2017,33 +2048,31 @@ foreign import ccall unsafe "ta_func.h TA_CDLHIKKAKE"
 -- outputs
 --   outInteger (int[])
 
-ta_cdlhikkake :: [Double] -> [Double] -> [Double] -> [Double] -> IO (Either Int (Int, Int, [Int]))
-ta_cdlhikkake inOpen inHigh inLow inClose
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_cdlhikkake startIdx endIdx (getInArrPtr 0) (getInArrPtr 1) (getInArrPtr 2) (getInArrPtr 3) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inOpen ++ inHigh ++ inLow ++ inClose
-          len = fromIntegral $ length inOpen
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_cdlhikkake :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
+ta_cdlhikkake inOpen inHigh inLow inClose = do
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
+    _outInteger <- VM.new len
+    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
+      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
+        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
+          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+            alloca $ \cOutBegIdx ->
+              alloca $ \cOutNbElement ->
+                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                  do rc <- c_ta_cdlhikkake 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
+                     case rc of
+                       0 -> do outBegIdx <- peek cOutBegIdx
+                               outNbElement <- peek cOutNbElement
+                               return $ Right $ (fromIntegral outBegIdx,
+                                                 fromIntegral outNbElement,
+                                                 out_outInteger)
+                       _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inOpen
 
 --
 -- CDLHIKKAKEMOD        Modified Hikkake Pattern
@@ -2061,33 +2090,31 @@ foreign import ccall unsafe "ta_func.h TA_CDLHIKKAKEMOD"
 -- outputs
 --   outInteger (int[])
 
-ta_cdlhikkakemod :: [Double] -> [Double] -> [Double] -> [Double] -> IO (Either Int (Int, Int, [Int]))
-ta_cdlhikkakemod inOpen inHigh inLow inClose
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_cdlhikkakemod startIdx endIdx (getInArrPtr 0) (getInArrPtr 1) (getInArrPtr 2) (getInArrPtr 3) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inOpen ++ inHigh ++ inLow ++ inClose
-          len = fromIntegral $ length inOpen
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_cdlhikkakemod :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
+ta_cdlhikkakemod inOpen inHigh inLow inClose = do
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
+    _outInteger <- VM.new len
+    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
+      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
+        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
+          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+            alloca $ \cOutBegIdx ->
+              alloca $ \cOutNbElement ->
+                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                  do rc <- c_ta_cdlhikkakemod 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
+                     case rc of
+                       0 -> do outBegIdx <- peek cOutBegIdx
+                               outNbElement <- peek cOutNbElement
+                               return $ Right $ (fromIntegral outBegIdx,
+                                                 fromIntegral outNbElement,
+                                                 out_outInteger)
+                       _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inOpen
 
 --
 -- CDLHOMINGPIGEON      Homing Pigeon
@@ -2105,33 +2132,31 @@ foreign import ccall unsafe "ta_func.h TA_CDLHOMINGPIGEON"
 -- outputs
 --   outInteger (int[])
 
-ta_cdlhomingpigeon :: [Double] -> [Double] -> [Double] -> [Double] -> IO (Either Int (Int, Int, [Int]))
-ta_cdlhomingpigeon inOpen inHigh inLow inClose
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_cdlhomingpigeon startIdx endIdx (getInArrPtr 0) (getInArrPtr 1) (getInArrPtr 2) (getInArrPtr 3) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inOpen ++ inHigh ++ inLow ++ inClose
-          len = fromIntegral $ length inOpen
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_cdlhomingpigeon :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
+ta_cdlhomingpigeon inOpen inHigh inLow inClose = do
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
+    _outInteger <- VM.new len
+    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
+      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
+        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
+          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+            alloca $ \cOutBegIdx ->
+              alloca $ \cOutNbElement ->
+                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                  do rc <- c_ta_cdlhomingpigeon 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
+                     case rc of
+                       0 -> do outBegIdx <- peek cOutBegIdx
+                               outNbElement <- peek cOutNbElement
+                               return $ Right $ (fromIntegral outBegIdx,
+                                                 fromIntegral outNbElement,
+                                                 out_outInteger)
+                       _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inOpen
 
 --
 -- CDLIDENTICAL3CROWS   Identical Three Crows
@@ -2149,33 +2174,31 @@ foreign import ccall unsafe "ta_func.h TA_CDLIDENTICAL3CROWS"
 -- outputs
 --   outInteger (int[])
 
-ta_cdlidentical3crows :: [Double] -> [Double] -> [Double] -> [Double] -> IO (Either Int (Int, Int, [Int]))
-ta_cdlidentical3crows inOpen inHigh inLow inClose
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_cdlidentical3crows startIdx endIdx (getInArrPtr 0) (getInArrPtr 1) (getInArrPtr 2) (getInArrPtr 3) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inOpen ++ inHigh ++ inLow ++ inClose
-          len = fromIntegral $ length inOpen
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_cdlidentical3crows :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
+ta_cdlidentical3crows inOpen inHigh inLow inClose = do
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
+    _outInteger <- VM.new len
+    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
+      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
+        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
+          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+            alloca $ \cOutBegIdx ->
+              alloca $ \cOutNbElement ->
+                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                  do rc <- c_ta_cdlidentical3crows 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
+                     case rc of
+                       0 -> do outBegIdx <- peek cOutBegIdx
+                               outNbElement <- peek cOutNbElement
+                               return $ Right $ (fromIntegral outBegIdx,
+                                                 fromIntegral outNbElement,
+                                                 out_outInteger)
+                       _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inOpen
 
 --
 -- CDLINNECK            In-Neck Pattern
@@ -2193,33 +2216,31 @@ foreign import ccall unsafe "ta_func.h TA_CDLINNECK"
 -- outputs
 --   outInteger (int[])
 
-ta_cdlinneck :: [Double] -> [Double] -> [Double] -> [Double] -> IO (Either Int (Int, Int, [Int]))
-ta_cdlinneck inOpen inHigh inLow inClose
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_cdlinneck startIdx endIdx (getInArrPtr 0) (getInArrPtr 1) (getInArrPtr 2) (getInArrPtr 3) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inOpen ++ inHigh ++ inLow ++ inClose
-          len = fromIntegral $ length inOpen
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_cdlinneck :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
+ta_cdlinneck inOpen inHigh inLow inClose = do
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
+    _outInteger <- VM.new len
+    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
+      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
+        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
+          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+            alloca $ \cOutBegIdx ->
+              alloca $ \cOutNbElement ->
+                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                  do rc <- c_ta_cdlinneck 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
+                     case rc of
+                       0 -> do outBegIdx <- peek cOutBegIdx
+                               outNbElement <- peek cOutNbElement
+                               return $ Right $ (fromIntegral outBegIdx,
+                                                 fromIntegral outNbElement,
+                                                 out_outInteger)
+                       _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inOpen
 
 --
 -- CDLINVERTEDHAMMER    Inverted Hammer
@@ -2237,33 +2258,31 @@ foreign import ccall unsafe "ta_func.h TA_CDLINVERTEDHAMMER"
 -- outputs
 --   outInteger (int[])
 
-ta_cdlinvertedhammer :: [Double] -> [Double] -> [Double] -> [Double] -> IO (Either Int (Int, Int, [Int]))
-ta_cdlinvertedhammer inOpen inHigh inLow inClose
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_cdlinvertedhammer startIdx endIdx (getInArrPtr 0) (getInArrPtr 1) (getInArrPtr 2) (getInArrPtr 3) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inOpen ++ inHigh ++ inLow ++ inClose
-          len = fromIntegral $ length inOpen
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_cdlinvertedhammer :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
+ta_cdlinvertedhammer inOpen inHigh inLow inClose = do
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
+    _outInteger <- VM.new len
+    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
+      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
+        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
+          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+            alloca $ \cOutBegIdx ->
+              alloca $ \cOutNbElement ->
+                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                  do rc <- c_ta_cdlinvertedhammer 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
+                     case rc of
+                       0 -> do outBegIdx <- peek cOutBegIdx
+                               outNbElement <- peek cOutNbElement
+                               return $ Right $ (fromIntegral outBegIdx,
+                                                 fromIntegral outNbElement,
+                                                 out_outInteger)
+                       _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inOpen
 
 --
 -- CDLKICKING           Kicking
@@ -2281,33 +2300,31 @@ foreign import ccall unsafe "ta_func.h TA_CDLKICKING"
 -- outputs
 --   outInteger (int[])
 
-ta_cdlkicking :: [Double] -> [Double] -> [Double] -> [Double] -> IO (Either Int (Int, Int, [Int]))
-ta_cdlkicking inOpen inHigh inLow inClose
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_cdlkicking startIdx endIdx (getInArrPtr 0) (getInArrPtr 1) (getInArrPtr 2) (getInArrPtr 3) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inOpen ++ inHigh ++ inLow ++ inClose
-          len = fromIntegral $ length inOpen
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_cdlkicking :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
+ta_cdlkicking inOpen inHigh inLow inClose = do
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
+    _outInteger <- VM.new len
+    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
+      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
+        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
+          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+            alloca $ \cOutBegIdx ->
+              alloca $ \cOutNbElement ->
+                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                  do rc <- c_ta_cdlkicking 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
+                     case rc of
+                       0 -> do outBegIdx <- peek cOutBegIdx
+                               outNbElement <- peek cOutNbElement
+                               return $ Right $ (fromIntegral outBegIdx,
+                                                 fromIntegral outNbElement,
+                                                 out_outInteger)
+                       _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inOpen
 
 --
 -- CDLKICKINGBYLENGTH   Kicking - bull/bear determined by the longer marubozu
@@ -2325,33 +2342,31 @@ foreign import ccall unsafe "ta_func.h TA_CDLKICKINGBYLENGTH"
 -- outputs
 --   outInteger (int[])
 
-ta_cdlkickingbylength :: [Double] -> [Double] -> [Double] -> [Double] -> IO (Either Int (Int, Int, [Int]))
-ta_cdlkickingbylength inOpen inHigh inLow inClose
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_cdlkickingbylength startIdx endIdx (getInArrPtr 0) (getInArrPtr 1) (getInArrPtr 2) (getInArrPtr 3) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inOpen ++ inHigh ++ inLow ++ inClose
-          len = fromIntegral $ length inOpen
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_cdlkickingbylength :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
+ta_cdlkickingbylength inOpen inHigh inLow inClose = do
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
+    _outInteger <- VM.new len
+    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
+      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
+        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
+          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+            alloca $ \cOutBegIdx ->
+              alloca $ \cOutNbElement ->
+                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                  do rc <- c_ta_cdlkickingbylength 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
+                     case rc of
+                       0 -> do outBegIdx <- peek cOutBegIdx
+                               outNbElement <- peek cOutNbElement
+                               return $ Right $ (fromIntegral outBegIdx,
+                                                 fromIntegral outNbElement,
+                                                 out_outInteger)
+                       _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inOpen
 
 --
 -- CDLLADDERBOTTOM      Ladder Bottom
@@ -2369,33 +2384,31 @@ foreign import ccall unsafe "ta_func.h TA_CDLLADDERBOTTOM"
 -- outputs
 --   outInteger (int[])
 
-ta_cdlladderbottom :: [Double] -> [Double] -> [Double] -> [Double] -> IO (Either Int (Int, Int, [Int]))
-ta_cdlladderbottom inOpen inHigh inLow inClose
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_cdlladderbottom startIdx endIdx (getInArrPtr 0) (getInArrPtr 1) (getInArrPtr 2) (getInArrPtr 3) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inOpen ++ inHigh ++ inLow ++ inClose
-          len = fromIntegral $ length inOpen
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_cdlladderbottom :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
+ta_cdlladderbottom inOpen inHigh inLow inClose = do
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
+    _outInteger <- VM.new len
+    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
+      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
+        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
+          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+            alloca $ \cOutBegIdx ->
+              alloca $ \cOutNbElement ->
+                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                  do rc <- c_ta_cdlladderbottom 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
+                     case rc of
+                       0 -> do outBegIdx <- peek cOutBegIdx
+                               outNbElement <- peek cOutNbElement
+                               return $ Right $ (fromIntegral outBegIdx,
+                                                 fromIntegral outNbElement,
+                                                 out_outInteger)
+                       _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inOpen
 
 --
 -- CDLLONGLEGGEDDOJI    Long Legged Doji
@@ -2413,33 +2426,31 @@ foreign import ccall unsafe "ta_func.h TA_CDLLONGLEGGEDDOJI"
 -- outputs
 --   outInteger (int[])
 
-ta_cdllongleggeddoji :: [Double] -> [Double] -> [Double] -> [Double] -> IO (Either Int (Int, Int, [Int]))
-ta_cdllongleggeddoji inOpen inHigh inLow inClose
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_cdllongleggeddoji startIdx endIdx (getInArrPtr 0) (getInArrPtr 1) (getInArrPtr 2) (getInArrPtr 3) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inOpen ++ inHigh ++ inLow ++ inClose
-          len = fromIntegral $ length inOpen
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_cdllongleggeddoji :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
+ta_cdllongleggeddoji inOpen inHigh inLow inClose = do
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
+    _outInteger <- VM.new len
+    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
+      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
+        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
+          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+            alloca $ \cOutBegIdx ->
+              alloca $ \cOutNbElement ->
+                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                  do rc <- c_ta_cdllongleggeddoji 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
+                     case rc of
+                       0 -> do outBegIdx <- peek cOutBegIdx
+                               outNbElement <- peek cOutNbElement
+                               return $ Right $ (fromIntegral outBegIdx,
+                                                 fromIntegral outNbElement,
+                                                 out_outInteger)
+                       _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inOpen
 
 --
 -- CDLLONGLINE          Long Line Candle
@@ -2457,33 +2468,31 @@ foreign import ccall unsafe "ta_func.h TA_CDLLONGLINE"
 -- outputs
 --   outInteger (int[])
 
-ta_cdllongline :: [Double] -> [Double] -> [Double] -> [Double] -> IO (Either Int (Int, Int, [Int]))
-ta_cdllongline inOpen inHigh inLow inClose
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_cdllongline startIdx endIdx (getInArrPtr 0) (getInArrPtr 1) (getInArrPtr 2) (getInArrPtr 3) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inOpen ++ inHigh ++ inLow ++ inClose
-          len = fromIntegral $ length inOpen
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_cdllongline :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
+ta_cdllongline inOpen inHigh inLow inClose = do
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
+    _outInteger <- VM.new len
+    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
+      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
+        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
+          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+            alloca $ \cOutBegIdx ->
+              alloca $ \cOutNbElement ->
+                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                  do rc <- c_ta_cdllongline 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
+                     case rc of
+                       0 -> do outBegIdx <- peek cOutBegIdx
+                               outNbElement <- peek cOutNbElement
+                               return $ Right $ (fromIntegral outBegIdx,
+                                                 fromIntegral outNbElement,
+                                                 out_outInteger)
+                       _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inOpen
 
 --
 -- CDLMARUBOZU          Marubozu
@@ -2501,33 +2510,31 @@ foreign import ccall unsafe "ta_func.h TA_CDLMARUBOZU"
 -- outputs
 --   outInteger (int[])
 
-ta_cdlmarubozu :: [Double] -> [Double] -> [Double] -> [Double] -> IO (Either Int (Int, Int, [Int]))
-ta_cdlmarubozu inOpen inHigh inLow inClose
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_cdlmarubozu startIdx endIdx (getInArrPtr 0) (getInArrPtr 1) (getInArrPtr 2) (getInArrPtr 3) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inOpen ++ inHigh ++ inLow ++ inClose
-          len = fromIntegral $ length inOpen
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_cdlmarubozu :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
+ta_cdlmarubozu inOpen inHigh inLow inClose = do
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
+    _outInteger <- VM.new len
+    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
+      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
+        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
+          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+            alloca $ \cOutBegIdx ->
+              alloca $ \cOutNbElement ->
+                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                  do rc <- c_ta_cdlmarubozu 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
+                     case rc of
+                       0 -> do outBegIdx <- peek cOutBegIdx
+                               outNbElement <- peek cOutNbElement
+                               return $ Right $ (fromIntegral outBegIdx,
+                                                 fromIntegral outNbElement,
+                                                 out_outInteger)
+                       _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inOpen
 
 --
 -- CDLMATCHINGLOW       Matching Low
@@ -2545,33 +2552,31 @@ foreign import ccall unsafe "ta_func.h TA_CDLMATCHINGLOW"
 -- outputs
 --   outInteger (int[])
 
-ta_cdlmatchinglow :: [Double] -> [Double] -> [Double] -> [Double] -> IO (Either Int (Int, Int, [Int]))
-ta_cdlmatchinglow inOpen inHigh inLow inClose
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_cdlmatchinglow startIdx endIdx (getInArrPtr 0) (getInArrPtr 1) (getInArrPtr 2) (getInArrPtr 3) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inOpen ++ inHigh ++ inLow ++ inClose
-          len = fromIntegral $ length inOpen
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_cdlmatchinglow :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
+ta_cdlmatchinglow inOpen inHigh inLow inClose = do
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
+    _outInteger <- VM.new len
+    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
+      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
+        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
+          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+            alloca $ \cOutBegIdx ->
+              alloca $ \cOutNbElement ->
+                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                  do rc <- c_ta_cdlmatchinglow 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
+                     case rc of
+                       0 -> do outBegIdx <- peek cOutBegIdx
+                               outNbElement <- peek cOutNbElement
+                               return $ Right $ (fromIntegral outBegIdx,
+                                                 fromIntegral outNbElement,
+                                                 out_outInteger)
+                       _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inOpen
 
 --
 -- CDLMATHOLD           Mat Hold
@@ -2590,33 +2595,31 @@ foreign import ccall unsafe "ta_func.h TA_CDLMATHOLD"
 -- outputs
 --   outInteger (int[])
 
-ta_cdlmathold :: [Double] -> [Double] -> [Double] -> [Double] -> Double -> IO (Either Int (Int, Int, [Int]))
-ta_cdlmathold inOpen inHigh inLow inClose optInPenetration
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_cdlmathold startIdx endIdx (getInArrPtr 0) (getInArrPtr 1) (getInArrPtr 2) (getInArrPtr 3) (realToFrac optInPenetration) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inOpen ++ inHigh ++ inLow ++ inClose
-          len = fromIntegral $ length inOpen
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_cdlmathold :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> Double -> IO (Either Int (Int, Int, V.Vector CInt))
+ta_cdlmathold inOpen inHigh inLow inClose optInPenetration = do
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
+    _outInteger <- VM.new len
+    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
+      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
+        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
+          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+            alloca $ \cOutBegIdx ->
+              alloca $ \cOutNbElement ->
+                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                  do rc <- c_ta_cdlmathold 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose (realToFrac optInPenetration) cOutBegIdx cOutNbElement c_outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
+                     case rc of
+                       0 -> do outBegIdx <- peek cOutBegIdx
+                               outNbElement <- peek cOutNbElement
+                               return $ Right $ (fromIntegral outBegIdx,
+                                                 fromIntegral outNbElement,
+                                                 out_outInteger)
+                       _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inOpen
 
 --
 -- CDLMORNINGDOJISTAR   Morning Doji Star
@@ -2635,33 +2638,31 @@ foreign import ccall unsafe "ta_func.h TA_CDLMORNINGDOJISTAR"
 -- outputs
 --   outInteger (int[])
 
-ta_cdlmorningdojistar :: [Double] -> [Double] -> [Double] -> [Double] -> Double -> IO (Either Int (Int, Int, [Int]))
-ta_cdlmorningdojistar inOpen inHigh inLow inClose optInPenetration
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_cdlmorningdojistar startIdx endIdx (getInArrPtr 0) (getInArrPtr 1) (getInArrPtr 2) (getInArrPtr 3) (realToFrac optInPenetration) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inOpen ++ inHigh ++ inLow ++ inClose
-          len = fromIntegral $ length inOpen
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_cdlmorningdojistar :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> Double -> IO (Either Int (Int, Int, V.Vector CInt))
+ta_cdlmorningdojistar inOpen inHigh inLow inClose optInPenetration = do
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
+    _outInteger <- VM.new len
+    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
+      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
+        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
+          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+            alloca $ \cOutBegIdx ->
+              alloca $ \cOutNbElement ->
+                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                  do rc <- c_ta_cdlmorningdojistar 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose (realToFrac optInPenetration) cOutBegIdx cOutNbElement c_outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
+                     case rc of
+                       0 -> do outBegIdx <- peek cOutBegIdx
+                               outNbElement <- peek cOutNbElement
+                               return $ Right $ (fromIntegral outBegIdx,
+                                                 fromIntegral outNbElement,
+                                                 out_outInteger)
+                       _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inOpen
 
 --
 -- CDLMORNINGSTAR       Morning Star
@@ -2680,33 +2681,31 @@ foreign import ccall unsafe "ta_func.h TA_CDLMORNINGSTAR"
 -- outputs
 --   outInteger (int[])
 
-ta_cdlmorningstar :: [Double] -> [Double] -> [Double] -> [Double] -> Double -> IO (Either Int (Int, Int, [Int]))
-ta_cdlmorningstar inOpen inHigh inLow inClose optInPenetration
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_cdlmorningstar startIdx endIdx (getInArrPtr 0) (getInArrPtr 1) (getInArrPtr 2) (getInArrPtr 3) (realToFrac optInPenetration) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inOpen ++ inHigh ++ inLow ++ inClose
-          len = fromIntegral $ length inOpen
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_cdlmorningstar :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> Double -> IO (Either Int (Int, Int, V.Vector CInt))
+ta_cdlmorningstar inOpen inHigh inLow inClose optInPenetration = do
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
+    _outInteger <- VM.new len
+    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
+      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
+        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
+          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+            alloca $ \cOutBegIdx ->
+              alloca $ \cOutNbElement ->
+                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                  do rc <- c_ta_cdlmorningstar 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose (realToFrac optInPenetration) cOutBegIdx cOutNbElement c_outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
+                     case rc of
+                       0 -> do outBegIdx <- peek cOutBegIdx
+                               outNbElement <- peek cOutNbElement
+                               return $ Right $ (fromIntegral outBegIdx,
+                                                 fromIntegral outNbElement,
+                                                 out_outInteger)
+                       _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inOpen
 
 --
 -- CDLONNECK            On-Neck Pattern
@@ -2724,33 +2723,31 @@ foreign import ccall unsafe "ta_func.h TA_CDLONNECK"
 -- outputs
 --   outInteger (int[])
 
-ta_cdlonneck :: [Double] -> [Double] -> [Double] -> [Double] -> IO (Either Int (Int, Int, [Int]))
-ta_cdlonneck inOpen inHigh inLow inClose
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_cdlonneck startIdx endIdx (getInArrPtr 0) (getInArrPtr 1) (getInArrPtr 2) (getInArrPtr 3) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inOpen ++ inHigh ++ inLow ++ inClose
-          len = fromIntegral $ length inOpen
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_cdlonneck :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
+ta_cdlonneck inOpen inHigh inLow inClose = do
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
+    _outInteger <- VM.new len
+    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
+      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
+        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
+          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+            alloca $ \cOutBegIdx ->
+              alloca $ \cOutNbElement ->
+                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                  do rc <- c_ta_cdlonneck 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
+                     case rc of
+                       0 -> do outBegIdx <- peek cOutBegIdx
+                               outNbElement <- peek cOutNbElement
+                               return $ Right $ (fromIntegral outBegIdx,
+                                                 fromIntegral outNbElement,
+                                                 out_outInteger)
+                       _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inOpen
 
 --
 -- CDLPIERCING          Piercing Pattern
@@ -2768,33 +2765,31 @@ foreign import ccall unsafe "ta_func.h TA_CDLPIERCING"
 -- outputs
 --   outInteger (int[])
 
-ta_cdlpiercing :: [Double] -> [Double] -> [Double] -> [Double] -> IO (Either Int (Int, Int, [Int]))
-ta_cdlpiercing inOpen inHigh inLow inClose
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_cdlpiercing startIdx endIdx (getInArrPtr 0) (getInArrPtr 1) (getInArrPtr 2) (getInArrPtr 3) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inOpen ++ inHigh ++ inLow ++ inClose
-          len = fromIntegral $ length inOpen
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_cdlpiercing :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
+ta_cdlpiercing inOpen inHigh inLow inClose = do
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
+    _outInteger <- VM.new len
+    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
+      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
+        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
+          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+            alloca $ \cOutBegIdx ->
+              alloca $ \cOutNbElement ->
+                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                  do rc <- c_ta_cdlpiercing 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
+                     case rc of
+                       0 -> do outBegIdx <- peek cOutBegIdx
+                               outNbElement <- peek cOutNbElement
+                               return $ Right $ (fromIntegral outBegIdx,
+                                                 fromIntegral outNbElement,
+                                                 out_outInteger)
+                       _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inOpen
 
 --
 -- CDLRICKSHAWMAN       Rickshaw Man
@@ -2812,33 +2807,31 @@ foreign import ccall unsafe "ta_func.h TA_CDLRICKSHAWMAN"
 -- outputs
 --   outInteger (int[])
 
-ta_cdlrickshawman :: [Double] -> [Double] -> [Double] -> [Double] -> IO (Either Int (Int, Int, [Int]))
-ta_cdlrickshawman inOpen inHigh inLow inClose
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_cdlrickshawman startIdx endIdx (getInArrPtr 0) (getInArrPtr 1) (getInArrPtr 2) (getInArrPtr 3) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inOpen ++ inHigh ++ inLow ++ inClose
-          len = fromIntegral $ length inOpen
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_cdlrickshawman :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
+ta_cdlrickshawman inOpen inHigh inLow inClose = do
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
+    _outInteger <- VM.new len
+    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
+      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
+        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
+          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+            alloca $ \cOutBegIdx ->
+              alloca $ \cOutNbElement ->
+                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                  do rc <- c_ta_cdlrickshawman 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
+                     case rc of
+                       0 -> do outBegIdx <- peek cOutBegIdx
+                               outNbElement <- peek cOutNbElement
+                               return $ Right $ (fromIntegral outBegIdx,
+                                                 fromIntegral outNbElement,
+                                                 out_outInteger)
+                       _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inOpen
 
 --
 -- CDLRISEFALL3METHODS  Rising/Falling Three Methods
@@ -2856,33 +2849,31 @@ foreign import ccall unsafe "ta_func.h TA_CDLRISEFALL3METHODS"
 -- outputs
 --   outInteger (int[])
 
-ta_cdlrisefall3methods :: [Double] -> [Double] -> [Double] -> [Double] -> IO (Either Int (Int, Int, [Int]))
-ta_cdlrisefall3methods inOpen inHigh inLow inClose
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_cdlrisefall3methods startIdx endIdx (getInArrPtr 0) (getInArrPtr 1) (getInArrPtr 2) (getInArrPtr 3) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inOpen ++ inHigh ++ inLow ++ inClose
-          len = fromIntegral $ length inOpen
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_cdlrisefall3methods :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
+ta_cdlrisefall3methods inOpen inHigh inLow inClose = do
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
+    _outInteger <- VM.new len
+    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
+      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
+        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
+          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+            alloca $ \cOutBegIdx ->
+              alloca $ \cOutNbElement ->
+                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                  do rc <- c_ta_cdlrisefall3methods 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
+                     case rc of
+                       0 -> do outBegIdx <- peek cOutBegIdx
+                               outNbElement <- peek cOutNbElement
+                               return $ Right $ (fromIntegral outBegIdx,
+                                                 fromIntegral outNbElement,
+                                                 out_outInteger)
+                       _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inOpen
 
 --
 -- CDLSEPARATINGLINES   Separating Lines
@@ -2900,33 +2891,31 @@ foreign import ccall unsafe "ta_func.h TA_CDLSEPARATINGLINES"
 -- outputs
 --   outInteger (int[])
 
-ta_cdlseparatinglines :: [Double] -> [Double] -> [Double] -> [Double] -> IO (Either Int (Int, Int, [Int]))
-ta_cdlseparatinglines inOpen inHigh inLow inClose
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_cdlseparatinglines startIdx endIdx (getInArrPtr 0) (getInArrPtr 1) (getInArrPtr 2) (getInArrPtr 3) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inOpen ++ inHigh ++ inLow ++ inClose
-          len = fromIntegral $ length inOpen
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_cdlseparatinglines :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
+ta_cdlseparatinglines inOpen inHigh inLow inClose = do
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
+    _outInteger <- VM.new len
+    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
+      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
+        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
+          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+            alloca $ \cOutBegIdx ->
+              alloca $ \cOutNbElement ->
+                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                  do rc <- c_ta_cdlseparatinglines 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
+                     case rc of
+                       0 -> do outBegIdx <- peek cOutBegIdx
+                               outNbElement <- peek cOutNbElement
+                               return $ Right $ (fromIntegral outBegIdx,
+                                                 fromIntegral outNbElement,
+                                                 out_outInteger)
+                       _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inOpen
 
 --
 -- CDLSHOOTINGSTAR      Shooting Star
@@ -2944,33 +2933,31 @@ foreign import ccall unsafe "ta_func.h TA_CDLSHOOTINGSTAR"
 -- outputs
 --   outInteger (int[])
 
-ta_cdlshootingstar :: [Double] -> [Double] -> [Double] -> [Double] -> IO (Either Int (Int, Int, [Int]))
-ta_cdlshootingstar inOpen inHigh inLow inClose
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_cdlshootingstar startIdx endIdx (getInArrPtr 0) (getInArrPtr 1) (getInArrPtr 2) (getInArrPtr 3) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inOpen ++ inHigh ++ inLow ++ inClose
-          len = fromIntegral $ length inOpen
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_cdlshootingstar :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
+ta_cdlshootingstar inOpen inHigh inLow inClose = do
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
+    _outInteger <- VM.new len
+    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
+      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
+        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
+          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+            alloca $ \cOutBegIdx ->
+              alloca $ \cOutNbElement ->
+                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                  do rc <- c_ta_cdlshootingstar 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
+                     case rc of
+                       0 -> do outBegIdx <- peek cOutBegIdx
+                               outNbElement <- peek cOutNbElement
+                               return $ Right $ (fromIntegral outBegIdx,
+                                                 fromIntegral outNbElement,
+                                                 out_outInteger)
+                       _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inOpen
 
 --
 -- CDLSHORTLINE         Short Line Candle
@@ -2988,33 +2975,31 @@ foreign import ccall unsafe "ta_func.h TA_CDLSHORTLINE"
 -- outputs
 --   outInteger (int[])
 
-ta_cdlshortline :: [Double] -> [Double] -> [Double] -> [Double] -> IO (Either Int (Int, Int, [Int]))
-ta_cdlshortline inOpen inHigh inLow inClose
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_cdlshortline startIdx endIdx (getInArrPtr 0) (getInArrPtr 1) (getInArrPtr 2) (getInArrPtr 3) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inOpen ++ inHigh ++ inLow ++ inClose
-          len = fromIntegral $ length inOpen
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_cdlshortline :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
+ta_cdlshortline inOpen inHigh inLow inClose = do
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
+    _outInteger <- VM.new len
+    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
+      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
+        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
+          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+            alloca $ \cOutBegIdx ->
+              alloca $ \cOutNbElement ->
+                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                  do rc <- c_ta_cdlshortline 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
+                     case rc of
+                       0 -> do outBegIdx <- peek cOutBegIdx
+                               outNbElement <- peek cOutNbElement
+                               return $ Right $ (fromIntegral outBegIdx,
+                                                 fromIntegral outNbElement,
+                                                 out_outInteger)
+                       _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inOpen
 
 --
 -- CDLSPINNINGTOP       Spinning Top
@@ -3032,33 +3017,31 @@ foreign import ccall unsafe "ta_func.h TA_CDLSPINNINGTOP"
 -- outputs
 --   outInteger (int[])
 
-ta_cdlspinningtop :: [Double] -> [Double] -> [Double] -> [Double] -> IO (Either Int (Int, Int, [Int]))
-ta_cdlspinningtop inOpen inHigh inLow inClose
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_cdlspinningtop startIdx endIdx (getInArrPtr 0) (getInArrPtr 1) (getInArrPtr 2) (getInArrPtr 3) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inOpen ++ inHigh ++ inLow ++ inClose
-          len = fromIntegral $ length inOpen
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_cdlspinningtop :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
+ta_cdlspinningtop inOpen inHigh inLow inClose = do
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
+    _outInteger <- VM.new len
+    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
+      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
+        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
+          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+            alloca $ \cOutBegIdx ->
+              alloca $ \cOutNbElement ->
+                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                  do rc <- c_ta_cdlspinningtop 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
+                     case rc of
+                       0 -> do outBegIdx <- peek cOutBegIdx
+                               outNbElement <- peek cOutNbElement
+                               return $ Right $ (fromIntegral outBegIdx,
+                                                 fromIntegral outNbElement,
+                                                 out_outInteger)
+                       _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inOpen
 
 --
 -- CDLSTALLEDPATTERN    Stalled Pattern
@@ -3076,33 +3059,31 @@ foreign import ccall unsafe "ta_func.h TA_CDLSTALLEDPATTERN"
 -- outputs
 --   outInteger (int[])
 
-ta_cdlstalledpattern :: [Double] -> [Double] -> [Double] -> [Double] -> IO (Either Int (Int, Int, [Int]))
-ta_cdlstalledpattern inOpen inHigh inLow inClose
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_cdlstalledpattern startIdx endIdx (getInArrPtr 0) (getInArrPtr 1) (getInArrPtr 2) (getInArrPtr 3) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inOpen ++ inHigh ++ inLow ++ inClose
-          len = fromIntegral $ length inOpen
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_cdlstalledpattern :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
+ta_cdlstalledpattern inOpen inHigh inLow inClose = do
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
+    _outInteger <- VM.new len
+    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
+      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
+        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
+          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+            alloca $ \cOutBegIdx ->
+              alloca $ \cOutNbElement ->
+                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                  do rc <- c_ta_cdlstalledpattern 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
+                     case rc of
+                       0 -> do outBegIdx <- peek cOutBegIdx
+                               outNbElement <- peek cOutNbElement
+                               return $ Right $ (fromIntegral outBegIdx,
+                                                 fromIntegral outNbElement,
+                                                 out_outInteger)
+                       _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inOpen
 
 --
 -- CDLSTICKSANDWICH     Stick Sandwich
@@ -3120,33 +3101,31 @@ foreign import ccall unsafe "ta_func.h TA_CDLSTICKSANDWICH"
 -- outputs
 --   outInteger (int[])
 
-ta_cdlsticksandwich :: [Double] -> [Double] -> [Double] -> [Double] -> IO (Either Int (Int, Int, [Int]))
-ta_cdlsticksandwich inOpen inHigh inLow inClose
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_cdlsticksandwich startIdx endIdx (getInArrPtr 0) (getInArrPtr 1) (getInArrPtr 2) (getInArrPtr 3) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inOpen ++ inHigh ++ inLow ++ inClose
-          len = fromIntegral $ length inOpen
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_cdlsticksandwich :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
+ta_cdlsticksandwich inOpen inHigh inLow inClose = do
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
+    _outInteger <- VM.new len
+    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
+      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
+        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
+          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+            alloca $ \cOutBegIdx ->
+              alloca $ \cOutNbElement ->
+                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                  do rc <- c_ta_cdlsticksandwich 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
+                     case rc of
+                       0 -> do outBegIdx <- peek cOutBegIdx
+                               outNbElement <- peek cOutNbElement
+                               return $ Right $ (fromIntegral outBegIdx,
+                                                 fromIntegral outNbElement,
+                                                 out_outInteger)
+                       _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inOpen
 
 --
 -- CDLTAKURI            Takuri (Dragonfly Doji with very long lower shadow)
@@ -3164,33 +3143,31 @@ foreign import ccall unsafe "ta_func.h TA_CDLTAKURI"
 -- outputs
 --   outInteger (int[])
 
-ta_cdltakuri :: [Double] -> [Double] -> [Double] -> [Double] -> IO (Either Int (Int, Int, [Int]))
-ta_cdltakuri inOpen inHigh inLow inClose
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_cdltakuri startIdx endIdx (getInArrPtr 0) (getInArrPtr 1) (getInArrPtr 2) (getInArrPtr 3) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inOpen ++ inHigh ++ inLow ++ inClose
-          len = fromIntegral $ length inOpen
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_cdltakuri :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
+ta_cdltakuri inOpen inHigh inLow inClose = do
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
+    _outInteger <- VM.new len
+    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
+      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
+        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
+          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+            alloca $ \cOutBegIdx ->
+              alloca $ \cOutNbElement ->
+                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                  do rc <- c_ta_cdltakuri 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
+                     case rc of
+                       0 -> do outBegIdx <- peek cOutBegIdx
+                               outNbElement <- peek cOutNbElement
+                               return $ Right $ (fromIntegral outBegIdx,
+                                                 fromIntegral outNbElement,
+                                                 out_outInteger)
+                       _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inOpen
 
 --
 -- CDLTASUKIGAP         Tasuki Gap
@@ -3208,33 +3185,31 @@ foreign import ccall unsafe "ta_func.h TA_CDLTASUKIGAP"
 -- outputs
 --   outInteger (int[])
 
-ta_cdltasukigap :: [Double] -> [Double] -> [Double] -> [Double] -> IO (Either Int (Int, Int, [Int]))
-ta_cdltasukigap inOpen inHigh inLow inClose
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_cdltasukigap startIdx endIdx (getInArrPtr 0) (getInArrPtr 1) (getInArrPtr 2) (getInArrPtr 3) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inOpen ++ inHigh ++ inLow ++ inClose
-          len = fromIntegral $ length inOpen
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_cdltasukigap :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
+ta_cdltasukigap inOpen inHigh inLow inClose = do
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
+    _outInteger <- VM.new len
+    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
+      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
+        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
+          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+            alloca $ \cOutBegIdx ->
+              alloca $ \cOutNbElement ->
+                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                  do rc <- c_ta_cdltasukigap 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
+                     case rc of
+                       0 -> do outBegIdx <- peek cOutBegIdx
+                               outNbElement <- peek cOutNbElement
+                               return $ Right $ (fromIntegral outBegIdx,
+                                                 fromIntegral outNbElement,
+                                                 out_outInteger)
+                       _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inOpen
 
 --
 -- CDLTHRUSTING         Thrusting Pattern
@@ -3252,33 +3227,31 @@ foreign import ccall unsafe "ta_func.h TA_CDLTHRUSTING"
 -- outputs
 --   outInteger (int[])
 
-ta_cdlthrusting :: [Double] -> [Double] -> [Double] -> [Double] -> IO (Either Int (Int, Int, [Int]))
-ta_cdlthrusting inOpen inHigh inLow inClose
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_cdlthrusting startIdx endIdx (getInArrPtr 0) (getInArrPtr 1) (getInArrPtr 2) (getInArrPtr 3) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inOpen ++ inHigh ++ inLow ++ inClose
-          len = fromIntegral $ length inOpen
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_cdlthrusting :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
+ta_cdlthrusting inOpen inHigh inLow inClose = do
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
+    _outInteger <- VM.new len
+    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
+      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
+        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
+          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+            alloca $ \cOutBegIdx ->
+              alloca $ \cOutNbElement ->
+                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                  do rc <- c_ta_cdlthrusting 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
+                     case rc of
+                       0 -> do outBegIdx <- peek cOutBegIdx
+                               outNbElement <- peek cOutNbElement
+                               return $ Right $ (fromIntegral outBegIdx,
+                                                 fromIntegral outNbElement,
+                                                 out_outInteger)
+                       _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inOpen
 
 --
 -- CDLTRISTAR           Tristar Pattern
@@ -3296,33 +3269,31 @@ foreign import ccall unsafe "ta_func.h TA_CDLTRISTAR"
 -- outputs
 --   outInteger (int[])
 
-ta_cdltristar :: [Double] -> [Double] -> [Double] -> [Double] -> IO (Either Int (Int, Int, [Int]))
-ta_cdltristar inOpen inHigh inLow inClose
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_cdltristar startIdx endIdx (getInArrPtr 0) (getInArrPtr 1) (getInArrPtr 2) (getInArrPtr 3) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inOpen ++ inHigh ++ inLow ++ inClose
-          len = fromIntegral $ length inOpen
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_cdltristar :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
+ta_cdltristar inOpen inHigh inLow inClose = do
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
+    _outInteger <- VM.new len
+    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
+      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
+        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
+          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+            alloca $ \cOutBegIdx ->
+              alloca $ \cOutNbElement ->
+                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                  do rc <- c_ta_cdltristar 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
+                     case rc of
+                       0 -> do outBegIdx <- peek cOutBegIdx
+                               outNbElement <- peek cOutNbElement
+                               return $ Right $ (fromIntegral outBegIdx,
+                                                 fromIntegral outNbElement,
+                                                 out_outInteger)
+                       _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inOpen
 
 --
 -- CDLUNIQUE3RIVER      Unique 3 River
@@ -3340,33 +3311,31 @@ foreign import ccall unsafe "ta_func.h TA_CDLUNIQUE3RIVER"
 -- outputs
 --   outInteger (int[])
 
-ta_cdlunique3river :: [Double] -> [Double] -> [Double] -> [Double] -> IO (Either Int (Int, Int, [Int]))
-ta_cdlunique3river inOpen inHigh inLow inClose
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_cdlunique3river startIdx endIdx (getInArrPtr 0) (getInArrPtr 1) (getInArrPtr 2) (getInArrPtr 3) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inOpen ++ inHigh ++ inLow ++ inClose
-          len = fromIntegral $ length inOpen
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_cdlunique3river :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
+ta_cdlunique3river inOpen inHigh inLow inClose = do
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
+    _outInteger <- VM.new len
+    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
+      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
+        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
+          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+            alloca $ \cOutBegIdx ->
+              alloca $ \cOutNbElement ->
+                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                  do rc <- c_ta_cdlunique3river 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
+                     case rc of
+                       0 -> do outBegIdx <- peek cOutBegIdx
+                               outNbElement <- peek cOutNbElement
+                               return $ Right $ (fromIntegral outBegIdx,
+                                                 fromIntegral outNbElement,
+                                                 out_outInteger)
+                       _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inOpen
 
 --
 -- CDLUPSIDEGAP2CROWS   Upside Gap Two Crows
@@ -3384,33 +3353,31 @@ foreign import ccall unsafe "ta_func.h TA_CDLUPSIDEGAP2CROWS"
 -- outputs
 --   outInteger (int[])
 
-ta_cdlupsidegap2crows :: [Double] -> [Double] -> [Double] -> [Double] -> IO (Either Int (Int, Int, [Int]))
-ta_cdlupsidegap2crows inOpen inHigh inLow inClose
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_cdlupsidegap2crows startIdx endIdx (getInArrPtr 0) (getInArrPtr 1) (getInArrPtr 2) (getInArrPtr 3) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inOpen ++ inHigh ++ inLow ++ inClose
-          len = fromIntegral $ length inOpen
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_cdlupsidegap2crows :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
+ta_cdlupsidegap2crows inOpen inHigh inLow inClose = do
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
+    _outInteger <- VM.new len
+    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
+      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
+        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
+          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+            alloca $ \cOutBegIdx ->
+              alloca $ \cOutNbElement ->
+                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                  do rc <- c_ta_cdlupsidegap2crows 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
+                     case rc of
+                       0 -> do outBegIdx <- peek cOutBegIdx
+                               outNbElement <- peek cOutNbElement
+                               return $ Right $ (fromIntegral outBegIdx,
+                                                 fromIntegral outNbElement,
+                                                 out_outInteger)
+                       _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inOpen
 
 --
 -- CDLXSIDEGAP3METHODS  Upside/Downside Gap Three Methods
@@ -3428,33 +3395,31 @@ foreign import ccall unsafe "ta_func.h TA_CDLXSIDEGAP3METHODS"
 -- outputs
 --   outInteger (int[])
 
-ta_cdlxsidegap3methods :: [Double] -> [Double] -> [Double] -> [Double] -> IO (Either Int (Int, Int, [Int]))
-ta_cdlxsidegap3methods inOpen inHigh inLow inClose
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_cdlxsidegap3methods startIdx endIdx (getInArrPtr 0) (getInArrPtr 1) (getInArrPtr 2) (getInArrPtr 3) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inOpen ++ inHigh ++ inLow ++ inClose
-          len = fromIntegral $ length inOpen
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_cdlxsidegap3methods :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
+ta_cdlxsidegap3methods inOpen inHigh inLow inClose = do
+    _inOpen <- V.unsafeThaw inOpen
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
+    _outInteger <- VM.new len
+    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
+      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
+        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
+          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+            alloca $ \cOutBegIdx ->
+              alloca $ \cOutNbElement ->
+                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                  do rc <- c_ta_cdlxsidegap3methods 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
+                     out_outInteger <- V.unsafeFreeze _outInteger
+                     case rc of
+                       0 -> do outBegIdx <- peek cOutBegIdx
+                               outNbElement <- peek cOutNbElement
+                               return $ Right $ (fromIntegral outBegIdx,
+                                                 fromIntegral outNbElement,
+                                                 out_outInteger)
+                       _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inOpen
 
 --
 -- CEIL                 Vector Ceil
@@ -3469,33 +3434,25 @@ foreign import ccall unsafe "ta_func.h TA_CEIL"
 -- outputs
 --   outReal (double[])
 
-ta_ceil :: [Double] -> IO (Either Int (Int, Int, [Double]))
-ta_ceil inReal
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_ceil startIdx endIdx (getInArrPtr 0) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inReal
-          len = fromIntegral $ length inReal
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_ceil :: V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CDouble))
+ta_ceil inReal = do
+    _inReal <- V.unsafeThaw inReal
+    _outReal <- VM.new len
+    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+      alloca $ \cOutBegIdx ->
+        alloca $ \cOutNbElement ->
+          withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+            do rc <- c_ta_ceil 0 (fromIntegral $ len - 1) c_inReal cOutBegIdx cOutNbElement c_outReal
+               out_outReal <- V.unsafeFreeze _outReal
+               case rc of
+                 0 -> do outBegIdx <- peek cOutBegIdx
+                         outNbElement <- peek cOutNbElement
+                         return $ Right $ (fromIntegral outBegIdx,
+                                           fromIntegral outNbElement,
+                                           out_outReal)
+                 _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inReal
 
 --
 -- CMO                  Chande Momentum Oscillator
@@ -3511,33 +3468,25 @@ foreign import ccall unsafe "ta_func.h TA_CMO"
 -- outputs
 --   outReal (double[])
 
-ta_cmo :: [Double] -> Int -> IO (Either Int (Int, Int, [Double]))
-ta_cmo inReal optInTimePeriod
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_cmo startIdx endIdx (getInArrPtr 0) (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inReal
-          len = fromIntegral $ length inReal
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_cmo :: V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble))
+ta_cmo inReal optInTimePeriod = do
+    _inReal <- V.unsafeThaw inReal
+    _outReal <- VM.new len
+    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+      alloca $ \cOutBegIdx ->
+        alloca $ \cOutNbElement ->
+          withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+            do rc <- c_ta_cmo 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
+               out_outReal <- V.unsafeFreeze _outReal
+               case rc of
+                 0 -> do outBegIdx <- peek cOutBegIdx
+                         outNbElement <- peek cOutNbElement
+                         return $ Right $ (fromIntegral outBegIdx,
+                                           fromIntegral outNbElement,
+                                           out_outReal)
+                 _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inReal
 
 --
 -- CORREL               Pearson's Correlation Coefficient (r)
@@ -3554,33 +3503,27 @@ foreign import ccall unsafe "ta_func.h TA_CORREL"
 -- outputs
 --   outReal (double[])
 
-ta_correl :: [Double] -> [Double] -> Int -> IO (Either Int (Int, Int, [Double]))
-ta_correl inReal0 inReal1 optInTimePeriod
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_correl startIdx endIdx (getInArrPtr 0) (getInArrPtr 1) (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inReal0 ++ inReal1
-          len = fromIntegral $ length inReal0
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_correl :: V.Vector CDouble -> V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble))
+ta_correl inReal0 inReal1 optInTimePeriod = do
+    _inReal0 <- V.unsafeThaw inReal0
+    _inReal1 <- V.unsafeThaw inReal1
+    _outReal <- VM.new len
+    withForeignPtr (vecPtr _inReal0) $ \c_inReal0 ->
+      withForeignPtr (vecPtr _inReal1) $ \c_inReal1 ->
+        alloca $ \cOutBegIdx ->
+          alloca $ \cOutNbElement ->
+            withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+              do rc <- c_ta_correl 0 (fromIntegral $ len - 1) c_inReal0 c_inReal1 (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
+                 out_outReal <- V.unsafeFreeze _outReal
+                 case rc of
+                   0 -> do outBegIdx <- peek cOutBegIdx
+                           outNbElement <- peek cOutNbElement
+                           return $ Right $ (fromIntegral outBegIdx,
+                                             fromIntegral outNbElement,
+                                             out_outReal)
+                   _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inReal0
 
 --
 -- COS                  Vector Trigonometric Cos
@@ -3595,33 +3538,25 @@ foreign import ccall unsafe "ta_func.h TA_COS"
 -- outputs
 --   outReal (double[])
 
-ta_cos :: [Double] -> IO (Either Int (Int, Int, [Double]))
-ta_cos inReal
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_cos startIdx endIdx (getInArrPtr 0) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inReal
-          len = fromIntegral $ length inReal
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_cos :: V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CDouble))
+ta_cos inReal = do
+    _inReal <- V.unsafeThaw inReal
+    _outReal <- VM.new len
+    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+      alloca $ \cOutBegIdx ->
+        alloca $ \cOutNbElement ->
+          withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+            do rc <- c_ta_cos 0 (fromIntegral $ len - 1) c_inReal cOutBegIdx cOutNbElement c_outReal
+               out_outReal <- V.unsafeFreeze _outReal
+               case rc of
+                 0 -> do outBegIdx <- peek cOutBegIdx
+                         outNbElement <- peek cOutNbElement
+                         return $ Right $ (fromIntegral outBegIdx,
+                                           fromIntegral outNbElement,
+                                           out_outReal)
+                 _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inReal
 
 --
 -- COSH                 Vector Trigonometric Cosh
@@ -3636,33 +3571,25 @@ foreign import ccall unsafe "ta_func.h TA_COSH"
 -- outputs
 --   outReal (double[])
 
-ta_cosh :: [Double] -> IO (Either Int (Int, Int, [Double]))
-ta_cosh inReal
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_cosh startIdx endIdx (getInArrPtr 0) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inReal
-          len = fromIntegral $ length inReal
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_cosh :: V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CDouble))
+ta_cosh inReal = do
+    _inReal <- V.unsafeThaw inReal
+    _outReal <- VM.new len
+    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+      alloca $ \cOutBegIdx ->
+        alloca $ \cOutNbElement ->
+          withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+            do rc <- c_ta_cosh 0 (fromIntegral $ len - 1) c_inReal cOutBegIdx cOutNbElement c_outReal
+               out_outReal <- V.unsafeFreeze _outReal
+               case rc of
+                 0 -> do outBegIdx <- peek cOutBegIdx
+                         outNbElement <- peek cOutNbElement
+                         return $ Right $ (fromIntegral outBegIdx,
+                                           fromIntegral outNbElement,
+                                           out_outReal)
+                 _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inReal
 
 --
 -- DEMA                 Double Exponential Moving Average
@@ -3678,33 +3605,25 @@ foreign import ccall unsafe "ta_func.h TA_DEMA"
 -- outputs
 --   outReal (double[])
 
-ta_dema :: [Double] -> Int -> IO (Either Int (Int, Int, [Double]))
-ta_dema inReal optInTimePeriod
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_dema startIdx endIdx (getInArrPtr 0) (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inReal
-          len = fromIntegral $ length inReal
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_dema :: V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble))
+ta_dema inReal optInTimePeriod = do
+    _inReal <- V.unsafeThaw inReal
+    _outReal <- VM.new len
+    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+      alloca $ \cOutBegIdx ->
+        alloca $ \cOutNbElement ->
+          withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+            do rc <- c_ta_dema 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
+               out_outReal <- V.unsafeFreeze _outReal
+               case rc of
+                 0 -> do outBegIdx <- peek cOutBegIdx
+                         outNbElement <- peek cOutNbElement
+                         return $ Right $ (fromIntegral outBegIdx,
+                                           fromIntegral outNbElement,
+                                           out_outReal)
+                 _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inReal
 
 --
 -- DIV                  Vector Arithmetic Div
@@ -3720,33 +3639,27 @@ foreign import ccall unsafe "ta_func.h TA_DIV"
 -- outputs
 --   outReal (double[])
 
-ta_div :: [Double] -> [Double] -> IO (Either Int (Int, Int, [Double]))
-ta_div inReal0 inReal1
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_div startIdx endIdx (getInArrPtr 0) (getInArrPtr 1) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inReal0 ++ inReal1
-          len = fromIntegral $ length inReal0
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_div :: V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CDouble))
+ta_div inReal0 inReal1 = do
+    _inReal0 <- V.unsafeThaw inReal0
+    _inReal1 <- V.unsafeThaw inReal1
+    _outReal <- VM.new len
+    withForeignPtr (vecPtr _inReal0) $ \c_inReal0 ->
+      withForeignPtr (vecPtr _inReal1) $ \c_inReal1 ->
+        alloca $ \cOutBegIdx ->
+          alloca $ \cOutNbElement ->
+            withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+              do rc <- c_ta_div 0 (fromIntegral $ len - 1) c_inReal0 c_inReal1 cOutBegIdx cOutNbElement c_outReal
+                 out_outReal <- V.unsafeFreeze _outReal
+                 case rc of
+                   0 -> do outBegIdx <- peek cOutBegIdx
+                           outNbElement <- peek cOutNbElement
+                           return $ Right $ (fromIntegral outBegIdx,
+                                             fromIntegral outNbElement,
+                                             out_outReal)
+                   _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inReal0
 
 --
 -- DX                   Directional Movement Index
@@ -3764,33 +3677,29 @@ foreign import ccall unsafe "ta_func.h TA_DX"
 -- outputs
 --   outReal (double[])
 
-ta_dx :: [Double] -> [Double] -> [Double] -> Int -> IO (Either Int (Int, Int, [Double]))
-ta_dx inHigh inLow inClose optInTimePeriod
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_dx startIdx endIdx (getInArrPtr 0) (getInArrPtr 1) (getInArrPtr 2) (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inHigh ++ inLow ++ inClose
-          len = fromIntegral $ length inHigh
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_dx :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble))
+ta_dx inHigh inLow inClose optInTimePeriod = do
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
+    _outReal <- VM.new len
+    withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
+      withForeignPtr (vecPtr _inLow) $ \c_inLow ->
+        withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+          alloca $ \cOutBegIdx ->
+            alloca $ \cOutNbElement ->
+              withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+                do rc <- c_ta_dx 0 (fromIntegral $ len - 1) c_inHigh c_inLow c_inClose (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
+                   out_outReal <- V.unsafeFreeze _outReal
+                   case rc of
+                     0 -> do outBegIdx <- peek cOutBegIdx
+                             outNbElement <- peek cOutNbElement
+                             return $ Right $ (fromIntegral outBegIdx,
+                                               fromIntegral outNbElement,
+                                               out_outReal)
+                     _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inHigh
 
 --
 -- EMA                  Exponential Moving Average
@@ -3806,33 +3715,25 @@ foreign import ccall unsafe "ta_func.h TA_EMA"
 -- outputs
 --   outReal (double[])
 
-ta_ema :: [Double] -> Int -> IO (Either Int (Int, Int, [Double]))
-ta_ema inReal optInTimePeriod
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_ema startIdx endIdx (getInArrPtr 0) (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inReal
-          len = fromIntegral $ length inReal
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_ema :: V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble))
+ta_ema inReal optInTimePeriod = do
+    _inReal <- V.unsafeThaw inReal
+    _outReal <- VM.new len
+    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+      alloca $ \cOutBegIdx ->
+        alloca $ \cOutNbElement ->
+          withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+            do rc <- c_ta_ema 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
+               out_outReal <- V.unsafeFreeze _outReal
+               case rc of
+                 0 -> do outBegIdx <- peek cOutBegIdx
+                         outNbElement <- peek cOutNbElement
+                         return $ Right $ (fromIntegral outBegIdx,
+                                           fromIntegral outNbElement,
+                                           out_outReal)
+                 _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inReal
 
 --
 -- EXP                  Vector Arithmetic Exp
@@ -3847,33 +3748,25 @@ foreign import ccall unsafe "ta_func.h TA_EXP"
 -- outputs
 --   outReal (double[])
 
-ta_exp :: [Double] -> IO (Either Int (Int, Int, [Double]))
-ta_exp inReal
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_exp startIdx endIdx (getInArrPtr 0) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inReal
-          len = fromIntegral $ length inReal
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_exp :: V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CDouble))
+ta_exp inReal = do
+    _inReal <- V.unsafeThaw inReal
+    _outReal <- VM.new len
+    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+      alloca $ \cOutBegIdx ->
+        alloca $ \cOutNbElement ->
+          withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+            do rc <- c_ta_exp 0 (fromIntegral $ len - 1) c_inReal cOutBegIdx cOutNbElement c_outReal
+               out_outReal <- V.unsafeFreeze _outReal
+               case rc of
+                 0 -> do outBegIdx <- peek cOutBegIdx
+                         outNbElement <- peek cOutNbElement
+                         return $ Right $ (fromIntegral outBegIdx,
+                                           fromIntegral outNbElement,
+                                           out_outReal)
+                 _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inReal
 
 --
 -- FLOOR                Vector Floor
@@ -3888,33 +3781,25 @@ foreign import ccall unsafe "ta_func.h TA_FLOOR"
 -- outputs
 --   outReal (double[])
 
-ta_floor :: [Double] -> IO (Either Int (Int, Int, [Double]))
-ta_floor inReal
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_floor startIdx endIdx (getInArrPtr 0) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inReal
-          len = fromIntegral $ length inReal
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_floor :: V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CDouble))
+ta_floor inReal = do
+    _inReal <- V.unsafeThaw inReal
+    _outReal <- VM.new len
+    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+      alloca $ \cOutBegIdx ->
+        alloca $ \cOutNbElement ->
+          withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+            do rc <- c_ta_floor 0 (fromIntegral $ len - 1) c_inReal cOutBegIdx cOutNbElement c_outReal
+               out_outReal <- V.unsafeFreeze _outReal
+               case rc of
+                 0 -> do outBegIdx <- peek cOutBegIdx
+                         outNbElement <- peek cOutNbElement
+                         return $ Right $ (fromIntegral outBegIdx,
+                                           fromIntegral outNbElement,
+                                           out_outReal)
+                 _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inReal
 
 --
 -- HT_DCPERIOD          Hilbert Transform - Dominant Cycle Period
@@ -3929,33 +3814,25 @@ foreign import ccall unsafe "ta_func.h TA_HT_DCPERIOD"
 -- outputs
 --   outReal (double[])
 
-ta_ht_dcperiod :: [Double] -> IO (Either Int (Int, Int, [Double]))
-ta_ht_dcperiod inReal
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_ht_dcperiod startIdx endIdx (getInArrPtr 0) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inReal
-          len = fromIntegral $ length inReal
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_ht_dcperiod :: V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CDouble))
+ta_ht_dcperiod inReal = do
+    _inReal <- V.unsafeThaw inReal
+    _outReal <- VM.new len
+    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+      alloca $ \cOutBegIdx ->
+        alloca $ \cOutNbElement ->
+          withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+            do rc <- c_ta_ht_dcperiod 0 (fromIntegral $ len - 1) c_inReal cOutBegIdx cOutNbElement c_outReal
+               out_outReal <- V.unsafeFreeze _outReal
+               case rc of
+                 0 -> do outBegIdx <- peek cOutBegIdx
+                         outNbElement <- peek cOutNbElement
+                         return $ Right $ (fromIntegral outBegIdx,
+                                           fromIntegral outNbElement,
+                                           out_outReal)
+                 _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inReal
 
 --
 -- HT_DCPHASE           Hilbert Transform - Dominant Cycle Phase
@@ -3970,33 +3847,25 @@ foreign import ccall unsafe "ta_func.h TA_HT_DCPHASE"
 -- outputs
 --   outReal (double[])
 
-ta_ht_dcphase :: [Double] -> IO (Either Int (Int, Int, [Double]))
-ta_ht_dcphase inReal
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_ht_dcphase startIdx endIdx (getInArrPtr 0) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inReal
-          len = fromIntegral $ length inReal
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_ht_dcphase :: V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CDouble))
+ta_ht_dcphase inReal = do
+    _inReal <- V.unsafeThaw inReal
+    _outReal <- VM.new len
+    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+      alloca $ \cOutBegIdx ->
+        alloca $ \cOutNbElement ->
+          withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+            do rc <- c_ta_ht_dcphase 0 (fromIntegral $ len - 1) c_inReal cOutBegIdx cOutNbElement c_outReal
+               out_outReal <- V.unsafeFreeze _outReal
+               case rc of
+                 0 -> do outBegIdx <- peek cOutBegIdx
+                         outNbElement <- peek cOutNbElement
+                         return $ Right $ (fromIntegral outBegIdx,
+                                           fromIntegral outNbElement,
+                                           out_outReal)
+                 _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inReal
 
 --
 -- HT_PHASOR            Hilbert Transform - Phasor Components
@@ -4012,34 +3881,29 @@ foreign import ccall unsafe "ta_func.h TA_HT_PHASOR"
 --   outInPhase (double[])
 --   outQuadrature (double[])
 
-ta_ht_phasor :: [Double] -> IO (Either Int (Int, Int, [Double], [Double]))
-ta_ht_phasor inReal
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_ht_phasor startIdx endIdx (getInArrPtr 0) cOutBegIdx cOutNbElement (getOutArrPtr 0) (getOutArrPtr 1)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0,
-                                 chunks !! 1
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inReal
-          len = fromIntegral $ length inReal
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 2
+ta_ht_phasor :: V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CDouble, V.Vector CDouble))
+ta_ht_phasor inReal = do
+    _inReal <- V.unsafeThaw inReal
+    _outInPhase <- VM.new len
+    _outQuadrature <- VM.new len
+    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+      alloca $ \cOutBegIdx ->
+        alloca $ \cOutNbElement ->
+          withForeignPtr (vecPtr _outInPhase) $ \c_outInPhase ->
+            withForeignPtr (vecPtr _outQuadrature) $ \c_outQuadrature ->
+              do rc <- c_ta_ht_phasor 0 (fromIntegral $ len - 1) c_inReal cOutBegIdx cOutNbElement c_outInPhase c_outQuadrature
+                 out_outInPhase <- V.unsafeFreeze _outInPhase
+                 out_outQuadrature <- V.unsafeFreeze _outQuadrature
+                 case rc of
+                   0 -> do outBegIdx <- peek cOutBegIdx
+                           outNbElement <- peek cOutNbElement
+                           return $ Right $ (fromIntegral outBegIdx,
+                                             fromIntegral outNbElement,
+                                             out_outInPhase,
+                                             out_outQuadrature)
+                   _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inReal
 
 --
 -- HT_SINE              Hilbert Transform - SineWave
@@ -4055,34 +3919,29 @@ foreign import ccall unsafe "ta_func.h TA_HT_SINE"
 --   outSine (double[])
 --   outLeadSine (double[])
 
-ta_ht_sine :: [Double] -> IO (Either Int (Int, Int, [Double], [Double]))
-ta_ht_sine inReal
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_ht_sine startIdx endIdx (getInArrPtr 0) cOutBegIdx cOutNbElement (getOutArrPtr 0) (getOutArrPtr 1)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0,
-                                 chunks !! 1
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inReal
-          len = fromIntegral $ length inReal
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 2
+ta_ht_sine :: V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CDouble, V.Vector CDouble))
+ta_ht_sine inReal = do
+    _inReal <- V.unsafeThaw inReal
+    _outSine <- VM.new len
+    _outLeadSine <- VM.new len
+    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+      alloca $ \cOutBegIdx ->
+        alloca $ \cOutNbElement ->
+          withForeignPtr (vecPtr _outSine) $ \c_outSine ->
+            withForeignPtr (vecPtr _outLeadSine) $ \c_outLeadSine ->
+              do rc <- c_ta_ht_sine 0 (fromIntegral $ len - 1) c_inReal cOutBegIdx cOutNbElement c_outSine c_outLeadSine
+                 out_outSine <- V.unsafeFreeze _outSine
+                 out_outLeadSine <- V.unsafeFreeze _outLeadSine
+                 case rc of
+                   0 -> do outBegIdx <- peek cOutBegIdx
+                           outNbElement <- peek cOutNbElement
+                           return $ Right $ (fromIntegral outBegIdx,
+                                             fromIntegral outNbElement,
+                                             out_outSine,
+                                             out_outLeadSine)
+                   _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inReal
 
 --
 -- HT_TRENDLINE         Hilbert Transform - Instantaneous Trendline
@@ -4097,33 +3956,25 @@ foreign import ccall unsafe "ta_func.h TA_HT_TRENDLINE"
 -- outputs
 --   outReal (double[])
 
-ta_ht_trendline :: [Double] -> IO (Either Int (Int, Int, [Double]))
-ta_ht_trendline inReal
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_ht_trendline startIdx endIdx (getInArrPtr 0) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inReal
-          len = fromIntegral $ length inReal
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_ht_trendline :: V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CDouble))
+ta_ht_trendline inReal = do
+    _inReal <- V.unsafeThaw inReal
+    _outReal <- VM.new len
+    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+      alloca $ \cOutBegIdx ->
+        alloca $ \cOutNbElement ->
+          withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+            do rc <- c_ta_ht_trendline 0 (fromIntegral $ len - 1) c_inReal cOutBegIdx cOutNbElement c_outReal
+               out_outReal <- V.unsafeFreeze _outReal
+               case rc of
+                 0 -> do outBegIdx <- peek cOutBegIdx
+                         outNbElement <- peek cOutNbElement
+                         return $ Right $ (fromIntegral outBegIdx,
+                                           fromIntegral outNbElement,
+                                           out_outReal)
+                 _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inReal
 
 --
 -- HT_TRENDMODE         Hilbert Transform - Trend vs Cycle Mode
@@ -4138,33 +3989,25 @@ foreign import ccall unsafe "ta_func.h TA_HT_TRENDMODE"
 -- outputs
 --   outInteger (int[])
 
-ta_ht_trendmode :: [Double] -> IO (Either Int (Int, Int, [Int]))
-ta_ht_trendmode inReal
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_ht_trendmode startIdx endIdx (getInArrPtr 0) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inReal
-          len = fromIntegral $ length inReal
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_ht_trendmode :: V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
+ta_ht_trendmode inReal = do
+    _inReal <- V.unsafeThaw inReal
+    _outInteger <- VM.new len
+    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+      alloca $ \cOutBegIdx ->
+        alloca $ \cOutNbElement ->
+          withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+            do rc <- c_ta_ht_trendmode 0 (fromIntegral $ len - 1) c_inReal cOutBegIdx cOutNbElement c_outInteger
+               out_outInteger <- V.unsafeFreeze _outInteger
+               case rc of
+                 0 -> do outBegIdx <- peek cOutBegIdx
+                         outNbElement <- peek cOutNbElement
+                         return $ Right $ (fromIntegral outBegIdx,
+                                           fromIntegral outNbElement,
+                                           out_outInteger)
+                 _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inReal
 
 --
 -- KAMA                 Kaufman Adaptive Moving Average
@@ -4180,33 +4023,25 @@ foreign import ccall unsafe "ta_func.h TA_KAMA"
 -- outputs
 --   outReal (double[])
 
-ta_kama :: [Double] -> Int -> IO (Either Int (Int, Int, [Double]))
-ta_kama inReal optInTimePeriod
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_kama startIdx endIdx (getInArrPtr 0) (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inReal
-          len = fromIntegral $ length inReal
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_kama :: V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble))
+ta_kama inReal optInTimePeriod = do
+    _inReal <- V.unsafeThaw inReal
+    _outReal <- VM.new len
+    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+      alloca $ \cOutBegIdx ->
+        alloca $ \cOutNbElement ->
+          withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+            do rc <- c_ta_kama 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
+               out_outReal <- V.unsafeFreeze _outReal
+               case rc of
+                 0 -> do outBegIdx <- peek cOutBegIdx
+                         outNbElement <- peek cOutNbElement
+                         return $ Right $ (fromIntegral outBegIdx,
+                                           fromIntegral outNbElement,
+                                           out_outReal)
+                 _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inReal
 
 --
 -- LINEARREG            Linear Regression
@@ -4222,33 +4057,25 @@ foreign import ccall unsafe "ta_func.h TA_LINEARREG"
 -- outputs
 --   outReal (double[])
 
-ta_linearreg :: [Double] -> Int -> IO (Either Int (Int, Int, [Double]))
-ta_linearreg inReal optInTimePeriod
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_linearreg startIdx endIdx (getInArrPtr 0) (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inReal
-          len = fromIntegral $ length inReal
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_linearreg :: V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble))
+ta_linearreg inReal optInTimePeriod = do
+    _inReal <- V.unsafeThaw inReal
+    _outReal <- VM.new len
+    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+      alloca $ \cOutBegIdx ->
+        alloca $ \cOutNbElement ->
+          withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+            do rc <- c_ta_linearreg 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
+               out_outReal <- V.unsafeFreeze _outReal
+               case rc of
+                 0 -> do outBegIdx <- peek cOutBegIdx
+                         outNbElement <- peek cOutNbElement
+                         return $ Right $ (fromIntegral outBegIdx,
+                                           fromIntegral outNbElement,
+                                           out_outReal)
+                 _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inReal
 
 --
 -- LINEARREG_ANGLE      Linear Regression Angle
@@ -4264,33 +4091,25 @@ foreign import ccall unsafe "ta_func.h TA_LINEARREG_ANGLE"
 -- outputs
 --   outReal (double[])
 
-ta_linearreg_angle :: [Double] -> Int -> IO (Either Int (Int, Int, [Double]))
-ta_linearreg_angle inReal optInTimePeriod
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_linearreg_angle startIdx endIdx (getInArrPtr 0) (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inReal
-          len = fromIntegral $ length inReal
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_linearreg_angle :: V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble))
+ta_linearreg_angle inReal optInTimePeriod = do
+    _inReal <- V.unsafeThaw inReal
+    _outReal <- VM.new len
+    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+      alloca $ \cOutBegIdx ->
+        alloca $ \cOutNbElement ->
+          withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+            do rc <- c_ta_linearreg_angle 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
+               out_outReal <- V.unsafeFreeze _outReal
+               case rc of
+                 0 -> do outBegIdx <- peek cOutBegIdx
+                         outNbElement <- peek cOutNbElement
+                         return $ Right $ (fromIntegral outBegIdx,
+                                           fromIntegral outNbElement,
+                                           out_outReal)
+                 _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inReal
 
 --
 -- LINEARREG_INTERCEPT  Linear Regression Intercept
@@ -4306,33 +4125,25 @@ foreign import ccall unsafe "ta_func.h TA_LINEARREG_INTERCEPT"
 -- outputs
 --   outReal (double[])
 
-ta_linearreg_intercept :: [Double] -> Int -> IO (Either Int (Int, Int, [Double]))
-ta_linearreg_intercept inReal optInTimePeriod
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_linearreg_intercept startIdx endIdx (getInArrPtr 0) (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inReal
-          len = fromIntegral $ length inReal
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_linearreg_intercept :: V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble))
+ta_linearreg_intercept inReal optInTimePeriod = do
+    _inReal <- V.unsafeThaw inReal
+    _outReal <- VM.new len
+    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+      alloca $ \cOutBegIdx ->
+        alloca $ \cOutNbElement ->
+          withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+            do rc <- c_ta_linearreg_intercept 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
+               out_outReal <- V.unsafeFreeze _outReal
+               case rc of
+                 0 -> do outBegIdx <- peek cOutBegIdx
+                         outNbElement <- peek cOutNbElement
+                         return $ Right $ (fromIntegral outBegIdx,
+                                           fromIntegral outNbElement,
+                                           out_outReal)
+                 _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inReal
 
 --
 -- LINEARREG_SLOPE      Linear Regression Slope
@@ -4348,33 +4159,25 @@ foreign import ccall unsafe "ta_func.h TA_LINEARREG_SLOPE"
 -- outputs
 --   outReal (double[])
 
-ta_linearreg_slope :: [Double] -> Int -> IO (Either Int (Int, Int, [Double]))
-ta_linearreg_slope inReal optInTimePeriod
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_linearreg_slope startIdx endIdx (getInArrPtr 0) (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inReal
-          len = fromIntegral $ length inReal
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_linearreg_slope :: V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble))
+ta_linearreg_slope inReal optInTimePeriod = do
+    _inReal <- V.unsafeThaw inReal
+    _outReal <- VM.new len
+    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+      alloca $ \cOutBegIdx ->
+        alloca $ \cOutNbElement ->
+          withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+            do rc <- c_ta_linearreg_slope 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
+               out_outReal <- V.unsafeFreeze _outReal
+               case rc of
+                 0 -> do outBegIdx <- peek cOutBegIdx
+                         outNbElement <- peek cOutNbElement
+                         return $ Right $ (fromIntegral outBegIdx,
+                                           fromIntegral outNbElement,
+                                           out_outReal)
+                 _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inReal
 
 --
 -- LN                   Vector Log Natural
@@ -4389,33 +4192,25 @@ foreign import ccall unsafe "ta_func.h TA_LN"
 -- outputs
 --   outReal (double[])
 
-ta_ln :: [Double] -> IO (Either Int (Int, Int, [Double]))
-ta_ln inReal
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_ln startIdx endIdx (getInArrPtr 0) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inReal
-          len = fromIntegral $ length inReal
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_ln :: V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CDouble))
+ta_ln inReal = do
+    _inReal <- V.unsafeThaw inReal
+    _outReal <- VM.new len
+    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+      alloca $ \cOutBegIdx ->
+        alloca $ \cOutNbElement ->
+          withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+            do rc <- c_ta_ln 0 (fromIntegral $ len - 1) c_inReal cOutBegIdx cOutNbElement c_outReal
+               out_outReal <- V.unsafeFreeze _outReal
+               case rc of
+                 0 -> do outBegIdx <- peek cOutBegIdx
+                         outNbElement <- peek cOutNbElement
+                         return $ Right $ (fromIntegral outBegIdx,
+                                           fromIntegral outNbElement,
+                                           out_outReal)
+                 _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inReal
 
 --
 -- LOG10                Vector Log10
@@ -4430,33 +4225,25 @@ foreign import ccall unsafe "ta_func.h TA_LOG10"
 -- outputs
 --   outReal (double[])
 
-ta_log10 :: [Double] -> IO (Either Int (Int, Int, [Double]))
-ta_log10 inReal
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_log10 startIdx endIdx (getInArrPtr 0) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inReal
-          len = fromIntegral $ length inReal
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_log10 :: V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CDouble))
+ta_log10 inReal = do
+    _inReal <- V.unsafeThaw inReal
+    _outReal <- VM.new len
+    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+      alloca $ \cOutBegIdx ->
+        alloca $ \cOutNbElement ->
+          withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+            do rc <- c_ta_log10 0 (fromIntegral $ len - 1) c_inReal cOutBegIdx cOutNbElement c_outReal
+               out_outReal <- V.unsafeFreeze _outReal
+               case rc of
+                 0 -> do outBegIdx <- peek cOutBegIdx
+                         outNbElement <- peek cOutNbElement
+                         return $ Right $ (fromIntegral outBegIdx,
+                                           fromIntegral outNbElement,
+                                           out_outReal)
+                 _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inReal
 
 --
 -- MA                   Moving average
@@ -4473,33 +4260,25 @@ foreign import ccall unsafe "ta_func.h TA_MA"
 -- outputs
 --   outReal (double[])
 
-ta_ma :: [Double] -> Int -> Int -> IO (Either Int (Int, Int, [Double]))
-ta_ma inReal optInTimePeriod optInMAType
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_ma startIdx endIdx (getInArrPtr 0) (fromIntegral optInTimePeriod) (fromIntegral optInMAType) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inReal
-          len = fromIntegral $ length inReal
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_ma :: V.Vector CDouble -> Int -> Int -> IO (Either Int (Int, Int, V.Vector CDouble))
+ta_ma inReal optInTimePeriod optInMAType = do
+    _inReal <- V.unsafeThaw inReal
+    _outReal <- VM.new len
+    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+      alloca $ \cOutBegIdx ->
+        alloca $ \cOutNbElement ->
+          withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+            do rc <- c_ta_ma 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) (fromIntegral optInMAType) cOutBegIdx cOutNbElement c_outReal
+               out_outReal <- V.unsafeFreeze _outReal
+               case rc of
+                 0 -> do outBegIdx <- peek cOutBegIdx
+                         outNbElement <- peek cOutNbElement
+                         return $ Right $ (fromIntegral outBegIdx,
+                                           fromIntegral outNbElement,
+                                           out_outReal)
+                 _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inReal
 
 --
 -- MACD                 Moving Average Convergence/Divergence
@@ -4519,35 +4298,33 @@ foreign import ccall unsafe "ta_func.h TA_MACD"
 --   outMACDSignal (double[])
 --   outMACDHist (double[])
 
-ta_macd :: [Double] -> Int -> Int -> Int -> IO (Either Int (Int, Int, [Double], [Double], [Double]))
-ta_macd inReal optInFastPeriod optInSlowPeriod optInSignalPeriod
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_macd startIdx endIdx (getInArrPtr 0) (fromIntegral optInFastPeriod) (fromIntegral optInSlowPeriod) (fromIntegral optInSignalPeriod) cOutBegIdx cOutNbElement (getOutArrPtr 0) (getOutArrPtr 1) (getOutArrPtr 2)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0,
-                                 chunks !! 1,
-                                 chunks !! 2
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inReal
-          len = fromIntegral $ length inReal
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 3
+ta_macd :: V.Vector CDouble -> Int -> Int -> Int -> IO (Either Int (Int, Int, V.Vector CDouble, V.Vector CDouble, V.Vector CDouble))
+ta_macd inReal optInFastPeriod optInSlowPeriod optInSignalPeriod = do
+    _inReal <- V.unsafeThaw inReal
+    _outMACD <- VM.new len
+    _outMACDSignal <- VM.new len
+    _outMACDHist <- VM.new len
+    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+      alloca $ \cOutBegIdx ->
+        alloca $ \cOutNbElement ->
+          withForeignPtr (vecPtr _outMACD) $ \c_outMACD ->
+            withForeignPtr (vecPtr _outMACDSignal) $ \c_outMACDSignal ->
+              withForeignPtr (vecPtr _outMACDHist) $ \c_outMACDHist ->
+                do rc <- c_ta_macd 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInFastPeriod) (fromIntegral optInSlowPeriod) (fromIntegral optInSignalPeriod) cOutBegIdx cOutNbElement c_outMACD c_outMACDSignal c_outMACDHist
+                   out_outMACD <- V.unsafeFreeze _outMACD
+                   out_outMACDSignal <- V.unsafeFreeze _outMACDSignal
+                   out_outMACDHist <- V.unsafeFreeze _outMACDHist
+                   case rc of
+                     0 -> do outBegIdx <- peek cOutBegIdx
+                             outNbElement <- peek cOutNbElement
+                             return $ Right $ (fromIntegral outBegIdx,
+                                               fromIntegral outNbElement,
+                                               out_outMACD,
+                                               out_outMACDSignal,
+                                               out_outMACDHist)
+                     _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inReal
 
 --
 -- MACDEXT              MACD with controllable MA type
@@ -4570,35 +4347,33 @@ foreign import ccall unsafe "ta_func.h TA_MACDEXT"
 --   outMACDSignal (double[])
 --   outMACDHist (double[])
 
-ta_macdext :: [Double] -> Int -> Int -> Int -> Int -> Int -> Int -> IO (Either Int (Int, Int, [Double], [Double], [Double]))
-ta_macdext inReal optInFastPeriod optInFastMAType optInSlowPeriod optInSlowMAType optInSignalPeriod optInSignalMAType
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_macdext startIdx endIdx (getInArrPtr 0) (fromIntegral optInFastPeriod) (fromIntegral optInFastMAType) (fromIntegral optInSlowPeriod) (fromIntegral optInSlowMAType) (fromIntegral optInSignalPeriod) (fromIntegral optInSignalMAType) cOutBegIdx cOutNbElement (getOutArrPtr 0) (getOutArrPtr 1) (getOutArrPtr 2)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0,
-                                 chunks !! 1,
-                                 chunks !! 2
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inReal
-          len = fromIntegral $ length inReal
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 3
+ta_macdext :: V.Vector CDouble -> Int -> Int -> Int -> Int -> Int -> Int -> IO (Either Int (Int, Int, V.Vector CDouble, V.Vector CDouble, V.Vector CDouble))
+ta_macdext inReal optInFastPeriod optInFastMAType optInSlowPeriod optInSlowMAType optInSignalPeriod optInSignalMAType = do
+    _inReal <- V.unsafeThaw inReal
+    _outMACD <- VM.new len
+    _outMACDSignal <- VM.new len
+    _outMACDHist <- VM.new len
+    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+      alloca $ \cOutBegIdx ->
+        alloca $ \cOutNbElement ->
+          withForeignPtr (vecPtr _outMACD) $ \c_outMACD ->
+            withForeignPtr (vecPtr _outMACDSignal) $ \c_outMACDSignal ->
+              withForeignPtr (vecPtr _outMACDHist) $ \c_outMACDHist ->
+                do rc <- c_ta_macdext 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInFastPeriod) (fromIntegral optInFastMAType) (fromIntegral optInSlowPeriod) (fromIntegral optInSlowMAType) (fromIntegral optInSignalPeriod) (fromIntegral optInSignalMAType) cOutBegIdx cOutNbElement c_outMACD c_outMACDSignal c_outMACDHist
+                   out_outMACD <- V.unsafeFreeze _outMACD
+                   out_outMACDSignal <- V.unsafeFreeze _outMACDSignal
+                   out_outMACDHist <- V.unsafeFreeze _outMACDHist
+                   case rc of
+                     0 -> do outBegIdx <- peek cOutBegIdx
+                             outNbElement <- peek cOutNbElement
+                             return $ Right $ (fromIntegral outBegIdx,
+                                               fromIntegral outNbElement,
+                                               out_outMACD,
+                                               out_outMACDSignal,
+                                               out_outMACDHist)
+                     _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inReal
 
 --
 -- MACDFIX              Moving Average Convergence/Divergence Fix 12/26
@@ -4616,35 +4391,33 @@ foreign import ccall unsafe "ta_func.h TA_MACDFIX"
 --   outMACDSignal (double[])
 --   outMACDHist (double[])
 
-ta_macdfix :: [Double] -> Int -> IO (Either Int (Int, Int, [Double], [Double], [Double]))
-ta_macdfix inReal optInSignalPeriod
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_macdfix startIdx endIdx (getInArrPtr 0) (fromIntegral optInSignalPeriod) cOutBegIdx cOutNbElement (getOutArrPtr 0) (getOutArrPtr 1) (getOutArrPtr 2)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0,
-                                 chunks !! 1,
-                                 chunks !! 2
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inReal
-          len = fromIntegral $ length inReal
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 3
+ta_macdfix :: V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble, V.Vector CDouble, V.Vector CDouble))
+ta_macdfix inReal optInSignalPeriod = do
+    _inReal <- V.unsafeThaw inReal
+    _outMACD <- VM.new len
+    _outMACDSignal <- VM.new len
+    _outMACDHist <- VM.new len
+    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+      alloca $ \cOutBegIdx ->
+        alloca $ \cOutNbElement ->
+          withForeignPtr (vecPtr _outMACD) $ \c_outMACD ->
+            withForeignPtr (vecPtr _outMACDSignal) $ \c_outMACDSignal ->
+              withForeignPtr (vecPtr _outMACDHist) $ \c_outMACDHist ->
+                do rc <- c_ta_macdfix 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInSignalPeriod) cOutBegIdx cOutNbElement c_outMACD c_outMACDSignal c_outMACDHist
+                   out_outMACD <- V.unsafeFreeze _outMACD
+                   out_outMACDSignal <- V.unsafeFreeze _outMACDSignal
+                   out_outMACDHist <- V.unsafeFreeze _outMACDHist
+                   case rc of
+                     0 -> do outBegIdx <- peek cOutBegIdx
+                             outNbElement <- peek cOutNbElement
+                             return $ Right $ (fromIntegral outBegIdx,
+                                               fromIntegral outNbElement,
+                                               out_outMACD,
+                                               out_outMACDSignal,
+                                               out_outMACDHist)
+                     _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inReal
 
 --
 -- MAMA                 MESA Adaptive Moving Average
@@ -4662,34 +4435,29 @@ foreign import ccall unsafe "ta_func.h TA_MAMA"
 --   outMAMA (double[])
 --   outFAMA (double[])
 
-ta_mama :: [Double] -> Double -> Double -> IO (Either Int (Int, Int, [Double], [Double]))
-ta_mama inReal optInFastLimit optInSlowLimit
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_mama startIdx endIdx (getInArrPtr 0) (realToFrac optInFastLimit) (realToFrac optInSlowLimit) cOutBegIdx cOutNbElement (getOutArrPtr 0) (getOutArrPtr 1)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0,
-                                 chunks !! 1
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inReal
-          len = fromIntegral $ length inReal
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 2
+ta_mama :: V.Vector CDouble -> Double -> Double -> IO (Either Int (Int, Int, V.Vector CDouble, V.Vector CDouble))
+ta_mama inReal optInFastLimit optInSlowLimit = do
+    _inReal <- V.unsafeThaw inReal
+    _outMAMA <- VM.new len
+    _outFAMA <- VM.new len
+    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+      alloca $ \cOutBegIdx ->
+        alloca $ \cOutNbElement ->
+          withForeignPtr (vecPtr _outMAMA) $ \c_outMAMA ->
+            withForeignPtr (vecPtr _outFAMA) $ \c_outFAMA ->
+              do rc <- c_ta_mama 0 (fromIntegral $ len - 1) c_inReal (realToFrac optInFastLimit) (realToFrac optInSlowLimit) cOutBegIdx cOutNbElement c_outMAMA c_outFAMA
+                 out_outMAMA <- V.unsafeFreeze _outMAMA
+                 out_outFAMA <- V.unsafeFreeze _outFAMA
+                 case rc of
+                   0 -> do outBegIdx <- peek cOutBegIdx
+                           outNbElement <- peek cOutNbElement
+                           return $ Right $ (fromIntegral outBegIdx,
+                                             fromIntegral outNbElement,
+                                             out_outMAMA,
+                                             out_outFAMA)
+                   _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inReal
 
 --
 -- MAVP                 Moving average with variable period
@@ -4708,33 +4476,27 @@ foreign import ccall unsafe "ta_func.h TA_MAVP"
 -- outputs
 --   outReal (double[])
 
-ta_mavp :: [Double] -> [Double] -> Int -> Int -> Int -> IO (Either Int (Int, Int, [Double]))
-ta_mavp inReal inPeriods optInMinPeriod optInMaxPeriod optInMAType
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_mavp startIdx endIdx (getInArrPtr 0) (getInArrPtr 1) (fromIntegral optInMinPeriod) (fromIntegral optInMaxPeriod) (fromIntegral optInMAType) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inReal ++ inPeriods
-          len = fromIntegral $ length inReal
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_mavp :: V.Vector CDouble -> V.Vector CDouble -> Int -> Int -> Int -> IO (Either Int (Int, Int, V.Vector CDouble))
+ta_mavp inReal inPeriods optInMinPeriod optInMaxPeriod optInMAType = do
+    _inReal <- V.unsafeThaw inReal
+    _inPeriods <- V.unsafeThaw inPeriods
+    _outReal <- VM.new len
+    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+      withForeignPtr (vecPtr _inPeriods) $ \c_inPeriods ->
+        alloca $ \cOutBegIdx ->
+          alloca $ \cOutNbElement ->
+            withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+              do rc <- c_ta_mavp 0 (fromIntegral $ len - 1) c_inReal c_inPeriods (fromIntegral optInMinPeriod) (fromIntegral optInMaxPeriod) (fromIntegral optInMAType) cOutBegIdx cOutNbElement c_outReal
+                 out_outReal <- V.unsafeFreeze _outReal
+                 case rc of
+                   0 -> do outBegIdx <- peek cOutBegIdx
+                           outNbElement <- peek cOutNbElement
+                           return $ Right $ (fromIntegral outBegIdx,
+                                             fromIntegral outNbElement,
+                                             out_outReal)
+                   _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inReal
 
 --
 -- MAX                  Highest value over a specified period
@@ -4750,33 +4512,25 @@ foreign import ccall unsafe "ta_func.h TA_MAX"
 -- outputs
 --   outReal (double[])
 
-ta_max :: [Double] -> Int -> IO (Either Int (Int, Int, [Double]))
-ta_max inReal optInTimePeriod
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_max startIdx endIdx (getInArrPtr 0) (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inReal
-          len = fromIntegral $ length inReal
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_max :: V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble))
+ta_max inReal optInTimePeriod = do
+    _inReal <- V.unsafeThaw inReal
+    _outReal <- VM.new len
+    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+      alloca $ \cOutBegIdx ->
+        alloca $ \cOutNbElement ->
+          withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+            do rc <- c_ta_max 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
+               out_outReal <- V.unsafeFreeze _outReal
+               case rc of
+                 0 -> do outBegIdx <- peek cOutBegIdx
+                         outNbElement <- peek cOutNbElement
+                         return $ Right $ (fromIntegral outBegIdx,
+                                           fromIntegral outNbElement,
+                                           out_outReal)
+                 _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inReal
 
 --
 -- MAXINDEX             Index of highest value over a specified period
@@ -4792,33 +4546,25 @@ foreign import ccall unsafe "ta_func.h TA_MAXINDEX"
 -- outputs
 --   outInteger (int[])
 
-ta_maxindex :: [Double] -> Int -> IO (Either Int (Int, Int, [Int]))
-ta_maxindex inReal optInTimePeriod
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_maxindex startIdx endIdx (getInArrPtr 0) (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inReal
-          len = fromIntegral $ length inReal
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_maxindex :: V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CInt))
+ta_maxindex inReal optInTimePeriod = do
+    _inReal <- V.unsafeThaw inReal
+    _outInteger <- VM.new len
+    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+      alloca $ \cOutBegIdx ->
+        alloca $ \cOutNbElement ->
+          withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+            do rc <- c_ta_maxindex 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outInteger
+               out_outInteger <- V.unsafeFreeze _outInteger
+               case rc of
+                 0 -> do outBegIdx <- peek cOutBegIdx
+                         outNbElement <- peek cOutNbElement
+                         return $ Right $ (fromIntegral outBegIdx,
+                                           fromIntegral outNbElement,
+                                           out_outInteger)
+                 _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inReal
 
 --
 -- MEDPRICE             Median Price
@@ -4834,33 +4580,27 @@ foreign import ccall unsafe "ta_func.h TA_MEDPRICE"
 -- outputs
 --   outReal (double[])
 
-ta_medprice :: [Double] -> [Double] -> IO (Either Int (Int, Int, [Double]))
-ta_medprice inHigh inLow
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_medprice startIdx endIdx (getInArrPtr 0) (getInArrPtr 1) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inHigh ++ inLow
-          len = fromIntegral $ length inHigh
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_medprice :: V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CDouble))
+ta_medprice inHigh inLow = do
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _outReal <- VM.new len
+    withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
+      withForeignPtr (vecPtr _inLow) $ \c_inLow ->
+        alloca $ \cOutBegIdx ->
+          alloca $ \cOutNbElement ->
+            withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+              do rc <- c_ta_medprice 0 (fromIntegral $ len - 1) c_inHigh c_inLow cOutBegIdx cOutNbElement c_outReal
+                 out_outReal <- V.unsafeFreeze _outReal
+                 case rc of
+                   0 -> do outBegIdx <- peek cOutBegIdx
+                           outNbElement <- peek cOutNbElement
+                           return $ Right $ (fromIntegral outBegIdx,
+                                             fromIntegral outNbElement,
+                                             out_outReal)
+                   _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inHigh
 
 --
 -- MFI                  Money Flow Index
@@ -4879,33 +4619,31 @@ foreign import ccall unsafe "ta_func.h TA_MFI"
 -- outputs
 --   outReal (double[])
 
-ta_mfi :: [Double] -> [Double] -> [Double] -> [Double] -> Int -> IO (Either Int (Int, Int, [Double]))
-ta_mfi inHigh inLow inClose inVolume optInTimePeriod
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_mfi startIdx endIdx (getInArrPtr 0) (getInArrPtr 1) (getInArrPtr 2) (getInArrPtr 3) (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inHigh ++ inLow ++ inClose ++ inVolume
-          len = fromIntegral $ length inHigh
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_mfi :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble))
+ta_mfi inHigh inLow inClose inVolume optInTimePeriod = do
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
+    _inVolume <- V.unsafeThaw inVolume
+    _outReal <- VM.new len
+    withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
+      withForeignPtr (vecPtr _inLow) $ \c_inLow ->
+        withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+          withForeignPtr (vecPtr _inVolume) $ \c_inVolume ->
+            alloca $ \cOutBegIdx ->
+              alloca $ \cOutNbElement ->
+                withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+                  do rc <- c_ta_mfi 0 (fromIntegral $ len - 1) c_inHigh c_inLow c_inClose c_inVolume (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
+                     out_outReal <- V.unsafeFreeze _outReal
+                     case rc of
+                       0 -> do outBegIdx <- peek cOutBegIdx
+                               outNbElement <- peek cOutNbElement
+                               return $ Right $ (fromIntegral outBegIdx,
+                                                 fromIntegral outNbElement,
+                                                 out_outReal)
+                       _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inHigh
 
 --
 -- MIDPOINT             MidPoint over period
@@ -4921,33 +4659,25 @@ foreign import ccall unsafe "ta_func.h TA_MIDPOINT"
 -- outputs
 --   outReal (double[])
 
-ta_midpoint :: [Double] -> Int -> IO (Either Int (Int, Int, [Double]))
-ta_midpoint inReal optInTimePeriod
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_midpoint startIdx endIdx (getInArrPtr 0) (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inReal
-          len = fromIntegral $ length inReal
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_midpoint :: V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble))
+ta_midpoint inReal optInTimePeriod = do
+    _inReal <- V.unsafeThaw inReal
+    _outReal <- VM.new len
+    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+      alloca $ \cOutBegIdx ->
+        alloca $ \cOutNbElement ->
+          withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+            do rc <- c_ta_midpoint 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
+               out_outReal <- V.unsafeFreeze _outReal
+               case rc of
+                 0 -> do outBegIdx <- peek cOutBegIdx
+                         outNbElement <- peek cOutNbElement
+                         return $ Right $ (fromIntegral outBegIdx,
+                                           fromIntegral outNbElement,
+                                           out_outReal)
+                 _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inReal
 
 --
 -- MIDPRICE             Midpoint Price over period
@@ -4964,33 +4694,27 @@ foreign import ccall unsafe "ta_func.h TA_MIDPRICE"
 -- outputs
 --   outReal (double[])
 
-ta_midprice :: [Double] -> [Double] -> Int -> IO (Either Int (Int, Int, [Double]))
-ta_midprice inHigh inLow optInTimePeriod
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_midprice startIdx endIdx (getInArrPtr 0) (getInArrPtr 1) (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inHigh ++ inLow
-          len = fromIntegral $ length inHigh
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_midprice :: V.Vector CDouble -> V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble))
+ta_midprice inHigh inLow optInTimePeriod = do
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _outReal <- VM.new len
+    withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
+      withForeignPtr (vecPtr _inLow) $ \c_inLow ->
+        alloca $ \cOutBegIdx ->
+          alloca $ \cOutNbElement ->
+            withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+              do rc <- c_ta_midprice 0 (fromIntegral $ len - 1) c_inHigh c_inLow (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
+                 out_outReal <- V.unsafeFreeze _outReal
+                 case rc of
+                   0 -> do outBegIdx <- peek cOutBegIdx
+                           outNbElement <- peek cOutNbElement
+                           return $ Right $ (fromIntegral outBegIdx,
+                                             fromIntegral outNbElement,
+                                             out_outReal)
+                   _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inHigh
 
 --
 -- MIN                  Lowest value over a specified period
@@ -5006,33 +4730,25 @@ foreign import ccall unsafe "ta_func.h TA_MIN"
 -- outputs
 --   outReal (double[])
 
-ta_min :: [Double] -> Int -> IO (Either Int (Int, Int, [Double]))
-ta_min inReal optInTimePeriod
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_min startIdx endIdx (getInArrPtr 0) (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inReal
-          len = fromIntegral $ length inReal
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_min :: V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble))
+ta_min inReal optInTimePeriod = do
+    _inReal <- V.unsafeThaw inReal
+    _outReal <- VM.new len
+    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+      alloca $ \cOutBegIdx ->
+        alloca $ \cOutNbElement ->
+          withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+            do rc <- c_ta_min 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
+               out_outReal <- V.unsafeFreeze _outReal
+               case rc of
+                 0 -> do outBegIdx <- peek cOutBegIdx
+                         outNbElement <- peek cOutNbElement
+                         return $ Right $ (fromIntegral outBegIdx,
+                                           fromIntegral outNbElement,
+                                           out_outReal)
+                 _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inReal
 
 --
 -- MININDEX             Index of lowest value over a specified period
@@ -5043,38 +4759,31 @@ foreign import ccall unsafe "ta_func.h TA_MININDEX"
 
 -- inputs
 --   inReal
+
 -- arguments
 --   optInTimePeriod (int)
 -- outputs
 --   outInteger (int[])
 
-ta_minindex :: [Double] -> Int -> IO (Either Int (Int, Int, [Int]))
-ta_minindex inReal optInTimePeriod
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_minindex startIdx endIdx (getInArrPtr 0) (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inReal
-          len = fromIntegral $ length inReal
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_minindex :: V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CInt))
+ta_minindex inReal optInTimePeriod = do
+    _inReal <- V.unsafeThaw inReal
+    _outInteger <- VM.new len
+    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+      alloca $ \cOutBegIdx ->
+        alloca $ \cOutNbElement ->
+          withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+            do rc <- c_ta_minindex 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outInteger
+               out_outInteger <- V.unsafeFreeze _outInteger
+               case rc of
+                 0 -> do outBegIdx <- peek cOutBegIdx
+                         outNbElement <- peek cOutNbElement
+                         return $ Right $ (fromIntegral outBegIdx,
+                                           fromIntegral outNbElement,
+                                           out_outInteger)
+                 _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inReal
 
 --
 -- MINMAX               Lowest and highest values over a specified period
@@ -5091,34 +4800,29 @@ foreign import ccall unsafe "ta_func.h TA_MINMAX"
 --   outMin (double[])
 --   outMax (double[])
 
-ta_minmax :: [Double] -> Int -> IO (Either Int (Int, Int, [Double], [Double]))
-ta_minmax inReal optInTimePeriod
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_minmax startIdx endIdx (getInArrPtr 0) (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement (getOutArrPtr 0) (getOutArrPtr 1)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0,
-                                 chunks !! 1
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inReal
-          len = fromIntegral $ length inReal
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 2
+ta_minmax :: V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble, V.Vector CDouble))
+ta_minmax inReal optInTimePeriod = do
+    _inReal <- V.unsafeThaw inReal
+    _outMin <- VM.new len
+    _outMax <- VM.new len
+    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+      alloca $ \cOutBegIdx ->
+        alloca $ \cOutNbElement ->
+          withForeignPtr (vecPtr _outMin) $ \c_outMin ->
+            withForeignPtr (vecPtr _outMax) $ \c_outMax ->
+              do rc <- c_ta_minmax 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outMin c_outMax
+                 out_outMin <- V.unsafeFreeze _outMin
+                 out_outMax <- V.unsafeFreeze _outMax
+                 case rc of
+                   0 -> do outBegIdx <- peek cOutBegIdx
+                           outNbElement <- peek cOutNbElement
+                           return $ Right $ (fromIntegral outBegIdx,
+                                             fromIntegral outNbElement,
+                                             out_outMin,
+                                             out_outMax)
+                   _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inReal
 
 --
 -- MINMAXINDEX          Indexes of lowest and highest values over a specified period
@@ -5135,34 +4839,29 @@ foreign import ccall unsafe "ta_func.h TA_MINMAXINDEX"
 --   outMinIdx (int[])
 --   outMaxIdx (int[])
 
-ta_minmaxindex :: [Double] -> Int -> IO (Either Int (Int, Int, [Int], [Int]))
-ta_minmaxindex inReal optInTimePeriod
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_minmaxindex startIdx endIdx (getInArrPtr 0) (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement (getOutArrPtr 0) (getOutArrPtr 1)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0,
-                                 chunks !! 1
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inReal
-          len = fromIntegral $ length inReal
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 2
+ta_minmaxindex :: V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CInt, V.Vector CInt))
+ta_minmaxindex inReal optInTimePeriod = do
+    _inReal <- V.unsafeThaw inReal
+    _outMinIdx <- VM.new len
+    _outMaxIdx <- VM.new len
+    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+      alloca $ \cOutBegIdx ->
+        alloca $ \cOutNbElement ->
+          withForeignPtr (vecPtr _outMinIdx) $ \c_outMinIdx ->
+            withForeignPtr (vecPtr _outMaxIdx) $ \c_outMaxIdx ->
+              do rc <- c_ta_minmaxindex 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outMinIdx c_outMaxIdx
+                 out_outMinIdx <- V.unsafeFreeze _outMinIdx
+                 out_outMaxIdx <- V.unsafeFreeze _outMaxIdx
+                 case rc of
+                   0 -> do outBegIdx <- peek cOutBegIdx
+                           outNbElement <- peek cOutNbElement
+                           return $ Right $ (fromIntegral outBegIdx,
+                                             fromIntegral outNbElement,
+                                             out_outMinIdx,
+                                             out_outMaxIdx)
+                   _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inReal
 
 --
 -- MINUS_DI             Minus Directional Indicator
@@ -5180,33 +4879,29 @@ foreign import ccall unsafe "ta_func.h TA_MINUS_DI"
 -- outputs
 --   outReal (double[])
 
-ta_minus_di :: [Double] -> [Double] -> [Double] -> Int -> IO (Either Int (Int, Int, [Double]))
-ta_minus_di inHigh inLow inClose optInTimePeriod
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_minus_di startIdx endIdx (getInArrPtr 0) (getInArrPtr 1) (getInArrPtr 2) (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inHigh ++ inLow ++ inClose
-          len = fromIntegral $ length inHigh
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_minus_di :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble))
+ta_minus_di inHigh inLow inClose optInTimePeriod = do
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
+    _outReal <- VM.new len
+    withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
+      withForeignPtr (vecPtr _inLow) $ \c_inLow ->
+        withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+          alloca $ \cOutBegIdx ->
+            alloca $ \cOutNbElement ->
+              withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+                do rc <- c_ta_minus_di 0 (fromIntegral $ len - 1) c_inHigh c_inLow c_inClose (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
+                   out_outReal <- V.unsafeFreeze _outReal
+                   case rc of
+                     0 -> do outBegIdx <- peek cOutBegIdx
+                             outNbElement <- peek cOutNbElement
+                             return $ Right $ (fromIntegral outBegIdx,
+                                               fromIntegral outNbElement,
+                                               out_outReal)
+                     _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inHigh
 
 --
 -- MINUS_DM             Minus Directional Movement
@@ -5223,33 +4918,27 @@ foreign import ccall unsafe "ta_func.h TA_MINUS_DM"
 -- outputs
 --   outReal (double[])
 
-ta_minus_dm :: [Double] -> [Double] -> Int -> IO (Either Int (Int, Int, [Double]))
-ta_minus_dm inHigh inLow optInTimePeriod
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_minus_dm startIdx endIdx (getInArrPtr 0) (getInArrPtr 1) (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inHigh ++ inLow
-          len = fromIntegral $ length inHigh
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_minus_dm :: V.Vector CDouble -> V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble))
+ta_minus_dm inHigh inLow optInTimePeriod = do
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _outReal <- VM.new len
+    withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
+      withForeignPtr (vecPtr _inLow) $ \c_inLow ->
+        alloca $ \cOutBegIdx ->
+          alloca $ \cOutNbElement ->
+            withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+              do rc <- c_ta_minus_dm 0 (fromIntegral $ len - 1) c_inHigh c_inLow (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
+                 out_outReal <- V.unsafeFreeze _outReal
+                 case rc of
+                   0 -> do outBegIdx <- peek cOutBegIdx
+                           outNbElement <- peek cOutNbElement
+                           return $ Right $ (fromIntegral outBegIdx,
+                                             fromIntegral outNbElement,
+                                             out_outReal)
+                   _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inHigh
 
 --
 -- MOM                  Momentum
@@ -5265,33 +4954,25 @@ foreign import ccall unsafe "ta_func.h TA_MOM"
 -- outputs
 --   outReal (double[])
 
-ta_mom :: [Double] -> Int -> IO (Either Int (Int, Int, [Double]))
-ta_mom inReal optInTimePeriod
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_mom startIdx endIdx (getInArrPtr 0) (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inReal
-          len = fromIntegral $ length inReal
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_mom :: V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble))
+ta_mom inReal optInTimePeriod = do
+    _inReal <- V.unsafeThaw inReal
+    _outReal <- VM.new len
+    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+      alloca $ \cOutBegIdx ->
+        alloca $ \cOutNbElement ->
+          withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+            do rc <- c_ta_mom 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
+               out_outReal <- V.unsafeFreeze _outReal
+               case rc of
+                 0 -> do outBegIdx <- peek cOutBegIdx
+                         outNbElement <- peek cOutNbElement
+                         return $ Right $ (fromIntegral outBegIdx,
+                                           fromIntegral outNbElement,
+                                           out_outReal)
+                 _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inReal
 
 --
 -- MULT                 Vector Arithmetic Mult
@@ -5307,33 +4988,27 @@ foreign import ccall unsafe "ta_func.h TA_MULT"
 -- outputs
 --   outReal (double[])
 
-ta_mult :: [Double] -> [Double] -> IO (Either Int (Int, Int, [Double]))
-ta_mult inReal0 inReal1
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_mult startIdx endIdx (getInArrPtr 0) (getInArrPtr 1) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inReal0 ++ inReal1
-          len = fromIntegral $ length inReal0
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_mult :: V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CDouble))
+ta_mult inReal0 inReal1 = do
+    _inReal0 <- V.unsafeThaw inReal0
+    _inReal1 <- V.unsafeThaw inReal1
+    _outReal <- VM.new len
+    withForeignPtr (vecPtr _inReal0) $ \c_inReal0 ->
+      withForeignPtr (vecPtr _inReal1) $ \c_inReal1 ->
+        alloca $ \cOutBegIdx ->
+          alloca $ \cOutNbElement ->
+            withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+              do rc <- c_ta_mult 0 (fromIntegral $ len - 1) c_inReal0 c_inReal1 cOutBegIdx cOutNbElement c_outReal
+                 out_outReal <- V.unsafeFreeze _outReal
+                 case rc of
+                   0 -> do outBegIdx <- peek cOutBegIdx
+                           outNbElement <- peek cOutNbElement
+                           return $ Right $ (fromIntegral outBegIdx,
+                                             fromIntegral outNbElement,
+                                             out_outReal)
+                   _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inReal0
 
 --
 -- NATR                 Normalized Average True Range
@@ -5351,33 +5026,29 @@ foreign import ccall unsafe "ta_func.h TA_NATR"
 -- outputs
 --   outReal (double[])
 
-ta_natr :: [Double] -> [Double] -> [Double] -> Int -> IO (Either Int (Int, Int, [Double]))
-ta_natr inHigh inLow inClose optInTimePeriod
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_natr startIdx endIdx (getInArrPtr 0) (getInArrPtr 1) (getInArrPtr 2) (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inHigh ++ inLow ++ inClose
-          len = fromIntegral $ length inHigh
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_natr :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble))
+ta_natr inHigh inLow inClose optInTimePeriod = do
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
+    _outReal <- VM.new len
+    withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
+      withForeignPtr (vecPtr _inLow) $ \c_inLow ->
+        withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+          alloca $ \cOutBegIdx ->
+            alloca $ \cOutNbElement ->
+              withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+                do rc <- c_ta_natr 0 (fromIntegral $ len - 1) c_inHigh c_inLow c_inClose (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
+                   out_outReal <- V.unsafeFreeze _outReal
+                   case rc of
+                     0 -> do outBegIdx <- peek cOutBegIdx
+                             outNbElement <- peek cOutNbElement
+                             return $ Right $ (fromIntegral outBegIdx,
+                                               fromIntegral outNbElement,
+                                               out_outReal)
+                     _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inHigh
 
 --
 -- OBV                  On Balance Volume
@@ -5393,33 +5064,27 @@ foreign import ccall unsafe "ta_func.h TA_OBV"
 -- outputs
 --   outReal (double[])
 
-ta_obv :: [Double] -> [Double] -> IO (Either Int (Int, Int, [Double]))
-ta_obv inReal inVolume1
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_obv startIdx endIdx (getInArrPtr 0) (getInArrPtr 1) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inReal ++ inVolume1
-          len = fromIntegral $ length inReal
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_obv :: V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CDouble))
+ta_obv inReal inVolume1 = do
+    _inReal <- V.unsafeThaw inReal
+    _inVolume1 <- V.unsafeThaw inVolume1
+    _outReal <- VM.new len
+    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+      withForeignPtr (vecPtr _inVolume1) $ \c_inVolume1 ->
+        alloca $ \cOutBegIdx ->
+          alloca $ \cOutNbElement ->
+            withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+              do rc <- c_ta_obv 0 (fromIntegral $ len - 1) c_inReal c_inVolume1 cOutBegIdx cOutNbElement c_outReal
+                 out_outReal <- V.unsafeFreeze _outReal
+                 case rc of
+                   0 -> do outBegIdx <- peek cOutBegIdx
+                           outNbElement <- peek cOutNbElement
+                           return $ Right $ (fromIntegral outBegIdx,
+                                             fromIntegral outNbElement,
+                                             out_outReal)
+                   _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inReal
 
 --
 -- PLUS_DI              Plus Directional Indicator
@@ -5437,33 +5102,29 @@ foreign import ccall unsafe "ta_func.h TA_PLUS_DI"
 -- outputs
 --   outReal (double[])
 
-ta_plus_di :: [Double] -> [Double] -> [Double] -> Int -> IO (Either Int (Int, Int, [Double]))
-ta_plus_di inHigh inLow inClose optInTimePeriod
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_plus_di startIdx endIdx (getInArrPtr 0) (getInArrPtr 1) (getInArrPtr 2) (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inHigh ++ inLow ++ inClose
-          len = fromIntegral $ length inHigh
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_plus_di :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble))
+ta_plus_di inHigh inLow inClose optInTimePeriod = do
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
+    _outReal <- VM.new len
+    withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
+      withForeignPtr (vecPtr _inLow) $ \c_inLow ->
+        withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+          alloca $ \cOutBegIdx ->
+            alloca $ \cOutNbElement ->
+              withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+                do rc <- c_ta_plus_di 0 (fromIntegral $ len - 1) c_inHigh c_inLow c_inClose (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
+                   out_outReal <- V.unsafeFreeze _outReal
+                   case rc of
+                     0 -> do outBegIdx <- peek cOutBegIdx
+                             outNbElement <- peek cOutNbElement
+                             return $ Right $ (fromIntegral outBegIdx,
+                                               fromIntegral outNbElement,
+                                               out_outReal)
+                     _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inHigh
 
 --
 -- PLUS_DM              Plus Directional Movement
@@ -5480,33 +5141,27 @@ foreign import ccall unsafe "ta_func.h TA_PLUS_DM"
 -- outputs
 --   outReal (double[])
 
-ta_plus_dm :: [Double] -> [Double] -> Int -> IO (Either Int (Int, Int, [Double]))
-ta_plus_dm inHigh inLow optInTimePeriod
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_plus_dm startIdx endIdx (getInArrPtr 0) (getInArrPtr 1) (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inHigh ++ inLow
-          len = fromIntegral $ length inHigh
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_plus_dm :: V.Vector CDouble -> V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble))
+ta_plus_dm inHigh inLow optInTimePeriod = do
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _outReal <- VM.new len
+    withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
+      withForeignPtr (vecPtr _inLow) $ \c_inLow ->
+        alloca $ \cOutBegIdx ->
+          alloca $ \cOutNbElement ->
+            withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+              do rc <- c_ta_plus_dm 0 (fromIntegral $ len - 1) c_inHigh c_inLow (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
+                 out_outReal <- V.unsafeFreeze _outReal
+                 case rc of
+                   0 -> do outBegIdx <- peek cOutBegIdx
+                           outNbElement <- peek cOutNbElement
+                           return $ Right $ (fromIntegral outBegIdx,
+                                             fromIntegral outNbElement,
+                                             out_outReal)
+                   _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inHigh
 
 --
 -- PPO                  Percentage Price Oscillator
@@ -5524,33 +5179,25 @@ foreign import ccall unsafe "ta_func.h TA_PPO"
 -- outputs
 --   outReal (double[])
 
-ta_ppo :: [Double] -> Int -> Int -> Int -> IO (Either Int (Int, Int, [Double]))
-ta_ppo inReal optInFastPeriod optInSlowPeriod optInMAType
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_ppo startIdx endIdx (getInArrPtr 0) (fromIntegral optInFastPeriod) (fromIntegral optInSlowPeriod) (fromIntegral optInMAType) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inReal
-          len = fromIntegral $ length inReal
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_ppo :: V.Vector CDouble -> Int -> Int -> Int -> IO (Either Int (Int, Int, V.Vector CDouble))
+ta_ppo inReal optInFastPeriod optInSlowPeriod optInMAType = do
+    _inReal <- V.unsafeThaw inReal
+    _outReal <- VM.new len
+    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+      alloca $ \cOutBegIdx ->
+        alloca $ \cOutNbElement ->
+          withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+            do rc <- c_ta_ppo 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInFastPeriod) (fromIntegral optInSlowPeriod) (fromIntegral optInMAType) cOutBegIdx cOutNbElement c_outReal
+               out_outReal <- V.unsafeFreeze _outReal
+               case rc of
+                 0 -> do outBegIdx <- peek cOutBegIdx
+                         outNbElement <- peek cOutNbElement
+                         return $ Right $ (fromIntegral outBegIdx,
+                                           fromIntegral outNbElement,
+                                           out_outReal)
+                 _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inReal
 
 --
 -- ROC                  Rate of change : ((price/prevPrice)-1)*100
@@ -5566,33 +5213,25 @@ foreign import ccall unsafe "ta_func.h TA_ROC"
 -- outputs
 --   outReal (double[])
 
-ta_roc :: [Double] -> Int -> IO (Either Int (Int, Int, [Double]))
-ta_roc inReal optInTimePeriod
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_roc startIdx endIdx (getInArrPtr 0) (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inReal
-          len = fromIntegral $ length inReal
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_roc :: V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble))
+ta_roc inReal optInTimePeriod = do
+    _inReal <- V.unsafeThaw inReal
+    _outReal <- VM.new len
+    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+      alloca $ \cOutBegIdx ->
+        alloca $ \cOutNbElement ->
+          withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+            do rc <- c_ta_roc 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
+               out_outReal <- V.unsafeFreeze _outReal
+               case rc of
+                 0 -> do outBegIdx <- peek cOutBegIdx
+                         outNbElement <- peek cOutNbElement
+                         return $ Right $ (fromIntegral outBegIdx,
+                                           fromIntegral outNbElement,
+                                           out_outReal)
+                 _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inReal
 
 --
 -- ROCP                 Rate of change Percentage: (price-prevPrice)/prevPrice
@@ -5608,33 +5247,25 @@ foreign import ccall unsafe "ta_func.h TA_ROCP"
 -- outputs
 --   outReal (double[])
 
-ta_rocp :: [Double] -> Int -> IO (Either Int (Int, Int, [Double]))
-ta_rocp inReal optInTimePeriod
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_rocp startIdx endIdx (getInArrPtr 0) (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inReal
-          len = fromIntegral $ length inReal
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_rocp :: V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble))
+ta_rocp inReal optInTimePeriod = do
+    _inReal <- V.unsafeThaw inReal
+    _outReal <- VM.new len
+    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+      alloca $ \cOutBegIdx ->
+        alloca $ \cOutNbElement ->
+          withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+            do rc <- c_ta_rocp 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
+               out_outReal <- V.unsafeFreeze _outReal
+               case rc of
+                 0 -> do outBegIdx <- peek cOutBegIdx
+                         outNbElement <- peek cOutNbElement
+                         return $ Right $ (fromIntegral outBegIdx,
+                                           fromIntegral outNbElement,
+                                           out_outReal)
+                 _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inReal
 
 --
 -- ROCR                 Rate of change ratio: (price/prevPrice)
@@ -5650,33 +5281,25 @@ foreign import ccall unsafe "ta_func.h TA_ROCR"
 -- outputs
 --   outReal (double[])
 
-ta_rocr :: [Double] -> Int -> IO (Either Int (Int, Int, [Double]))
-ta_rocr inReal optInTimePeriod
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_rocr startIdx endIdx (getInArrPtr 0) (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inReal
-          len = fromIntegral $ length inReal
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_rocr :: V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble))
+ta_rocr inReal optInTimePeriod = do
+    _inReal <- V.unsafeThaw inReal
+    _outReal <- VM.new len
+    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+      alloca $ \cOutBegIdx ->
+        alloca $ \cOutNbElement ->
+          withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+            do rc <- c_ta_rocr 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
+               out_outReal <- V.unsafeFreeze _outReal
+               case rc of
+                 0 -> do outBegIdx <- peek cOutBegIdx
+                         outNbElement <- peek cOutNbElement
+                         return $ Right $ (fromIntegral outBegIdx,
+                                           fromIntegral outNbElement,
+                                           out_outReal)
+                 _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inReal
 
 --
 -- ROCR100              Rate of change ratio 100 scale: (price/prevPrice)*100
@@ -5692,33 +5315,25 @@ foreign import ccall unsafe "ta_func.h TA_ROCR100"
 -- outputs
 --   outReal (double[])
 
-ta_rocr100 :: [Double] -> Int -> IO (Either Int (Int, Int, [Double]))
-ta_rocr100 inReal optInTimePeriod
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_rocr100 startIdx endIdx (getInArrPtr 0) (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inReal
-          len = fromIntegral $ length inReal
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_rocr100 :: V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble))
+ta_rocr100 inReal optInTimePeriod = do
+    _inReal <- V.unsafeThaw inReal
+    _outReal <- VM.new len
+    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+      alloca $ \cOutBegIdx ->
+        alloca $ \cOutNbElement ->
+          withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+            do rc <- c_ta_rocr100 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
+               out_outReal <- V.unsafeFreeze _outReal
+               case rc of
+                 0 -> do outBegIdx <- peek cOutBegIdx
+                         outNbElement <- peek cOutNbElement
+                         return $ Right $ (fromIntegral outBegIdx,
+                                           fromIntegral outNbElement,
+                                           out_outReal)
+                 _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inReal
 
 --
 -- RSI                  Relative Strength Index
@@ -5734,33 +5349,25 @@ foreign import ccall unsafe "ta_func.h TA_RSI"
 -- outputs
 --   outReal (double[])
 
-ta_rsi :: [Double] -> Int -> IO (Either Int (Int, Int, [Double]))
-ta_rsi inReal optInTimePeriod
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_rsi startIdx endIdx (getInArrPtr 0) (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inReal
-          len = fromIntegral $ length inReal
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_rsi :: V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble))
+ta_rsi inReal optInTimePeriod = do
+    _inReal <- V.unsafeThaw inReal
+    _outReal <- VM.new len
+    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+      alloca $ \cOutBegIdx ->
+        alloca $ \cOutNbElement ->
+          withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+            do rc <- c_ta_rsi 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
+               out_outReal <- V.unsafeFreeze _outReal
+               case rc of
+                 0 -> do outBegIdx <- peek cOutBegIdx
+                         outNbElement <- peek cOutNbElement
+                         return $ Right $ (fromIntegral outBegIdx,
+                                           fromIntegral outNbElement,
+                                           out_outReal)
+                 _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inReal
 
 --
 -- SAR                  Parabolic SAR
@@ -5778,33 +5385,27 @@ foreign import ccall unsafe "ta_func.h TA_SAR"
 -- outputs
 --   outReal (double[])
 
-ta_sar :: [Double] -> [Double] -> Double -> Double -> IO (Either Int (Int, Int, [Double]))
-ta_sar inHigh inLow optInAcceleration optInMaximum
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_sar startIdx endIdx (getInArrPtr 0) (getInArrPtr 1) (realToFrac optInAcceleration) (realToFrac optInMaximum) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inHigh ++ inLow
-          len = fromIntegral $ length inHigh
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_sar :: V.Vector CDouble -> V.Vector CDouble -> Double -> Double -> IO (Either Int (Int, Int, V.Vector CDouble))
+ta_sar inHigh inLow optInAcceleration optInMaximum = do
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _outReal <- VM.new len
+    withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
+      withForeignPtr (vecPtr _inLow) $ \c_inLow ->
+        alloca $ \cOutBegIdx ->
+          alloca $ \cOutNbElement ->
+            withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+              do rc <- c_ta_sar 0 (fromIntegral $ len - 1) c_inHigh c_inLow (realToFrac optInAcceleration) (realToFrac optInMaximum) cOutBegIdx cOutNbElement c_outReal
+                 out_outReal <- V.unsafeFreeze _outReal
+                 case rc of
+                   0 -> do outBegIdx <- peek cOutBegIdx
+                           outNbElement <- peek cOutNbElement
+                           return $ Right $ (fromIntegral outBegIdx,
+                                             fromIntegral outNbElement,
+                                             out_outReal)
+                   _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inHigh
 
 --
 -- SAREXT               Parabolic SAR - Extended
@@ -5828,33 +5429,27 @@ foreign import ccall unsafe "ta_func.h TA_SAREXT"
 -- outputs
 --   outReal (double[])
 
-ta_sarext :: [Double] -> [Double] -> Double -> Double -> Double -> Double -> Double -> Double -> Double -> Double -> IO (Either Int (Int, Int, [Double]))
-ta_sarext inHigh inLow optInStartValue optInOffsetOnReverse optInAccelerationInitLong optInAccelerationLong optInAccelerationMaxLong optInAccelerationInitShort optInAccelerationShort optInAccelerationMaxShort
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_sarext startIdx endIdx (getInArrPtr 0) (getInArrPtr 1) (realToFrac optInStartValue) (realToFrac optInOffsetOnReverse) (realToFrac optInAccelerationInitLong) (realToFrac optInAccelerationLong) (realToFrac optInAccelerationMaxLong) (realToFrac optInAccelerationInitShort) (realToFrac optInAccelerationShort) (realToFrac optInAccelerationMaxShort) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inHigh ++ inLow
-          len = fromIntegral $ length inHigh
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_sarext :: V.Vector CDouble -> V.Vector CDouble -> Double -> Double -> Double -> Double -> Double -> Double -> Double -> Double -> IO (Either Int (Int, Int, V.Vector CDouble))
+ta_sarext inHigh inLow optInStartValue optInOffsetOnReverse optInAccelerationInitLong optInAccelerationLong optInAccelerationMaxLong optInAccelerationInitShort optInAccelerationShort optInAccelerationMaxShort = do
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _outReal <- VM.new len
+    withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
+      withForeignPtr (vecPtr _inLow) $ \c_inLow ->
+        alloca $ \cOutBegIdx ->
+          alloca $ \cOutNbElement ->
+            withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+              do rc <- c_ta_sarext 0 (fromIntegral $ len - 1) c_inHigh c_inLow (realToFrac optInStartValue) (realToFrac optInOffsetOnReverse) (realToFrac optInAccelerationInitLong) (realToFrac optInAccelerationLong) (realToFrac optInAccelerationMaxLong) (realToFrac optInAccelerationInitShort) (realToFrac optInAccelerationShort) (realToFrac optInAccelerationMaxShort) cOutBegIdx cOutNbElement c_outReal
+                 out_outReal <- V.unsafeFreeze _outReal
+                 case rc of
+                   0 -> do outBegIdx <- peek cOutBegIdx
+                           outNbElement <- peek cOutNbElement
+                           return $ Right $ (fromIntegral outBegIdx,
+                                             fromIntegral outNbElement,
+                                             out_outReal)
+                   _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inHigh
 
 --
 -- SIN                  Vector Trigonometric Sin
@@ -5869,33 +5464,25 @@ foreign import ccall unsafe "ta_func.h TA_SIN"
 -- outputs
 --   outReal (double[])
 
-ta_sin :: [Double] -> IO (Either Int (Int, Int, [Double]))
-ta_sin inReal
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_sin startIdx endIdx (getInArrPtr 0) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inReal
-          len = fromIntegral $ length inReal
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_sin :: V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CDouble))
+ta_sin inReal = do
+    _inReal <- V.unsafeThaw inReal
+    _outReal <- VM.new len
+    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+      alloca $ \cOutBegIdx ->
+        alloca $ \cOutNbElement ->
+          withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+            do rc <- c_ta_sin 0 (fromIntegral $ len - 1) c_inReal cOutBegIdx cOutNbElement c_outReal
+               out_outReal <- V.unsafeFreeze _outReal
+               case rc of
+                 0 -> do outBegIdx <- peek cOutBegIdx
+                         outNbElement <- peek cOutNbElement
+                         return $ Right $ (fromIntegral outBegIdx,
+                                           fromIntegral outNbElement,
+                                           out_outReal)
+                 _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inReal
 
 --
 -- SINH                 Vector Trigonometric Sinh
@@ -5910,33 +5497,25 @@ foreign import ccall unsafe "ta_func.h TA_SINH"
 -- outputs
 --   outReal (double[])
 
-ta_sinh :: [Double] -> IO (Either Int (Int, Int, [Double]))
-ta_sinh inReal
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_sinh startIdx endIdx (getInArrPtr 0) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inReal
-          len = fromIntegral $ length inReal
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_sinh :: V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CDouble))
+ta_sinh inReal = do
+    _inReal <- V.unsafeThaw inReal
+    _outReal <- VM.new len
+    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+      alloca $ \cOutBegIdx ->
+        alloca $ \cOutNbElement ->
+          withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+            do rc <- c_ta_sinh 0 (fromIntegral $ len - 1) c_inReal cOutBegIdx cOutNbElement c_outReal
+               out_outReal <- V.unsafeFreeze _outReal
+               case rc of
+                 0 -> do outBegIdx <- peek cOutBegIdx
+                         outNbElement <- peek cOutNbElement
+                         return $ Right $ (fromIntegral outBegIdx,
+                                           fromIntegral outNbElement,
+                                           out_outReal)
+                 _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inReal
 
 --
 -- SMA                  Simple Moving Average
@@ -5952,33 +5531,25 @@ foreign import ccall unsafe "ta_func.h TA_SMA"
 -- outputs
 --   outReal (double[])
 
-ta_sma :: [Double] -> Int -> IO (Either Int (Int, Int, [Double]))
-ta_sma inReal optInTimePeriod
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_sma startIdx endIdx (getInArrPtr 0) (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inReal
-          len = fromIntegral $ length inReal
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_sma :: V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble))
+ta_sma inReal optInTimePeriod = do
+    _inReal <- V.unsafeThaw inReal
+    _outReal <- VM.new len
+    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+      alloca $ \cOutBegIdx ->
+        alloca $ \cOutNbElement ->
+          withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+            do rc <- c_ta_sma 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
+               out_outReal <- V.unsafeFreeze _outReal
+               case rc of
+                 0 -> do outBegIdx <- peek cOutBegIdx
+                         outNbElement <- peek cOutNbElement
+                         return $ Right $ (fromIntegral outBegIdx,
+                                           fromIntegral outNbElement,
+                                           out_outReal)
+                 _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inReal
 
 --
 -- SQRT                 Vector Square Root
@@ -5993,33 +5564,25 @@ foreign import ccall unsafe "ta_func.h TA_SQRT"
 -- outputs
 --   outReal (double[])
 
-ta_sqrt :: [Double] -> IO (Either Int (Int, Int, [Double]))
-ta_sqrt inReal
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_sqrt startIdx endIdx (getInArrPtr 0) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inReal
-          len = fromIntegral $ length inReal
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_sqrt :: V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CDouble))
+ta_sqrt inReal = do
+    _inReal <- V.unsafeThaw inReal
+    _outReal <- VM.new len
+    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+      alloca $ \cOutBegIdx ->
+        alloca $ \cOutNbElement ->
+          withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+            do rc <- c_ta_sqrt 0 (fromIntegral $ len - 1) c_inReal cOutBegIdx cOutNbElement c_outReal
+               out_outReal <- V.unsafeFreeze _outReal
+               case rc of
+                 0 -> do outBegIdx <- peek cOutBegIdx
+                         outNbElement <- peek cOutNbElement
+                         return $ Right $ (fromIntegral outBegIdx,
+                                           fromIntegral outNbElement,
+                                           out_outReal)
+                 _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inReal
 
 --
 -- STDDEV               Standard Deviation
@@ -6036,33 +5599,25 @@ foreign import ccall unsafe "ta_func.h TA_STDDEV"
 -- outputs
 --   outReal (double[])
 
-ta_stddev :: [Double] -> Int -> Double -> IO (Either Int (Int, Int, [Double]))
-ta_stddev inReal optInTimePeriod optInNbDev
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_stddev startIdx endIdx (getInArrPtr 0) (fromIntegral optInTimePeriod) (realToFrac optInNbDev) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inReal
-          len = fromIntegral $ length inReal
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_stddev :: V.Vector CDouble -> Int -> Double -> IO (Either Int (Int, Int, V.Vector CDouble))
+ta_stddev inReal optInTimePeriod optInNbDev = do
+    _inReal <- V.unsafeThaw inReal
+    _outReal <- VM.new len
+    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+      alloca $ \cOutBegIdx ->
+        alloca $ \cOutNbElement ->
+          withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+            do rc <- c_ta_stddev 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) (realToFrac optInNbDev) cOutBegIdx cOutNbElement c_outReal
+               out_outReal <- V.unsafeFreeze _outReal
+               case rc of
+                 0 -> do outBegIdx <- peek cOutBegIdx
+                         outNbElement <- peek cOutNbElement
+                         return $ Right $ (fromIntegral outBegIdx,
+                                           fromIntegral outNbElement,
+                                           out_outReal)
+                 _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inReal
 
 --
 -- STOCH                Stochastic
@@ -6085,34 +5640,33 @@ foreign import ccall unsafe "ta_func.h TA_STOCH"
 --   outSlowK (double[])
 --   outSlowD (double[])
 
-ta_stoch :: [Double] -> [Double] -> [Double] -> Int -> Int -> Int -> Int -> Int -> IO (Either Int (Int, Int, [Double], [Double]))
-ta_stoch inHigh inLow inClose optInFastK_Period optInSlowK_Period optInSlowK_MAType optInSlowD_Period optInSlowD_MAType
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_stoch startIdx endIdx (getInArrPtr 0) (getInArrPtr 1) (getInArrPtr 2) (fromIntegral optInFastK_Period) (fromIntegral optInSlowK_Period) (fromIntegral optInSlowK_MAType) (fromIntegral optInSlowD_Period) (fromIntegral optInSlowD_MAType) cOutBegIdx cOutNbElement (getOutArrPtr 0) (getOutArrPtr 1)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0,
-                                 chunks !! 1
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inHigh ++ inLow ++ inClose
-          len = fromIntegral $ length inHigh
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 2
+ta_stoch :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> Int -> Int -> Int -> Int -> Int -> IO (Either Int (Int, Int, V.Vector CDouble, V.Vector CDouble))
+ta_stoch inHigh inLow inClose optInFastK_Period optInSlowK_Period optInSlowK_MAType optInSlowD_Period optInSlowD_MAType = do
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
+    _outSlowK <- VM.new len
+    _outSlowD <- VM.new len
+    withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
+      withForeignPtr (vecPtr _inLow) $ \c_inLow ->
+        withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+          alloca $ \cOutBegIdx ->
+            alloca $ \cOutNbElement ->
+              withForeignPtr (vecPtr _outSlowK) $ \c_outSlowK ->
+                withForeignPtr (vecPtr _outSlowD) $ \c_outSlowD ->
+                  do rc <- c_ta_stoch 0 (fromIntegral $ len - 1) c_inHigh c_inLow c_inClose (fromIntegral optInFastK_Period) (fromIntegral optInSlowK_Period) (fromIntegral optInSlowK_MAType) (fromIntegral optInSlowD_Period) (fromIntegral optInSlowD_MAType) cOutBegIdx cOutNbElement c_outSlowK c_outSlowD
+                     out_outSlowK <- V.unsafeFreeze _outSlowK
+                     out_outSlowD <- V.unsafeFreeze _outSlowD
+                     case rc of
+                       0 -> do outBegIdx <- peek cOutBegIdx
+                               outNbElement <- peek cOutNbElement
+                               return $ Right $ (fromIntegral outBegIdx,
+                                                 fromIntegral outNbElement,
+                                                 out_outSlowK,
+                                                 out_outSlowD)
+                       _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inHigh
 
 --
 -- STOCHF               Stochastic Fast
@@ -6133,34 +5687,33 @@ foreign import ccall unsafe "ta_func.h TA_STOCHF"
 --   outFastK (double[])
 --   outFastD (double[])
 
-ta_stochf :: [Double] -> [Double] -> [Double] -> Int -> Int -> Int -> IO (Either Int (Int, Int, [Double], [Double]))
-ta_stochf inHigh inLow inClose optInFastK_Period optInFastD_Period optInFastD_MAType
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_stochf startIdx endIdx (getInArrPtr 0) (getInArrPtr 1) (getInArrPtr 2) (fromIntegral optInFastK_Period) (fromIntegral optInFastD_Period) (fromIntegral optInFastD_MAType) cOutBegIdx cOutNbElement (getOutArrPtr 0) (getOutArrPtr 1)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0,
-                                 chunks !! 1
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inHigh ++ inLow ++ inClose
-          len = fromIntegral $ length inHigh
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 2
+ta_stochf :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> Int -> Int -> Int -> IO (Either Int (Int, Int, V.Vector CDouble, V.Vector CDouble))
+ta_stochf inHigh inLow inClose optInFastK_Period optInFastD_Period optInFastD_MAType = do
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
+    _outFastK <- VM.new len
+    _outFastD <- VM.new len
+    withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
+      withForeignPtr (vecPtr _inLow) $ \c_inLow ->
+        withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+          alloca $ \cOutBegIdx ->
+            alloca $ \cOutNbElement ->
+              withForeignPtr (vecPtr _outFastK) $ \c_outFastK ->
+                withForeignPtr (vecPtr _outFastD) $ \c_outFastD ->
+                  do rc <- c_ta_stochf 0 (fromIntegral $ len - 1) c_inHigh c_inLow c_inClose (fromIntegral optInFastK_Period) (fromIntegral optInFastD_Period) (fromIntegral optInFastD_MAType) cOutBegIdx cOutNbElement c_outFastK c_outFastD
+                     out_outFastK <- V.unsafeFreeze _outFastK
+                     out_outFastD <- V.unsafeFreeze _outFastD
+                     case rc of
+                       0 -> do outBegIdx <- peek cOutBegIdx
+                               outNbElement <- peek cOutNbElement
+                               return $ Right $ (fromIntegral outBegIdx,
+                                                 fromIntegral outNbElement,
+                                                 out_outFastK,
+                                                 out_outFastD)
+                       _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inHigh
 
 --
 -- STOCHRSI             Stochastic Relative Strength Index
@@ -6180,34 +5733,29 @@ foreign import ccall unsafe "ta_func.h TA_STOCHRSI"
 --   outFastK (double[])
 --   outFastD (double[])
 
-ta_stochrsi :: [Double] -> Int -> Int -> Int -> Int -> IO (Either Int (Int, Int, [Double], [Double]))
-ta_stochrsi inReal optInTimePeriod optInFastK_Period optInFastD_Period optInFastD_MAType
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_stochrsi startIdx endIdx (getInArrPtr 0) (fromIntegral optInTimePeriod) (fromIntegral optInFastK_Period) (fromIntegral optInFastD_Period) (fromIntegral optInFastD_MAType) cOutBegIdx cOutNbElement (getOutArrPtr 0) (getOutArrPtr 1)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0,
-                                 chunks !! 1
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inReal
-          len = fromIntegral $ length inReal
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 2
+ta_stochrsi :: V.Vector CDouble -> Int -> Int -> Int -> Int -> IO (Either Int (Int, Int, V.Vector CDouble, V.Vector CDouble))
+ta_stochrsi inReal optInTimePeriod optInFastK_Period optInFastD_Period optInFastD_MAType = do
+    _inReal <- V.unsafeThaw inReal
+    _outFastK <- VM.new len
+    _outFastD <- VM.new len
+    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+      alloca $ \cOutBegIdx ->
+        alloca $ \cOutNbElement ->
+          withForeignPtr (vecPtr _outFastK) $ \c_outFastK ->
+            withForeignPtr (vecPtr _outFastD) $ \c_outFastD ->
+              do rc <- c_ta_stochrsi 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) (fromIntegral optInFastK_Period) (fromIntegral optInFastD_Period) (fromIntegral optInFastD_MAType) cOutBegIdx cOutNbElement c_outFastK c_outFastD
+                 out_outFastK <- V.unsafeFreeze _outFastK
+                 out_outFastD <- V.unsafeFreeze _outFastD
+                 case rc of
+                   0 -> do outBegIdx <- peek cOutBegIdx
+                           outNbElement <- peek cOutNbElement
+                           return $ Right $ (fromIntegral outBegIdx,
+                                             fromIntegral outNbElement,
+                                             out_outFastK,
+                                             out_outFastD)
+                   _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inReal
 
 --
 -- SUB                  Vector Arithmetic Substraction
@@ -6223,33 +5771,27 @@ foreign import ccall unsafe "ta_func.h TA_SUB"
 -- outputs
 --   outReal (double[])
 
-ta_sub :: [Double] -> [Double] -> IO (Either Int (Int, Int, [Double]))
-ta_sub inReal0 inReal1
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_sub startIdx endIdx (getInArrPtr 0) (getInArrPtr 1) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inReal0 ++ inReal1
-          len = fromIntegral $ length inReal0
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_sub :: V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CDouble))
+ta_sub inReal0 inReal1 = do
+    _inReal0 <- V.unsafeThaw inReal0
+    _inReal1 <- V.unsafeThaw inReal1
+    _outReal <- VM.new len
+    withForeignPtr (vecPtr _inReal0) $ \c_inReal0 ->
+      withForeignPtr (vecPtr _inReal1) $ \c_inReal1 ->
+        alloca $ \cOutBegIdx ->
+          alloca $ \cOutNbElement ->
+            withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+              do rc <- c_ta_sub 0 (fromIntegral $ len - 1) c_inReal0 c_inReal1 cOutBegIdx cOutNbElement c_outReal
+                 out_outReal <- V.unsafeFreeze _outReal
+                 case rc of
+                   0 -> do outBegIdx <- peek cOutBegIdx
+                           outNbElement <- peek cOutNbElement
+                           return $ Right $ (fromIntegral outBegIdx,
+                                             fromIntegral outNbElement,
+                                             out_outReal)
+                   _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inReal0
 
 --
 -- SUM                  Summation
@@ -6265,33 +5807,25 @@ foreign import ccall unsafe "ta_func.h TA_SUM"
 -- outputs
 --   outReal (double[])
 
-ta_sum :: [Double] -> Int -> IO (Either Int (Int, Int, [Double]))
-ta_sum inReal optInTimePeriod
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_sum startIdx endIdx (getInArrPtr 0) (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inReal
-          len = fromIntegral $ length inReal
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_sum :: V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble))
+ta_sum inReal optInTimePeriod = do
+    _inReal <- V.unsafeThaw inReal
+    _outReal <- VM.new len
+    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+      alloca $ \cOutBegIdx ->
+        alloca $ \cOutNbElement ->
+          withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+            do rc <- c_ta_sum 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
+               out_outReal <- V.unsafeFreeze _outReal
+               case rc of
+                 0 -> do outBegIdx <- peek cOutBegIdx
+                         outNbElement <- peek cOutNbElement
+                         return $ Right $ (fromIntegral outBegIdx,
+                                           fromIntegral outNbElement,
+                                           out_outReal)
+                 _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inReal
 
 --
 -- T3                   Triple Exponential Moving Average (T3)
@@ -6308,33 +5842,25 @@ foreign import ccall unsafe "ta_func.h TA_T3"
 -- outputs
 --   outReal (double[])
 
-ta_t3 :: [Double] -> Int -> Double -> IO (Either Int (Int, Int, [Double]))
-ta_t3 inReal optInTimePeriod optInVFactor
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_t3 startIdx endIdx (getInArrPtr 0) (fromIntegral optInTimePeriod) (realToFrac optInVFactor) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inReal
-          len = fromIntegral $ length inReal
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_t3 :: V.Vector CDouble -> Int -> Double -> IO (Either Int (Int, Int, V.Vector CDouble))
+ta_t3 inReal optInTimePeriod optInVFactor = do
+    _inReal <- V.unsafeThaw inReal
+    _outReal <- VM.new len
+    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+      alloca $ \cOutBegIdx ->
+        alloca $ \cOutNbElement ->
+          withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+            do rc <- c_ta_t3 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) (realToFrac optInVFactor) cOutBegIdx cOutNbElement c_outReal
+               out_outReal <- V.unsafeFreeze _outReal
+               case rc of
+                 0 -> do outBegIdx <- peek cOutBegIdx
+                         outNbElement <- peek cOutNbElement
+                         return $ Right $ (fromIntegral outBegIdx,
+                                           fromIntegral outNbElement,
+                                           out_outReal)
+                 _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inReal
 
 --
 -- TAN                  Vector Trigonometric Tan
@@ -6349,33 +5875,25 @@ foreign import ccall unsafe "ta_func.h TA_TAN"
 -- outputs
 --   outReal (double[])
 
-ta_tan :: [Double] -> IO (Either Int (Int, Int, [Double]))
-ta_tan inReal
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_tan startIdx endIdx (getInArrPtr 0) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inReal
-          len = fromIntegral $ length inReal
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_tan :: V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CDouble))
+ta_tan inReal = do
+    _inReal <- V.unsafeThaw inReal
+    _outReal <- VM.new len
+    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+      alloca $ \cOutBegIdx ->
+        alloca $ \cOutNbElement ->
+          withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+            do rc <- c_ta_tan 0 (fromIntegral $ len - 1) c_inReal cOutBegIdx cOutNbElement c_outReal
+               out_outReal <- V.unsafeFreeze _outReal
+               case rc of
+                 0 -> do outBegIdx <- peek cOutBegIdx
+                         outNbElement <- peek cOutNbElement
+                         return $ Right $ (fromIntegral outBegIdx,
+                                           fromIntegral outNbElement,
+                                           out_outReal)
+                 _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inReal
 
 --
 -- TANH                 Vector Trigonometric Tanh
@@ -6390,33 +5908,25 @@ foreign import ccall unsafe "ta_func.h TA_TANH"
 -- outputs
 --   outReal (double[])
 
-ta_tanh :: [Double] -> IO (Either Int (Int, Int, [Double]))
-ta_tanh inReal
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_tanh startIdx endIdx (getInArrPtr 0) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inReal
-          len = fromIntegral $ length inReal
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_tanh :: V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CDouble))
+ta_tanh inReal = do
+    _inReal <- V.unsafeThaw inReal
+    _outReal <- VM.new len
+    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+      alloca $ \cOutBegIdx ->
+        alloca $ \cOutNbElement ->
+          withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+            do rc <- c_ta_tanh 0 (fromIntegral $ len - 1) c_inReal cOutBegIdx cOutNbElement c_outReal
+               out_outReal <- V.unsafeFreeze _outReal
+               case rc of
+                 0 -> do outBegIdx <- peek cOutBegIdx
+                         outNbElement <- peek cOutNbElement
+                         return $ Right $ (fromIntegral outBegIdx,
+                                           fromIntegral outNbElement,
+                                           out_outReal)
+                 _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inReal
 
 --
 -- TEMA                 Triple Exponential Moving Average
@@ -6432,33 +5942,25 @@ foreign import ccall unsafe "ta_func.h TA_TEMA"
 -- outputs
 --   outReal (double[])
 
-ta_tema :: [Double] -> Int -> IO (Either Int (Int, Int, [Double]))
-ta_tema inReal optInTimePeriod
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_tema startIdx endIdx (getInArrPtr 0) (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inReal
-          len = fromIntegral $ length inReal
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_tema :: V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble))
+ta_tema inReal optInTimePeriod = do
+    _inReal <- V.unsafeThaw inReal
+    _outReal <- VM.new len
+    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+      alloca $ \cOutBegIdx ->
+        alloca $ \cOutNbElement ->
+          withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+            do rc <- c_ta_tema 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
+               out_outReal <- V.unsafeFreeze _outReal
+               case rc of
+                 0 -> do outBegIdx <- peek cOutBegIdx
+                         outNbElement <- peek cOutNbElement
+                         return $ Right $ (fromIntegral outBegIdx,
+                                           fromIntegral outNbElement,
+                                           out_outReal)
+                 _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inReal
 
 --
 -- TRANGE               True Range
@@ -6475,33 +5977,29 @@ foreign import ccall unsafe "ta_func.h TA_TRANGE"
 -- outputs
 --   outReal (double[])
 
-ta_trange :: [Double] -> [Double] -> [Double] -> IO (Either Int (Int, Int, [Double]))
-ta_trange inHigh inLow inClose
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_trange startIdx endIdx (getInArrPtr 0) (getInArrPtr 1) (getInArrPtr 2) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inHigh ++ inLow ++ inClose
-          len = fromIntegral $ length inHigh
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_trange :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CDouble))
+ta_trange inHigh inLow inClose = do
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
+    _outReal <- VM.new len
+    withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
+      withForeignPtr (vecPtr _inLow) $ \c_inLow ->
+        withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+          alloca $ \cOutBegIdx ->
+            alloca $ \cOutNbElement ->
+              withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+                do rc <- c_ta_trange 0 (fromIntegral $ len - 1) c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outReal
+                   out_outReal <- V.unsafeFreeze _outReal
+                   case rc of
+                     0 -> do outBegIdx <- peek cOutBegIdx
+                             outNbElement <- peek cOutNbElement
+                             return $ Right $ (fromIntegral outBegIdx,
+                                               fromIntegral outNbElement,
+                                               out_outReal)
+                     _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inHigh
 
 --
 -- TRIMA                Triangular Moving Average
@@ -6517,33 +6015,25 @@ foreign import ccall unsafe "ta_func.h TA_TRIMA"
 -- outputs
 --   outReal (double[])
 
-ta_trima :: [Double] -> Int -> IO (Either Int (Int, Int, [Double]))
-ta_trima inReal optInTimePeriod
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_trima startIdx endIdx (getInArrPtr 0) (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inReal
-          len = fromIntegral $ length inReal
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_trima :: V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble))
+ta_trima inReal optInTimePeriod = do
+    _inReal <- V.unsafeThaw inReal
+    _outReal <- VM.new len
+    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+      alloca $ \cOutBegIdx ->
+        alloca $ \cOutNbElement ->
+          withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+            do rc <- c_ta_trima 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
+               out_outReal <- V.unsafeFreeze _outReal
+               case rc of
+                 0 -> do outBegIdx <- peek cOutBegIdx
+                         outNbElement <- peek cOutNbElement
+                         return $ Right $ (fromIntegral outBegIdx,
+                                           fromIntegral outNbElement,
+                                           out_outReal)
+                 _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inReal
 
 --
 -- TRIX                 1-day Rate-Of-Change (ROC) of a Triple Smooth EMA
@@ -6559,33 +6049,25 @@ foreign import ccall unsafe "ta_func.h TA_TRIX"
 -- outputs
 --   outReal (double[])
 
-ta_trix :: [Double] -> Int -> IO (Either Int (Int, Int, [Double]))
-ta_trix inReal optInTimePeriod
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_trix startIdx endIdx (getInArrPtr 0) (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inReal
-          len = fromIntegral $ length inReal
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_trix :: V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble))
+ta_trix inReal optInTimePeriod = do
+    _inReal <- V.unsafeThaw inReal
+    _outReal <- VM.new len
+    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+      alloca $ \cOutBegIdx ->
+        alloca $ \cOutNbElement ->
+          withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+            do rc <- c_ta_trix 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
+               out_outReal <- V.unsafeFreeze _outReal
+               case rc of
+                 0 -> do outBegIdx <- peek cOutBegIdx
+                         outNbElement <- peek cOutNbElement
+                         return $ Right $ (fromIntegral outBegIdx,
+                                           fromIntegral outNbElement,
+                                           out_outReal)
+                 _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inReal
 
 --
 -- TSF                  Time Series Forecast
@@ -6601,33 +6083,25 @@ foreign import ccall unsafe "ta_func.h TA_TSF"
 -- outputs
 --   outReal (double[])
 
-ta_tsf :: [Double] -> Int -> IO (Either Int (Int, Int, [Double]))
-ta_tsf inReal optInTimePeriod
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_tsf startIdx endIdx (getInArrPtr 0) (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inReal
-          len = fromIntegral $ length inReal
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_tsf :: V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble))
+ta_tsf inReal optInTimePeriod = do
+    _inReal <- V.unsafeThaw inReal
+    _outReal <- VM.new len
+    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+      alloca $ \cOutBegIdx ->
+        alloca $ \cOutNbElement ->
+          withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+            do rc <- c_ta_tsf 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
+               out_outReal <- V.unsafeFreeze _outReal
+               case rc of
+                 0 -> do outBegIdx <- peek cOutBegIdx
+                         outNbElement <- peek cOutNbElement
+                         return $ Right $ (fromIntegral outBegIdx,
+                                           fromIntegral outNbElement,
+                                           out_outReal)
+                 _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inReal
 
 --
 -- TYPPRICE             Typical Price
@@ -6644,33 +6118,29 @@ foreign import ccall unsafe "ta_func.h TA_TYPPRICE"
 -- outputs
 --   outReal (double[])
 
-ta_typprice :: [Double] -> [Double] -> [Double] -> IO (Either Int (Int, Int, [Double]))
-ta_typprice inHigh inLow inClose
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_typprice startIdx endIdx (getInArrPtr 0) (getInArrPtr 1) (getInArrPtr 2) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inHigh ++ inLow ++ inClose
-          len = fromIntegral $ length inHigh
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_typprice :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CDouble))
+ta_typprice inHigh inLow inClose = do
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
+    _outReal <- VM.new len
+    withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
+      withForeignPtr (vecPtr _inLow) $ \c_inLow ->
+        withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+          alloca $ \cOutBegIdx ->
+            alloca $ \cOutNbElement ->
+              withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+                do rc <- c_ta_typprice 0 (fromIntegral $ len - 1) c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outReal
+                   out_outReal <- V.unsafeFreeze _outReal
+                   case rc of
+                     0 -> do outBegIdx <- peek cOutBegIdx
+                             outNbElement <- peek cOutNbElement
+                             return $ Right $ (fromIntegral outBegIdx,
+                                               fromIntegral outNbElement,
+                                               out_outReal)
+                     _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inHigh
 
 --
 -- ULTOSC               Ultimate Oscillator
@@ -6690,33 +6160,29 @@ foreign import ccall unsafe "ta_func.h TA_ULTOSC"
 -- outputs
 --   outReal (double[])
 
-ta_ultosc :: [Double] -> [Double] -> [Double] -> Int -> Int -> Int -> IO (Either Int (Int, Int, [Double]))
-ta_ultosc inHigh inLow inClose optInTimePeriod1 optInTimePeriod2 optInTimePeriod3
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_ultosc startIdx endIdx (getInArrPtr 0) (getInArrPtr 1) (getInArrPtr 2) (fromIntegral optInTimePeriod1) (fromIntegral optInTimePeriod2) (fromIntegral optInTimePeriod3) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inHigh ++ inLow ++ inClose
-          len = fromIntegral $ length inHigh
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_ultosc :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> Int -> Int -> Int -> IO (Either Int (Int, Int, V.Vector CDouble))
+ta_ultosc inHigh inLow inClose optInTimePeriod1 optInTimePeriod2 optInTimePeriod3 = do
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
+    _outReal <- VM.new len
+    withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
+      withForeignPtr (vecPtr _inLow) $ \c_inLow ->
+        withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+          alloca $ \cOutBegIdx ->
+            alloca $ \cOutNbElement ->
+              withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+                do rc <- c_ta_ultosc 0 (fromIntegral $ len - 1) c_inHigh c_inLow c_inClose (fromIntegral optInTimePeriod1) (fromIntegral optInTimePeriod2) (fromIntegral optInTimePeriod3) cOutBegIdx cOutNbElement c_outReal
+                   out_outReal <- V.unsafeFreeze _outReal
+                   case rc of
+                     0 -> do outBegIdx <- peek cOutBegIdx
+                             outNbElement <- peek cOutNbElement
+                             return $ Right $ (fromIntegral outBegIdx,
+                                               fromIntegral outNbElement,
+                                               out_outReal)
+                     _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inHigh
 
 --
 -- VAR                  Variance
@@ -6733,33 +6199,25 @@ foreign import ccall unsafe "ta_func.h TA_VAR"
 -- outputs
 --   outReal (double[])
 
-ta_var :: [Double] -> Int -> Double -> IO (Either Int (Int, Int, [Double]))
-ta_var inReal optInTimePeriod optInNbDev
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_var startIdx endIdx (getInArrPtr 0) (fromIntegral optInTimePeriod) (realToFrac optInNbDev) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inReal
-          len = fromIntegral $ length inReal
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_var :: V.Vector CDouble -> Int -> Double -> IO (Either Int (Int, Int, V.Vector CDouble))
+ta_var inReal optInTimePeriod optInNbDev = do
+    _inReal <- V.unsafeThaw inReal
+    _outReal <- VM.new len
+    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+      alloca $ \cOutBegIdx ->
+        alloca $ \cOutNbElement ->
+          withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+            do rc <- c_ta_var 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) (realToFrac optInNbDev) cOutBegIdx cOutNbElement c_outReal
+               out_outReal <- V.unsafeFreeze _outReal
+               case rc of
+                 0 -> do outBegIdx <- peek cOutBegIdx
+                         outNbElement <- peek cOutNbElement
+                         return $ Right $ (fromIntegral outBegIdx,
+                                           fromIntegral outNbElement,
+                                           out_outReal)
+                 _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inReal
 
 --
 -- WCLPRICE             Weighted Close Price
@@ -6776,33 +6234,29 @@ foreign import ccall unsafe "ta_func.h TA_WCLPRICE"
 -- outputs
 --   outReal (double[])
 
-ta_wclprice :: [Double] -> [Double] -> [Double] -> IO (Either Int (Int, Int, [Double]))
-ta_wclprice inHigh inLow inClose
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_wclprice startIdx endIdx (getInArrPtr 0) (getInArrPtr 1) (getInArrPtr 2) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inHigh ++ inLow ++ inClose
-          len = fromIntegral $ length inHigh
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_wclprice :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CDouble))
+ta_wclprice inHigh inLow inClose = do
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
+    _outReal <- VM.new len
+    withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
+      withForeignPtr (vecPtr _inLow) $ \c_inLow ->
+        withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+          alloca $ \cOutBegIdx ->
+            alloca $ \cOutNbElement ->
+              withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+                do rc <- c_ta_wclprice 0 (fromIntegral $ len - 1) c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outReal
+                   out_outReal <- V.unsafeFreeze _outReal
+                   case rc of
+                     0 -> do outBegIdx <- peek cOutBegIdx
+                             outNbElement <- peek cOutNbElement
+                             return $ Right $ (fromIntegral outBegIdx,
+                                               fromIntegral outNbElement,
+                                               out_outReal)
+                     _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inHigh
 
 --
 -- WILLR                Williams' %R
@@ -6820,33 +6274,29 @@ foreign import ccall unsafe "ta_func.h TA_WILLR"
 -- outputs
 --   outReal (double[])
 
-ta_willr :: [Double] -> [Double] -> [Double] -> Int -> IO (Either Int (Int, Int, [Double]))
-ta_willr inHigh inLow inClose optInTimePeriod
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_willr startIdx endIdx (getInArrPtr 0) (getInArrPtr 1) (getInArrPtr 2) (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inHigh ++ inLow ++ inClose
-          len = fromIntegral $ length inHigh
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
+ta_willr :: V.Vector CDouble -> V.Vector CDouble -> V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble))
+ta_willr inHigh inLow inClose optInTimePeriod = do
+    _inHigh <- V.unsafeThaw inHigh
+    _inLow <- V.unsafeThaw inLow
+    _inClose <- V.unsafeThaw inClose
+    _outReal <- VM.new len
+    withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
+      withForeignPtr (vecPtr _inLow) $ \c_inLow ->
+        withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+          alloca $ \cOutBegIdx ->
+            alloca $ \cOutNbElement ->
+              withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+                do rc <- c_ta_willr 0 (fromIntegral $ len - 1) c_inHigh c_inLow c_inClose (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
+                   out_outReal <- V.unsafeFreeze _outReal
+                   case rc of
+                     0 -> do outBegIdx <- peek cOutBegIdx
+                             outNbElement <- peek cOutNbElement
+                             return $ Right $ (fromIntegral outBegIdx,
+                                               fromIntegral outNbElement,
+                                               out_outReal)
+                     _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inHigh
 
 --
 -- WMA                  Weighted Moving Average
@@ -6862,122 +6312,156 @@ foreign import ccall unsafe "ta_func.h TA_WMA"
 -- outputs
 --   outReal (double[])
 
-ta_wma :: [Double] -> Int -> IO (Either Int (Int, Int, [Double]))
-ta_wma inReal optInTimePeriod
-    = withArray _inReal            $ \cInReal ->
-      alloca                       $ \cOutBegIdx ->
-      alloca                       $ \cOutNbElement ->
-      allocaArray (len * outputs)  $ \cOut ->
-      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)
-          getInArrPtr i   = getArrPtr i cInReal
-          getOutArrPtr i  = getArrPtr i cOut
-      in do
-        rc <- c_ta_wma startIdx endIdx (getInArrPtr 0) (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement (getOutArrPtr 0)
-        case rc of
-          0 -> do
-               _out <- peekArray (len * outputs) cOut
-               outBegIdx <- peek cOutBegIdx
-               outNbElement <- peek cOutNbElement
-               let chunks = (chunksOf len _out)
-               return $ Right $ (fromIntegral outBegIdx,
-                                 fromIntegral outNbElement,
-                                 chunks !! 0
-                                )
-          _ -> return $ Left $ fromIntegral rc
-    where _inReal = inReal
-          len = fromIntegral $ length inReal
-          startIdx = 0
-          endIdx = fromIntegral $ len - 1
-          outputs = 1
-
+ta_wma :: V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble))
+ta_wma inReal optInTimePeriod = do
+    _inReal <- V.unsafeThaw inReal
+    _outReal <- VM.new len
+    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+      alloca $ \cOutBegIdx ->
+        alloca $ \cOutNbElement ->
+          withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+            do rc <- c_ta_wma 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
+               out_outReal <- V.unsafeFreeze _outReal
+               case rc of
+                 0 -> do outBegIdx <- peek cOutBegIdx
+                         outNbElement <- peek cOutNbElement
+                         return $ Right $ (fromIntegral outBegIdx,
+                                           fromIntegral outNbElement,
+                                           out_outReal)
+                 _ -> return $ Left $ fromIntegral rc
+  where
+    len = fromIntegral $ V.length inReal
 
 -- *******************************
 -- *** End Auto-Generated Code ***
 -- *******************************
+
+-- For now, comment out main so it doesn't clash with another main when this lib is imported
+-- Alternative: export specific symbols, excluding main
+{-
 
 terpri :: IO ()
 terpri = putStrLn ""
 
 main :: IO ()
 main = do
-  	c_ta_init
+    c_ta_init
+                    
+    -- Apple stock prices. April 1, 2015 through April 30, 2015.
         
-        let close = [91.500, 94.815, 94.375,
-                     95.095, 93.780, 94.625,
-                     92.530, 92.750, 90.315,
-                     92.470, 96.125, 97.250,
-                     98.500, 89.875, 91.000,
-                     92.815, 89.155, 89.345,
-                     91.625, 89.875, 88.375,
-                     87.625, 84.780, 83.000]
+    let open = [124.82, 125.03, 124.47, 127.64, 125.85,
+                125.85, 125.95, 128.37, 127.00, 126.41,
+                126.28, 125.55, 125.57, 128.10, 126.99,
+                128.30, 130.49, 132.31, 134.46, 130.16,
+                128.64]
+    
+    let high = [125.12, 125.56, 127.51, 128.12, 126.40,
+                126.58, 127.21, 128.57, 127.29, 127.13,
+                127.10, 126.14, 128.12, 128.20, 128.87,
+                130.42, 130.63, 133.13, 134.54, 131.59,
+                128.64]
         
-        putStrLn "close"
-        print close
-        terpri
+    let low = [123.10, 124.19, 124.33, 125.98, 124.97,
+               124.66, 125.26, 126.61, 125.91, 126.01,
+               126.11, 124.46, 125.17, 126.67, 126.32,
+               128.14, 129.23, 131.15, 129.57, 128.30,
+               124.58]
         
-        -- TODO: pass real data into some of these, rather than passing the same series multiple times
-        -- (as is, with unrealistic series, these are just testing that the C calls work and don't e.g. seg fault)
+    let close = [124.25, 125.32, 127.35, 126.01, 125.60,
+                 126.56, 127.10, 126.85, 126.30, 126.78,
+                 126.17, 124.75, 127.60, 126.91, 128.62,
+                 129.67, 130.28, 132.65, 130.56, 128.64,
+                 125.15]
         
-        let inReal = close
-        let inHigh = map (1 +) close
-        let inLow = map (2 +) close
-        let inClose = map (2 *) close
-        let inVolume = map (fromIntegral . round . (4*)) close
+    let volume = [40621400, 32220100, 37194000, 35012300, 37329200,
+                  32484000, 40188000, 36365100, 25524600, 28970400,
+                  28369000, 51957000, 47054300, 32435100, 37654500,
+                  45770900, 44525900, 96954200, 118924000, 63386100,
+                  83195400]
+    
+    let adjclose = [123.73, 124.80, 126.82, 125.49, 125.08,
+                    126.03, 126.57, 126.32, 125.77, 126.25,
+                    125.65, 124.23, 127.07, 126.38, 128.08,
+                    129.13, 129.74, 132.10, 130.02, 128.10,
+                    124.63] :: [CDouble]
+                   
+    let vOpen = V.fromList(open)
+    let vHigh = V.fromList(high)
+    let vLow = V.fromList(low)
+    let vClose = V.fromList(close)
+    let vVolume = V.fromList(volume)
+    let vAdjclose = V.fromList(adjclose)
+    
+    putStrLn "close"
+    print close
+    terpri
+    
+    putStrLn "Chaikin A/D Line"
+    result <- ta_ad vHigh vLow vClose vVolume
+    print result
+    terpri
+      
+    putStrLn "Chaikin A/D Oscillator"
+    result <- ta_adosc vHigh vLow vClose vVolume 6 7
+    print result
+    terpri
+      
+    putStrLn "Average Directional Movement Index"
+    result <- ta_adx vHigh vLow vClose 6
+    print result
+    terpri
+    
+    putStrLn "Aroon"
+    result <- ta_aroon vHigh vLow 5
+    print result
+    terpri
+      
+    putStrLn "Average True Range"
+    result <- ta_atr vHigh vLow vClose 14
+    print result
+    terpri
+      
+    putStrLn "Moving Average"
+    result <- ta_ma vClose 5 taIntDefault
+    print result
+    terpri
+      
+    putStrLn "High-Wave Candle"
+    result <- ta_cdlhighwave vOpen vHigh vLow vClose
+    print result
+    terpri
+    
+    putStrLn "Hanging Man"
+    result <- ta_cdlhangingman vOpen vHigh vLow vClose
+    print result
+    terpri
+    
+    putStrLn "Median Price"
+    result <- ta_medprice vHigh vLow
+    print result
+    terpri
+      
+    putStrLn "Money Flow Index"
+    result <- ta_mfi vHigh vLow vClose vVolume 7
+    print result
+    terpri
+      
+    putStrLn "On Balance Volume"
+    result <- ta_obv vClose vVolume
+    print result
+    terpri
+    
+    putStrLn "Relative Strength Index"
+    result <- ta_rsi vClose 9
+    print result
+    terpri
+    
+    putStrLn "Simple Moving Average"
+    result <- ta_sma vClose 8
+    print result
+    terpri
         
-        putStrLn "Chaikin A/D Line"
-        result <- ta_ad inHigh inLow inClose inVolume
-        print result
-        terpri
-        
-        putStrLn "Chaikin A/D Oscillator"
-        result <- ta_adosc inHigh inLow inClose inVolume 6 7
-        print result
-        terpri
-        
-        putStrLn "Average Directional Movement Index"
-        result <- ta_adx inHigh inLow inClose 6
-        print result
-        terpri
-        
-        putStrLn "Aroon"
-        result <- ta_aroon inHigh inLow 5
-        print result
-        terpri
-        
-        putStrLn "Average True Range"
-        result <- ta_atr inHigh inLow inClose 14
-        print result
-        terpri
-        
-        putStrLn "All Moving Average"
-        result <- ta_ma inReal 5 taIntDefault
-        print result
-        terpri
-        
-        putStrLn "Median Price"
-        result <- ta_medprice inHigh inLow
-        print result
-        terpri
-          
-        putStrLn "Money Flow Index"
-        result <- ta_mfi inHigh inLow inClose inVolume 7
-        print result
-        terpri
-        
-        putStrLn "On Balance Volume"
-        result <- ta_obv inReal inVolume
-        print result
-        terpri
-
-        putStrLn "Relative Strength Index"
-        result <- ta_rsi inReal 9
-        print result
-        terpri
+-}    
         
         
-        
-        
-        
-        
-        
-        
+    

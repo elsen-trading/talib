@@ -7,12 +7,16 @@ import Data.Vector -- TODO: should match Vector used for the api. .Storable? .Un
 import Test.QuickCheck
 import Test.HUnit
 
-import Tests.MovingAverage
+import Tests.Wrappers
+
+import qualified Data.TALib
 
 main :: IO ()
-main = defaultMain allTests
+main = do
+    Data.TALib.c_ta_init
+    defaultMain allTests
 
 allTests :: TestTree
 allTests = testGroup "TALib Tests" [
-  movingAvgTests
+  wrapperTests
   ]

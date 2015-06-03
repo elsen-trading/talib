@@ -3,10 +3,19 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <stdarg.h>
 #include <ta-lib/ta_func.h>
 #include <ta-lib/ta_abstract.h>
 
 typedef enum {DOUBLE, INT, DOUBLEARRAY, INTARRAY} datatype;
+
+void printfIndent(int indent, const char *fmt, ...) {
+    va_list args;
+    va_start(args, fmt);
+    printf("%*s", indent, " ");
+    vprintf(fmt, args);
+    va_end(args);
+}
 
 typedef struct HS_Params {
    /* Params we need to generate Haskell code */
@@ -261,7 +270,7 @@ void printHsCode(const TA_FuncInfo *funcInfo, void *opaqueData) {
             strcat(tsSig, " -> ");
             strcat(ctaSig, " -> ");
         }
-        strcat(tsSig, "[Double]");
+        strcat(tsSig, "V.Vector CDouble");
         strcat(ctaSig, "Ptr CDouble");
     }
 
@@ -285,7 +294,7 @@ void printHsCode(const TA_FuncInfo *funcInfo, void *opaqueData) {
 
     strcat(tsSig, " -> IO (Either Int (Int, Int");
     for (int i = 0; i < hsParams.outputs; i++) {
-        strcat(tsSig, hsParams.outputTypes[i] == INTARRAY ? ", [Int]" : ", [Double]");
+        strcat(tsSig, hsParams.outputTypes[i] == INTARRAY ? ", V.Vector CInt" : ", V.Vector CDouble");
     }
     strcat(tsSig, "))");
 
@@ -312,8 +321,6 @@ void printHsCode(const TA_FuncInfo *funcInfo, void *opaqueData) {
     printf("\n");
     terpri();
 
-    // The haskell code we generate assumes all returned arrays are of the same type.
-    // This is fair to assume, since it's always the case for ta-lib functions.
     // All functions that have multiple returns have the same type (double[] or int[]) for all return arrays.
     // The following return multiple double[]s (number in parens = number of outputs):
     // AROON (2),
@@ -333,58 +340,78 @@ void printHsCode(const TA_FuncInfo *funcInfo, void *opaqueData) {
     // MINMAXINDEX (2)
 
     printf("ta_%s :: %s\n", hsParams.funcNameLower, tsSig);
-    printf("ta_%s %s\n", hsParams.funcNameLower, args);
-    printf("    = withArray _inReal            $ \\cInReal ->\n");
-    printf("      alloca                       $ \\cOutBegIdx ->\n");
-    printf("      alloca                       $ \\cOutNbElement ->\n");
-    printf("      allocaArray (len * outputs)  $ \\cOut ->\n");
-    printf("      let getArrPtr i arr = plusPtr arr (i * (sizeOf arr) * len)\n");
-    printf("          getInArrPtr i   = getArrPtr i cInReal\n");
-    printf("          getOutArrPtr i  = getArrPtr i cOut\n");
-    printf("      in do\n");
-    printf("        rc <- c_ta_%s startIdx endIdx", hsParams.funcNameLower);
+    printf("ta_%s %s = do\n", hsParams.funcNameLower, args);
+
+    int indent = 4;
     for (int i = 0; i < hsParams.inputs; i++) {
-        printf(" (getInArrPtr %d)", i);
+        char *in = hsParams.inputNames[i];
+        printfIndent(indent, "_%s <- V.unsafeThaw %s\n", in, in);
     }
+
+    for (int i = 0; i < hsParams.outputs; i++) {
+        printfIndent(indent, "_%s <- VM.new len\n", hsParams.outputNames[i]);
+    }
+
+    for (int i = 0; i < hsParams.inputs; i++) {
+        char *in = hsParams.inputNames[i];
+        printfIndent(indent, "withForeignPtr (vecPtr _%s) $ \\c_%s ->\n", in, in);
+        indent += 2;
+    }
+
+    printfIndent(indent, "alloca $ \\cOutBegIdx ->\n");
+    indent += 2;
+    printfIndent(indent, "alloca $ \\cOutNbElement ->\n");
+    indent += 2;
+
+    for (int i = 0; i < hsParams.outputs; i++) {
+        char *out = hsParams.outputNames[i];
+        printfIndent(indent, "withForeignPtr (vecPtr _%s) $ \\c_%s ->\n", out, out);
+        indent += 2;
+    }
+
+    printfIndent(indent, "do rc <- c_ta_%s 0 (fromIntegral $ len - 1)", hsParams.funcNameLower);
+    for (int i = 0; i < hsParams.inputs; i++) {
+        printf(" c_%s", hsParams.inputNames[i]);
+    }
+
     for (int i = 0; i < hsParams.optInputs; i++) {
         char *fn = (hsParams.optInputTypes[i] == INT) ? "fromIntegral" : "realToFrac";
         printf(" (%s %s)", fn, hsParams.optInputNames[i]);
     }
+
     printf(" cOutBegIdx cOutNbElement");
     for (int i = 0; i < hsParams.outputs; i++) {
-        printf(" (getOutArrPtr %d)", i);
+        printf(" c_%s", hsParams.outputNames[i]);
     }
     printf("\n");
-    printf("        case rc of\n");
-    printf("          0 -> do\n");
-    printf("               _out <- peekArray (len * outputs) cOut\n");
-    printf("               outBegIdx <- peek cOutBegIdx\n");
-    printf("               outNbElement <- peek cOutNbElement\n");
 
-
-    printf("               let chunks = (chunksOf len _out)\n");
-    printf("               return $ Right $ (fromIntegral outBegIdx,\n");
-    printf("                                 fromIntegral outNbElement");
+    indent += 3;
 
     for (int i = 0; i < hsParams.outputs; i++) {
+        char *out = hsParams.outputNames[i];
+        printfIndent(indent, "out_%s <- V.unsafeFreeze _%s\n", out, out);
+    }
+
+    printfIndent(indent, "case rc of\n");
+    indent += 2;
+    int caseIndent = indent;
+    printfIndent(indent, "0 -> do outBegIdx <- peek cOutBegIdx\n");
+    indent += 8;
+    printfIndent(indent, "outNbElement <- peek cOutNbElement\n");
+    printfIndent(indent, "return $ Right $ (fromIntegral outBegIdx,\n");
+    indent += 18;
+    printfIndent(indent, "fromIntegral outNbElement");
+    for (int i = 0; i < hsParams.outputs; i++) {
         printf(",\n");
-        printf("                                 chunks !! %d", i);
+        printfIndent(indent, "out_%s", hsParams.outputNames[i]);
     }
-    printf("\n");
-    printf("                                )\n");
-
-    printf("          _ -> return $ Left $ fromIntegral rc\n");
-    printf("    where _inReal = %s", hsParams.inputNames[0]);
-    for (int i = 1; i < hsParams.inputs; i++) {
-        printf(" ++ %s", hsParams.inputNames[i]);
-    }
-    printf("\n");
-
-    printf("          len = fromIntegral $ length %s\n", hsParams.inputNames[0]);
-    printf("          startIdx = 0\n");
-    printf("          endIdx = fromIntegral $ len - 1\n");
-    printf("          outputs = %d\n", hsParams.outputs);
-
+    printf(")\n");
+    indent = caseIndent;
+    printfIndent(indent, "_ -> return $ Left $ fromIntegral rc\n");
+    indent = 2;
+    printfIndent(indent, "where\n");
+    indent = 4;
+    printfIndent(indent, "len = fromIntegral $ V.length %s\n", hsParams.inputNames[0]);
     terpri();
 }
 
