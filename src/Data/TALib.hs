@@ -162,7 +162,6 @@ module Data.TALib (
 
 import Foreign.C.Types
 import Foreign.Ptr
-import Foreign.Marshal.Array
 import Foreign.Marshal.Alloc
 import Foreign.Storable
 import qualified Data.Vector.Storable as V
