@@ -49,6 +49,7 @@ vLow = V.fromList(low)
 vClose = V.fromList(close)
 vVolume = V.fromList(volume)
 
+hangingMan :: Assertion
 hangingMan = do
     result <- ta_cdlhangingman vOpen vHigh vLow vClose
     case result of
@@ -58,6 +59,7 @@ hangingMan = do
         assert (cOutNbElement == 10)
         assert $ (V.take cOutNbElement output) == (V.fromList [0,0,0,0,0,-100,0,0,0,0])
 
+relativeStrengthIndex :: Assertion
 relativeStrengthIndex = do
     result <- ta_rsi vClose 9
     case result of
@@ -80,6 +82,7 @@ relativeStrengthIndex = do
 
 -- floating point issues versus the numbers you output from C cause tests to fail with
 -- a direct comparison, so just make sure the vectors are very close
+simpleMovingAverage :: Assertion
 simpleMovingAverage = do
     result <- ta_sma vClose 8
     case result of
@@ -94,6 +97,7 @@ simpleMovingAverage = do
                        126.263750, 126.513750, 126.557500, 126.747500,
                        127.100000, 127.597500, 128.331250, 128.880000,
                        129.366250, 129.060000])
+
 wrapperTests :: TestTree
 wrapperTests = testGroup "Wrappers" [
   testCase "Hanging Man" hangingMan,

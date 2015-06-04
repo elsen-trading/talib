@@ -354,7 +354,7 @@ void printHsCode(const TA_FuncInfo *funcInfo, void *opaqueData) {
 
     for (int i = 0; i < hsParams.inputs; i++) {
         char *in = hsParams.inputNames[i];
-        printfIndent(indent, "withForeignPtr (vecPtr _%s) $ \\c_%s ->\n", in, in);
+        printfIndent(indent, "VM.unsafeWith _%s $ \\c_%s ->\n", in, in);
         indent += 2;
     }
 
@@ -365,7 +365,7 @@ void printHsCode(const TA_FuncInfo *funcInfo, void *opaqueData) {
 
     for (int i = 0; i < hsParams.outputs; i++) {
         char *out = hsParams.outputNames[i];
-        printfIndent(indent, "withForeignPtr (vecPtr _%s) $ \\c_%s ->\n", out, out);
+        printfIndent(indent, "VM.unsafeWith _%s $ \\c_%s ->\n", out, out);
         indent += 2;
     }
 

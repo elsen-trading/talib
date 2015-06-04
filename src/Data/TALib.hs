@@ -164,10 +164,7 @@ import Foreign.C.Types
 import Foreign.Ptr
 import Foreign.Marshal.Array
 import Foreign.Marshal.Alloc
-import Foreign.ForeignPtr
-import Foreign.ForeignPtr.Unsafe
 import Foreign.Storable
-import System.IO.Unsafe
 import qualified Data.Vector.Storable as V
 import qualified Data.Vector.Storable.Mutable as VM
 
@@ -180,9 +177,6 @@ taIntDefault = fromIntegral (minBound :: CInt)
 foreign import ccall unsafe "ta_common.h TA_Initialize"
   c_ta_init :: IO ()
                
-vecPtr :: VM.Storable a => VM.MVector s a -> ForeignPtr a
-vecPtr = fst . VM.unsafeToForeignPtr0
-
 -- *********************************
 -- *** Start Auto-Generated Code ***
 -- *********************************
@@ -204,10 +198,10 @@ ta_acos :: V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CDouble))
 ta_acos inReal = do
     _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
-    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+    VM.unsafeWith _inReal $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
-          withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+          VM.unsafeWith _outReal $ \c_outReal ->
             do rc <- c_ta_acos 0 (fromIntegral $ len - 1) c_inReal cOutBegIdx cOutNbElement c_outReal
                out_outReal <- V.unsafeFreeze _outReal
                case rc of
@@ -243,13 +237,13 @@ ta_ad inHigh inLow inClose inVolume = do
     _inClose <- V.unsafeThaw inClose
     _inVolume <- V.unsafeThaw inVolume
     _outReal <- VM.new len
-    withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
-      withForeignPtr (vecPtr _inLow) $ \c_inLow ->
-        withForeignPtr (vecPtr _inClose) $ \c_inClose ->
-          withForeignPtr (vecPtr _inVolume) $ \c_inVolume ->
+    VM.unsafeWith _inHigh $ \c_inHigh ->
+      VM.unsafeWith _inLow $ \c_inLow ->
+        VM.unsafeWith _inClose $ \c_inClose ->
+          VM.unsafeWith _inVolume $ \c_inVolume ->
             alloca $ \cOutBegIdx ->
               alloca $ \cOutNbElement ->
-                withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+                VM.unsafeWith _outReal $ \c_outReal ->
                   do rc <- c_ta_ad 0 (fromIntegral $ len - 1) c_inHigh c_inLow c_inClose c_inVolume cOutBegIdx cOutNbElement c_outReal
                      out_outReal <- V.unsafeFreeze _outReal
                      case rc of
@@ -281,11 +275,11 @@ ta_add inReal0 inReal1 = do
     _inReal0 <- V.unsafeThaw inReal0
     _inReal1 <- V.unsafeThaw inReal1
     _outReal <- VM.new len
-    withForeignPtr (vecPtr _inReal0) $ \c_inReal0 ->
-      withForeignPtr (vecPtr _inReal1) $ \c_inReal1 ->
+    VM.unsafeWith _inReal0 $ \c_inReal0 ->
+      VM.unsafeWith _inReal1 $ \c_inReal1 ->
         alloca $ \cOutBegIdx ->
           alloca $ \cOutNbElement ->
-            withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+            VM.unsafeWith _outReal $ \c_outReal ->
               do rc <- c_ta_add 0 (fromIntegral $ len - 1) c_inReal0 c_inReal1 cOutBegIdx cOutNbElement c_outReal
                  out_outReal <- V.unsafeFreeze _outReal
                  case rc of
@@ -323,13 +317,13 @@ ta_adosc inHigh inLow inClose inVolume optInFastPeriod optInSlowPeriod = do
     _inClose <- V.unsafeThaw inClose
     _inVolume <- V.unsafeThaw inVolume
     _outReal <- VM.new len
-    withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
-      withForeignPtr (vecPtr _inLow) $ \c_inLow ->
-        withForeignPtr (vecPtr _inClose) $ \c_inClose ->
-          withForeignPtr (vecPtr _inVolume) $ \c_inVolume ->
+    VM.unsafeWith _inHigh $ \c_inHigh ->
+      VM.unsafeWith _inLow $ \c_inLow ->
+        VM.unsafeWith _inClose $ \c_inClose ->
+          VM.unsafeWith _inVolume $ \c_inVolume ->
             alloca $ \cOutBegIdx ->
               alloca $ \cOutNbElement ->
-                withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+                VM.unsafeWith _outReal $ \c_outReal ->
                   do rc <- c_ta_adosc 0 (fromIntegral $ len - 1) c_inHigh c_inLow c_inClose c_inVolume (fromIntegral optInFastPeriod) (fromIntegral optInSlowPeriod) cOutBegIdx cOutNbElement c_outReal
                      out_outReal <- V.unsafeFreeze _outReal
                      case rc of
@@ -364,12 +358,12 @@ ta_adx inHigh inLow inClose optInTimePeriod = do
     _inLow <- V.unsafeThaw inLow
     _inClose <- V.unsafeThaw inClose
     _outReal <- VM.new len
-    withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
-      withForeignPtr (vecPtr _inLow) $ \c_inLow ->
-        withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+    VM.unsafeWith _inHigh $ \c_inHigh ->
+      VM.unsafeWith _inLow $ \c_inLow ->
+        VM.unsafeWith _inClose $ \c_inClose ->
           alloca $ \cOutBegIdx ->
             alloca $ \cOutNbElement ->
-              withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+              VM.unsafeWith _outReal $ \c_outReal ->
                 do rc <- c_ta_adx 0 (fromIntegral $ len - 1) c_inHigh c_inLow c_inClose (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
                    out_outReal <- V.unsafeFreeze _outReal
                    case rc of
@@ -404,12 +398,12 @@ ta_adxr inHigh inLow inClose optInTimePeriod = do
     _inLow <- V.unsafeThaw inLow
     _inClose <- V.unsafeThaw inClose
     _outReal <- VM.new len
-    withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
-      withForeignPtr (vecPtr _inLow) $ \c_inLow ->
-        withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+    VM.unsafeWith _inHigh $ \c_inHigh ->
+      VM.unsafeWith _inLow $ \c_inLow ->
+        VM.unsafeWith _inClose $ \c_inClose ->
           alloca $ \cOutBegIdx ->
             alloca $ \cOutNbElement ->
-              withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+              VM.unsafeWith _outReal $ \c_outReal ->
                 do rc <- c_ta_adxr 0 (fromIntegral $ len - 1) c_inHigh c_inLow c_inClose (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
                    out_outReal <- V.unsafeFreeze _outReal
                    case rc of
@@ -442,10 +436,10 @@ ta_apo :: V.Vector CDouble -> Int -> Int -> Int -> IO (Either Int (Int, Int, V.V
 ta_apo inReal optInFastPeriod optInSlowPeriod optInMAType = do
     _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
-    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+    VM.unsafeWith _inReal $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
-          withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+          VM.unsafeWith _outReal $ \c_outReal ->
             do rc <- c_ta_apo 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInFastPeriod) (fromIntegral optInSlowPeriod) (fromIntegral optInMAType) cOutBegIdx cOutNbElement c_outReal
                out_outReal <- V.unsafeFreeze _outReal
                case rc of
@@ -480,12 +474,12 @@ ta_aroon inHigh inLow optInTimePeriod = do
     _inLow <- V.unsafeThaw inLow
     _outAroonDown <- VM.new len
     _outAroonUp <- VM.new len
-    withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
-      withForeignPtr (vecPtr _inLow) $ \c_inLow ->
+    VM.unsafeWith _inHigh $ \c_inHigh ->
+      VM.unsafeWith _inLow $ \c_inLow ->
         alloca $ \cOutBegIdx ->
           alloca $ \cOutNbElement ->
-            withForeignPtr (vecPtr _outAroonDown) $ \c_outAroonDown ->
-              withForeignPtr (vecPtr _outAroonUp) $ \c_outAroonUp ->
+            VM.unsafeWith _outAroonDown $ \c_outAroonDown ->
+              VM.unsafeWith _outAroonUp $ \c_outAroonUp ->
                 do rc <- c_ta_aroon 0 (fromIntegral $ len - 1) c_inHigh c_inLow (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outAroonDown c_outAroonUp
                    out_outAroonDown <- V.unsafeFreeze _outAroonDown
                    out_outAroonUp <- V.unsafeFreeze _outAroonUp
@@ -520,11 +514,11 @@ ta_aroonosc inHigh inLow optInTimePeriod = do
     _inHigh <- V.unsafeThaw inHigh
     _inLow <- V.unsafeThaw inLow
     _outReal <- VM.new len
-    withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
-      withForeignPtr (vecPtr _inLow) $ \c_inLow ->
+    VM.unsafeWith _inHigh $ \c_inHigh ->
+      VM.unsafeWith _inLow $ \c_inLow ->
         alloca $ \cOutBegIdx ->
           alloca $ \cOutNbElement ->
-            withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+            VM.unsafeWith _outReal $ \c_outReal ->
               do rc <- c_ta_aroonosc 0 (fromIntegral $ len - 1) c_inHigh c_inLow (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
                  out_outReal <- V.unsafeFreeze _outReal
                  case rc of
@@ -554,10 +548,10 @@ ta_asin :: V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CDouble))
 ta_asin inReal = do
     _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
-    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+    VM.unsafeWith _inReal $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
-          withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+          VM.unsafeWith _outReal $ \c_outReal ->
             do rc <- c_ta_asin 0 (fromIntegral $ len - 1) c_inReal cOutBegIdx cOutNbElement c_outReal
                out_outReal <- V.unsafeFreeze _outReal
                case rc of
@@ -587,10 +581,10 @@ ta_atan :: V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CDouble))
 ta_atan inReal = do
     _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
-    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+    VM.unsafeWith _inReal $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
-          withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+          VM.unsafeWith _outReal $ \c_outReal ->
             do rc <- c_ta_atan 0 (fromIntegral $ len - 1) c_inReal cOutBegIdx cOutNbElement c_outReal
                out_outReal <- V.unsafeFreeze _outReal
                case rc of
@@ -625,12 +619,12 @@ ta_atr inHigh inLow inClose optInTimePeriod = do
     _inLow <- V.unsafeThaw inLow
     _inClose <- V.unsafeThaw inClose
     _outReal <- VM.new len
-    withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
-      withForeignPtr (vecPtr _inLow) $ \c_inLow ->
-        withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+    VM.unsafeWith _inHigh $ \c_inHigh ->
+      VM.unsafeWith _inLow $ \c_inLow ->
+        VM.unsafeWith _inClose $ \c_inClose ->
           alloca $ \cOutBegIdx ->
             alloca $ \cOutNbElement ->
-              withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+              VM.unsafeWith _outReal $ \c_outReal ->
                 do rc <- c_ta_atr 0 (fromIntegral $ len - 1) c_inHigh c_inLow c_inClose (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
                    out_outReal <- V.unsafeFreeze _outReal
                    case rc of
@@ -666,13 +660,13 @@ ta_avgprice inOpen inHigh inLow inClose = do
     _inLow <- V.unsafeThaw inLow
     _inClose <- V.unsafeThaw inClose
     _outReal <- VM.new len
-    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
-      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
-        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
-          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+    VM.unsafeWith _inOpen $ \c_inOpen ->
+      VM.unsafeWith _inHigh $ \c_inHigh ->
+        VM.unsafeWith _inLow $ \c_inLow ->
+          VM.unsafeWith _inClose $ \c_inClose ->
             alloca $ \cOutBegIdx ->
               alloca $ \cOutNbElement ->
-                withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+                VM.unsafeWith _outReal $ \c_outReal ->
                   do rc <- c_ta_avgprice 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outReal
                      out_outReal <- V.unsafeFreeze _outReal
                      case rc of
@@ -710,12 +704,12 @@ ta_bbands inReal optInTimePeriod optInNbDevUp optInNbDevDn optInMAType = do
     _outRealUpperBand <- VM.new len
     _outRealMiddleBand <- VM.new len
     _outRealLowerBand <- VM.new len
-    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+    VM.unsafeWith _inReal $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
-          withForeignPtr (vecPtr _outRealUpperBand) $ \c_outRealUpperBand ->
-            withForeignPtr (vecPtr _outRealMiddleBand) $ \c_outRealMiddleBand ->
-              withForeignPtr (vecPtr _outRealLowerBand) $ \c_outRealLowerBand ->
+          VM.unsafeWith _outRealUpperBand $ \c_outRealUpperBand ->
+            VM.unsafeWith _outRealMiddleBand $ \c_outRealMiddleBand ->
+              VM.unsafeWith _outRealLowerBand $ \c_outRealLowerBand ->
                 do rc <- c_ta_bbands 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) (realToFrac optInNbDevUp) (realToFrac optInNbDevDn) (fromIntegral optInMAType) cOutBegIdx cOutNbElement c_outRealUpperBand c_outRealMiddleBand c_outRealLowerBand
                    out_outRealUpperBand <- V.unsafeFreeze _outRealUpperBand
                    out_outRealMiddleBand <- V.unsafeFreeze _outRealMiddleBand
@@ -752,11 +746,11 @@ ta_beta inReal0 inReal1 optInTimePeriod = do
     _inReal0 <- V.unsafeThaw inReal0
     _inReal1 <- V.unsafeThaw inReal1
     _outReal <- VM.new len
-    withForeignPtr (vecPtr _inReal0) $ \c_inReal0 ->
-      withForeignPtr (vecPtr _inReal1) $ \c_inReal1 ->
+    VM.unsafeWith _inReal0 $ \c_inReal0 ->
+      VM.unsafeWith _inReal1 $ \c_inReal1 ->
         alloca $ \cOutBegIdx ->
           alloca $ \cOutNbElement ->
-            withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+            VM.unsafeWith _outReal $ \c_outReal ->
               do rc <- c_ta_beta 0 (fromIntegral $ len - 1) c_inReal0 c_inReal1 (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
                  out_outReal <- V.unsafeFreeze _outReal
                  case rc of
@@ -792,13 +786,13 @@ ta_bop inOpen inHigh inLow inClose = do
     _inLow <- V.unsafeThaw inLow
     _inClose <- V.unsafeThaw inClose
     _outReal <- VM.new len
-    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
-      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
-        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
-          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+    VM.unsafeWith _inOpen $ \c_inOpen ->
+      VM.unsafeWith _inHigh $ \c_inHigh ->
+        VM.unsafeWith _inLow $ \c_inLow ->
+          VM.unsafeWith _inClose $ \c_inClose ->
             alloca $ \cOutBegIdx ->
               alloca $ \cOutNbElement ->
-                withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+                VM.unsafeWith _outReal $ \c_outReal ->
                   do rc <- c_ta_bop 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outReal
                      out_outReal <- V.unsafeFreeze _outReal
                      case rc of
@@ -833,12 +827,12 @@ ta_cci inHigh inLow inClose optInTimePeriod = do
     _inLow <- V.unsafeThaw inLow
     _inClose <- V.unsafeThaw inClose
     _outReal <- VM.new len
-    withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
-      withForeignPtr (vecPtr _inLow) $ \c_inLow ->
-        withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+    VM.unsafeWith _inHigh $ \c_inHigh ->
+      VM.unsafeWith _inLow $ \c_inLow ->
+        VM.unsafeWith _inClose $ \c_inClose ->
           alloca $ \cOutBegIdx ->
             alloca $ \cOutNbElement ->
-              withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+              VM.unsafeWith _outReal $ \c_outReal ->
                 do rc <- c_ta_cci 0 (fromIntegral $ len - 1) c_inHigh c_inLow c_inClose (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
                    out_outReal <- V.unsafeFreeze _outReal
                    case rc of
@@ -874,13 +868,13 @@ ta_cdl2crows inOpen inHigh inLow inClose = do
     _inLow <- V.unsafeThaw inLow
     _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
-    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
-      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
-        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
-          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+    VM.unsafeWith _inOpen $ \c_inOpen ->
+      VM.unsafeWith _inHigh $ \c_inHigh ->
+        VM.unsafeWith _inLow $ \c_inLow ->
+          VM.unsafeWith _inClose $ \c_inClose ->
             alloca $ \cOutBegIdx ->
               alloca $ \cOutNbElement ->
-                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                VM.unsafeWith _outInteger $ \c_outInteger ->
                   do rc <- c_ta_cdl2crows 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
                      out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
@@ -916,13 +910,13 @@ ta_cdl3blackcrows inOpen inHigh inLow inClose = do
     _inLow <- V.unsafeThaw inLow
     _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
-    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
-      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
-        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
-          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+    VM.unsafeWith _inOpen $ \c_inOpen ->
+      VM.unsafeWith _inHigh $ \c_inHigh ->
+        VM.unsafeWith _inLow $ \c_inLow ->
+          VM.unsafeWith _inClose $ \c_inClose ->
             alloca $ \cOutBegIdx ->
               alloca $ \cOutNbElement ->
-                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                VM.unsafeWith _outInteger $ \c_outInteger ->
                   do rc <- c_ta_cdl3blackcrows 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
                      out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
@@ -958,13 +952,13 @@ ta_cdl3inside inOpen inHigh inLow inClose = do
     _inLow <- V.unsafeThaw inLow
     _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
-    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
-      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
-        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
-          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+    VM.unsafeWith _inOpen $ \c_inOpen ->
+      VM.unsafeWith _inHigh $ \c_inHigh ->
+        VM.unsafeWith _inLow $ \c_inLow ->
+          VM.unsafeWith _inClose $ \c_inClose ->
             alloca $ \cOutBegIdx ->
               alloca $ \cOutNbElement ->
-                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                VM.unsafeWith _outInteger $ \c_outInteger ->
                   do rc <- c_ta_cdl3inside 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
                      out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
@@ -1000,13 +994,13 @@ ta_cdl3linestrike inOpen inHigh inLow inClose = do
     _inLow <- V.unsafeThaw inLow
     _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
-    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
-      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
-        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
-          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+    VM.unsafeWith _inOpen $ \c_inOpen ->
+      VM.unsafeWith _inHigh $ \c_inHigh ->
+        VM.unsafeWith _inLow $ \c_inLow ->
+          VM.unsafeWith _inClose $ \c_inClose ->
             alloca $ \cOutBegIdx ->
               alloca $ \cOutNbElement ->
-                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                VM.unsafeWith _outInteger $ \c_outInteger ->
                   do rc <- c_ta_cdl3linestrike 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
                      out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
@@ -1042,13 +1036,13 @@ ta_cdl3outside inOpen inHigh inLow inClose = do
     _inLow <- V.unsafeThaw inLow
     _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
-    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
-      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
-        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
-          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+    VM.unsafeWith _inOpen $ \c_inOpen ->
+      VM.unsafeWith _inHigh $ \c_inHigh ->
+        VM.unsafeWith _inLow $ \c_inLow ->
+          VM.unsafeWith _inClose $ \c_inClose ->
             alloca $ \cOutBegIdx ->
               alloca $ \cOutNbElement ->
-                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                VM.unsafeWith _outInteger $ \c_outInteger ->
                   do rc <- c_ta_cdl3outside 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
                      out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
@@ -1084,13 +1078,13 @@ ta_cdl3starsinsouth inOpen inHigh inLow inClose = do
     _inLow <- V.unsafeThaw inLow
     _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
-    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
-      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
-        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
-          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+    VM.unsafeWith _inOpen $ \c_inOpen ->
+      VM.unsafeWith _inHigh $ \c_inHigh ->
+        VM.unsafeWith _inLow $ \c_inLow ->
+          VM.unsafeWith _inClose $ \c_inClose ->
             alloca $ \cOutBegIdx ->
               alloca $ \cOutNbElement ->
-                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                VM.unsafeWith _outInteger $ \c_outInteger ->
                   do rc <- c_ta_cdl3starsinsouth 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
                      out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
@@ -1126,13 +1120,13 @@ ta_cdl3whitesoldiers inOpen inHigh inLow inClose = do
     _inLow <- V.unsafeThaw inLow
     _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
-    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
-      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
-        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
-          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+    VM.unsafeWith _inOpen $ \c_inOpen ->
+      VM.unsafeWith _inHigh $ \c_inHigh ->
+        VM.unsafeWith _inLow $ \c_inLow ->
+          VM.unsafeWith _inClose $ \c_inClose ->
             alloca $ \cOutBegIdx ->
               alloca $ \cOutNbElement ->
-                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                VM.unsafeWith _outInteger $ \c_outInteger ->
                   do rc <- c_ta_cdl3whitesoldiers 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
                      out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
@@ -1169,13 +1163,13 @@ ta_cdlabandonedbaby inOpen inHigh inLow inClose optInPenetration = do
     _inLow <- V.unsafeThaw inLow
     _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
-    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
-      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
-        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
-          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+    VM.unsafeWith _inOpen $ \c_inOpen ->
+      VM.unsafeWith _inHigh $ \c_inHigh ->
+        VM.unsafeWith _inLow $ \c_inLow ->
+          VM.unsafeWith _inClose $ \c_inClose ->
             alloca $ \cOutBegIdx ->
               alloca $ \cOutNbElement ->
-                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                VM.unsafeWith _outInteger $ \c_outInteger ->
                   do rc <- c_ta_cdlabandonedbaby 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose (realToFrac optInPenetration) cOutBegIdx cOutNbElement c_outInteger
                      out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
@@ -1211,13 +1205,13 @@ ta_cdladvanceblock inOpen inHigh inLow inClose = do
     _inLow <- V.unsafeThaw inLow
     _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
-    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
-      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
-        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
-          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+    VM.unsafeWith _inOpen $ \c_inOpen ->
+      VM.unsafeWith _inHigh $ \c_inHigh ->
+        VM.unsafeWith _inLow $ \c_inLow ->
+          VM.unsafeWith _inClose $ \c_inClose ->
             alloca $ \cOutBegIdx ->
               alloca $ \cOutNbElement ->
-                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                VM.unsafeWith _outInteger $ \c_outInteger ->
                   do rc <- c_ta_cdladvanceblock 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
                      out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
@@ -1253,13 +1247,13 @@ ta_cdlbelthold inOpen inHigh inLow inClose = do
     _inLow <- V.unsafeThaw inLow
     _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
-    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
-      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
-        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
-          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+    VM.unsafeWith _inOpen $ \c_inOpen ->
+      VM.unsafeWith _inHigh $ \c_inHigh ->
+        VM.unsafeWith _inLow $ \c_inLow ->
+          VM.unsafeWith _inClose $ \c_inClose ->
             alloca $ \cOutBegIdx ->
               alloca $ \cOutNbElement ->
-                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                VM.unsafeWith _outInteger $ \c_outInteger ->
                   do rc <- c_ta_cdlbelthold 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
                      out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
@@ -1295,13 +1289,13 @@ ta_cdlbreakaway inOpen inHigh inLow inClose = do
     _inLow <- V.unsafeThaw inLow
     _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
-    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
-      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
-        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
-          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+    VM.unsafeWith _inOpen $ \c_inOpen ->
+      VM.unsafeWith _inHigh $ \c_inHigh ->
+        VM.unsafeWith _inLow $ \c_inLow ->
+          VM.unsafeWith _inClose $ \c_inClose ->
             alloca $ \cOutBegIdx ->
               alloca $ \cOutNbElement ->
-                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                VM.unsafeWith _outInteger $ \c_outInteger ->
                   do rc <- c_ta_cdlbreakaway 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
                      out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
@@ -1337,13 +1331,13 @@ ta_cdlclosingmarubozu inOpen inHigh inLow inClose = do
     _inLow <- V.unsafeThaw inLow
     _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
-    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
-      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
-        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
-          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+    VM.unsafeWith _inOpen $ \c_inOpen ->
+      VM.unsafeWith _inHigh $ \c_inHigh ->
+        VM.unsafeWith _inLow $ \c_inLow ->
+          VM.unsafeWith _inClose $ \c_inClose ->
             alloca $ \cOutBegIdx ->
               alloca $ \cOutNbElement ->
-                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                VM.unsafeWith _outInteger $ \c_outInteger ->
                   do rc <- c_ta_cdlclosingmarubozu 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
                      out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
@@ -1379,13 +1373,13 @@ ta_cdlconcealbabyswall inOpen inHigh inLow inClose = do
     _inLow <- V.unsafeThaw inLow
     _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
-    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
-      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
-        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
-          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+    VM.unsafeWith _inOpen $ \c_inOpen ->
+      VM.unsafeWith _inHigh $ \c_inHigh ->
+        VM.unsafeWith _inLow $ \c_inLow ->
+          VM.unsafeWith _inClose $ \c_inClose ->
             alloca $ \cOutBegIdx ->
               alloca $ \cOutNbElement ->
-                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                VM.unsafeWith _outInteger $ \c_outInteger ->
                   do rc <- c_ta_cdlconcealbabyswall 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
                      out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
@@ -1421,13 +1415,13 @@ ta_cdlcounterattack inOpen inHigh inLow inClose = do
     _inLow <- V.unsafeThaw inLow
     _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
-    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
-      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
-        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
-          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+    VM.unsafeWith _inOpen $ \c_inOpen ->
+      VM.unsafeWith _inHigh $ \c_inHigh ->
+        VM.unsafeWith _inLow $ \c_inLow ->
+          VM.unsafeWith _inClose $ \c_inClose ->
             alloca $ \cOutBegIdx ->
               alloca $ \cOutNbElement ->
-                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                VM.unsafeWith _outInteger $ \c_outInteger ->
                   do rc <- c_ta_cdlcounterattack 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
                      out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
@@ -1464,13 +1458,13 @@ ta_cdldarkcloudcover inOpen inHigh inLow inClose optInPenetration = do
     _inLow <- V.unsafeThaw inLow
     _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
-    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
-      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
-        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
-          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+    VM.unsafeWith _inOpen $ \c_inOpen ->
+      VM.unsafeWith _inHigh $ \c_inHigh ->
+        VM.unsafeWith _inLow $ \c_inLow ->
+          VM.unsafeWith _inClose $ \c_inClose ->
             alloca $ \cOutBegIdx ->
               alloca $ \cOutNbElement ->
-                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                VM.unsafeWith _outInteger $ \c_outInteger ->
                   do rc <- c_ta_cdldarkcloudcover 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose (realToFrac optInPenetration) cOutBegIdx cOutNbElement c_outInteger
                      out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
@@ -1506,13 +1500,13 @@ ta_cdldoji inOpen inHigh inLow inClose = do
     _inLow <- V.unsafeThaw inLow
     _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
-    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
-      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
-        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
-          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+    VM.unsafeWith _inOpen $ \c_inOpen ->
+      VM.unsafeWith _inHigh $ \c_inHigh ->
+        VM.unsafeWith _inLow $ \c_inLow ->
+          VM.unsafeWith _inClose $ \c_inClose ->
             alloca $ \cOutBegIdx ->
               alloca $ \cOutNbElement ->
-                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                VM.unsafeWith _outInteger $ \c_outInteger ->
                   do rc <- c_ta_cdldoji 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
                      out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
@@ -1548,13 +1542,13 @@ ta_cdldojistar inOpen inHigh inLow inClose = do
     _inLow <- V.unsafeThaw inLow
     _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
-    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
-      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
-        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
-          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+    VM.unsafeWith _inOpen $ \c_inOpen ->
+      VM.unsafeWith _inHigh $ \c_inHigh ->
+        VM.unsafeWith _inLow $ \c_inLow ->
+          VM.unsafeWith _inClose $ \c_inClose ->
             alloca $ \cOutBegIdx ->
               alloca $ \cOutNbElement ->
-                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                VM.unsafeWith _outInteger $ \c_outInteger ->
                   do rc <- c_ta_cdldojistar 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
                      out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
@@ -1590,13 +1584,13 @@ ta_cdldragonflydoji inOpen inHigh inLow inClose = do
     _inLow <- V.unsafeThaw inLow
     _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
-    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
-      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
-        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
-          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+    VM.unsafeWith _inOpen $ \c_inOpen ->
+      VM.unsafeWith _inHigh $ \c_inHigh ->
+        VM.unsafeWith _inLow $ \c_inLow ->
+          VM.unsafeWith _inClose $ \c_inClose ->
             alloca $ \cOutBegIdx ->
               alloca $ \cOutNbElement ->
-                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                VM.unsafeWith _outInteger $ \c_outInteger ->
                   do rc <- c_ta_cdldragonflydoji 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
                      out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
@@ -1632,13 +1626,13 @@ ta_cdlengulfing inOpen inHigh inLow inClose = do
     _inLow <- V.unsafeThaw inLow
     _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
-    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
-      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
-        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
-          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+    VM.unsafeWith _inOpen $ \c_inOpen ->
+      VM.unsafeWith _inHigh $ \c_inHigh ->
+        VM.unsafeWith _inLow $ \c_inLow ->
+          VM.unsafeWith _inClose $ \c_inClose ->
             alloca $ \cOutBegIdx ->
               alloca $ \cOutNbElement ->
-                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                VM.unsafeWith _outInteger $ \c_outInteger ->
                   do rc <- c_ta_cdlengulfing 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
                      out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
@@ -1675,13 +1669,13 @@ ta_cdleveningdojistar inOpen inHigh inLow inClose optInPenetration = do
     _inLow <- V.unsafeThaw inLow
     _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
-    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
-      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
-        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
-          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+    VM.unsafeWith _inOpen $ \c_inOpen ->
+      VM.unsafeWith _inHigh $ \c_inHigh ->
+        VM.unsafeWith _inLow $ \c_inLow ->
+          VM.unsafeWith _inClose $ \c_inClose ->
             alloca $ \cOutBegIdx ->
               alloca $ \cOutNbElement ->
-                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                VM.unsafeWith _outInteger $ \c_outInteger ->
                   do rc <- c_ta_cdleveningdojistar 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose (realToFrac optInPenetration) cOutBegIdx cOutNbElement c_outInteger
                      out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
@@ -1718,13 +1712,13 @@ ta_cdleveningstar inOpen inHigh inLow inClose optInPenetration = do
     _inLow <- V.unsafeThaw inLow
     _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
-    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
-      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
-        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
-          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+    VM.unsafeWith _inOpen $ \c_inOpen ->
+      VM.unsafeWith _inHigh $ \c_inHigh ->
+        VM.unsafeWith _inLow $ \c_inLow ->
+          VM.unsafeWith _inClose $ \c_inClose ->
             alloca $ \cOutBegIdx ->
               alloca $ \cOutNbElement ->
-                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                VM.unsafeWith _outInteger $ \c_outInteger ->
                   do rc <- c_ta_cdleveningstar 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose (realToFrac optInPenetration) cOutBegIdx cOutNbElement c_outInteger
                      out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
@@ -1744,7 +1738,6 @@ ta_cdleveningstar inOpen inHigh inLow inClose optInPenetration = do
 foreign import ccall unsafe "ta_func.h TA_CDLGAPSIDESIDEWHITE"
   c_ta_cdlgapsidesidewhite :: CInt -> CInt -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CDouble -> Ptr CInt -> Ptr CInt -> Ptr CInt -> IO CInt
 
-
 -- inputs
 --   inOpen
 --   inHigh
@@ -1761,13 +1754,13 @@ ta_cdlgapsidesidewhite inOpen inHigh inLow inClose = do
     _inLow <- V.unsafeThaw inLow
     _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
-    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
-      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
-        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
-          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+    VM.unsafeWith _inOpen $ \c_inOpen ->
+      VM.unsafeWith _inHigh $ \c_inHigh ->
+        VM.unsafeWith _inLow $ \c_inLow ->
+          VM.unsafeWith _inClose $ \c_inClose ->
             alloca $ \cOutBegIdx ->
               alloca $ \cOutNbElement ->
-                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                VM.unsafeWith _outInteger $ \c_outInteger ->
                   do rc <- c_ta_cdlgapsidesidewhite 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
                      out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
@@ -1803,13 +1796,13 @@ ta_cdlgravestonedoji inOpen inHigh inLow inClose = do
     _inLow <- V.unsafeThaw inLow
     _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
-    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
-      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
-        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
-          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+    VM.unsafeWith _inOpen $ \c_inOpen ->
+      VM.unsafeWith _inHigh $ \c_inHigh ->
+        VM.unsafeWith _inLow $ \c_inLow ->
+          VM.unsafeWith _inClose $ \c_inClose ->
             alloca $ \cOutBegIdx ->
               alloca $ \cOutNbElement ->
-                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                VM.unsafeWith _outInteger $ \c_outInteger ->
                   do rc <- c_ta_cdlgravestonedoji 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
                      out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
@@ -1845,13 +1838,13 @@ ta_cdlhammer inOpen inHigh inLow inClose = do
     _inLow <- V.unsafeThaw inLow
     _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
-    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
-      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
-        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
-          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+    VM.unsafeWith _inOpen $ \c_inOpen ->
+      VM.unsafeWith _inHigh $ \c_inHigh ->
+        VM.unsafeWith _inLow $ \c_inLow ->
+          VM.unsafeWith _inClose $ \c_inClose ->
             alloca $ \cOutBegIdx ->
               alloca $ \cOutNbElement ->
-                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                VM.unsafeWith _outInteger $ \c_outInteger ->
                   do rc <- c_ta_cdlhammer 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
                      out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
@@ -1887,13 +1880,13 @@ ta_cdlhangingman inOpen inHigh inLow inClose = do
     _inLow <- V.unsafeThaw inLow
     _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
-    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
-      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
-        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
-          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+    VM.unsafeWith _inOpen $ \c_inOpen ->
+      VM.unsafeWith _inHigh $ \c_inHigh ->
+        VM.unsafeWith _inLow $ \c_inLow ->
+          VM.unsafeWith _inClose $ \c_inClose ->
             alloca $ \cOutBegIdx ->
               alloca $ \cOutNbElement ->
-                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                VM.unsafeWith _outInteger $ \c_outInteger ->
                   do rc <- c_ta_cdlhangingman 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
                      out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
@@ -1929,13 +1922,13 @@ ta_cdlharami inOpen inHigh inLow inClose = do
     _inLow <- V.unsafeThaw inLow
     _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
-    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
-      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
-        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
-          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+    VM.unsafeWith _inOpen $ \c_inOpen ->
+      VM.unsafeWith _inHigh $ \c_inHigh ->
+        VM.unsafeWith _inLow $ \c_inLow ->
+          VM.unsafeWith _inClose $ \c_inClose ->
             alloca $ \cOutBegIdx ->
               alloca $ \cOutNbElement ->
-                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                VM.unsafeWith _outInteger $ \c_outInteger ->
                   do rc <- c_ta_cdlharami 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
                      out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
@@ -1971,13 +1964,13 @@ ta_cdlharamicross inOpen inHigh inLow inClose = do
     _inLow <- V.unsafeThaw inLow
     _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
-    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
-      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
-        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
-          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+    VM.unsafeWith _inOpen $ \c_inOpen ->
+      VM.unsafeWith _inHigh $ \c_inHigh ->
+        VM.unsafeWith _inLow $ \c_inLow ->
+          VM.unsafeWith _inClose $ \c_inClose ->
             alloca $ \cOutBegIdx ->
               alloca $ \cOutNbElement ->
-                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                VM.unsafeWith _outInteger $ \c_outInteger ->
                   do rc <- c_ta_cdlharamicross 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
                      out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
@@ -2013,13 +2006,13 @@ ta_cdlhighwave inOpen inHigh inLow inClose = do
     _inLow <- V.unsafeThaw inLow
     _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
-    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
-      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
-        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
-          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+    VM.unsafeWith _inOpen $ \c_inOpen ->
+      VM.unsafeWith _inHigh $ \c_inHigh ->
+        VM.unsafeWith _inLow $ \c_inLow ->
+          VM.unsafeWith _inClose $ \c_inClose ->
             alloca $ \cOutBegIdx ->
               alloca $ \cOutNbElement ->
-                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                VM.unsafeWith _outInteger $ \c_outInteger ->
                   do rc <- c_ta_cdlhighwave 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
                      out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
@@ -2055,13 +2048,13 @@ ta_cdlhikkake inOpen inHigh inLow inClose = do
     _inLow <- V.unsafeThaw inLow
     _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
-    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
-      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
-        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
-          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+    VM.unsafeWith _inOpen $ \c_inOpen ->
+      VM.unsafeWith _inHigh $ \c_inHigh ->
+        VM.unsafeWith _inLow $ \c_inLow ->
+          VM.unsafeWith _inClose $ \c_inClose ->
             alloca $ \cOutBegIdx ->
               alloca $ \cOutNbElement ->
-                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                VM.unsafeWith _outInteger $ \c_outInteger ->
                   do rc <- c_ta_cdlhikkake 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
                      out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
@@ -2097,13 +2090,13 @@ ta_cdlhikkakemod inOpen inHigh inLow inClose = do
     _inLow <- V.unsafeThaw inLow
     _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
-    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
-      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
-        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
-          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+    VM.unsafeWith _inOpen $ \c_inOpen ->
+      VM.unsafeWith _inHigh $ \c_inHigh ->
+        VM.unsafeWith _inLow $ \c_inLow ->
+          VM.unsafeWith _inClose $ \c_inClose ->
             alloca $ \cOutBegIdx ->
               alloca $ \cOutNbElement ->
-                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                VM.unsafeWith _outInteger $ \c_outInteger ->
                   do rc <- c_ta_cdlhikkakemod 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
                      out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
@@ -2139,13 +2132,13 @@ ta_cdlhomingpigeon inOpen inHigh inLow inClose = do
     _inLow <- V.unsafeThaw inLow
     _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
-    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
-      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
-        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
-          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+    VM.unsafeWith _inOpen $ \c_inOpen ->
+      VM.unsafeWith _inHigh $ \c_inHigh ->
+        VM.unsafeWith _inLow $ \c_inLow ->
+          VM.unsafeWith _inClose $ \c_inClose ->
             alloca $ \cOutBegIdx ->
               alloca $ \cOutNbElement ->
-                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                VM.unsafeWith _outInteger $ \c_outInteger ->
                   do rc <- c_ta_cdlhomingpigeon 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
                      out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
@@ -2181,13 +2174,13 @@ ta_cdlidentical3crows inOpen inHigh inLow inClose = do
     _inLow <- V.unsafeThaw inLow
     _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
-    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
-      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
-        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
-          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+    VM.unsafeWith _inOpen $ \c_inOpen ->
+      VM.unsafeWith _inHigh $ \c_inHigh ->
+        VM.unsafeWith _inLow $ \c_inLow ->
+          VM.unsafeWith _inClose $ \c_inClose ->
             alloca $ \cOutBegIdx ->
               alloca $ \cOutNbElement ->
-                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                VM.unsafeWith _outInteger $ \c_outInteger ->
                   do rc <- c_ta_cdlidentical3crows 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
                      out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
@@ -2223,13 +2216,13 @@ ta_cdlinneck inOpen inHigh inLow inClose = do
     _inLow <- V.unsafeThaw inLow
     _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
-    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
-      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
-        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
-          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+    VM.unsafeWith _inOpen $ \c_inOpen ->
+      VM.unsafeWith _inHigh $ \c_inHigh ->
+        VM.unsafeWith _inLow $ \c_inLow ->
+          VM.unsafeWith _inClose $ \c_inClose ->
             alloca $ \cOutBegIdx ->
               alloca $ \cOutNbElement ->
-                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                VM.unsafeWith _outInteger $ \c_outInteger ->
                   do rc <- c_ta_cdlinneck 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
                      out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
@@ -2265,13 +2258,13 @@ ta_cdlinvertedhammer inOpen inHigh inLow inClose = do
     _inLow <- V.unsafeThaw inLow
     _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
-    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
-      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
-        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
-          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+    VM.unsafeWith _inOpen $ \c_inOpen ->
+      VM.unsafeWith _inHigh $ \c_inHigh ->
+        VM.unsafeWith _inLow $ \c_inLow ->
+          VM.unsafeWith _inClose $ \c_inClose ->
             alloca $ \cOutBegIdx ->
               alloca $ \cOutNbElement ->
-                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                VM.unsafeWith _outInteger $ \c_outInteger ->
                   do rc <- c_ta_cdlinvertedhammer 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
                      out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
@@ -2307,13 +2300,13 @@ ta_cdlkicking inOpen inHigh inLow inClose = do
     _inLow <- V.unsafeThaw inLow
     _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
-    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
-      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
-        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
-          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+    VM.unsafeWith _inOpen $ \c_inOpen ->
+      VM.unsafeWith _inHigh $ \c_inHigh ->
+        VM.unsafeWith _inLow $ \c_inLow ->
+          VM.unsafeWith _inClose $ \c_inClose ->
             alloca $ \cOutBegIdx ->
               alloca $ \cOutNbElement ->
-                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                VM.unsafeWith _outInteger $ \c_outInteger ->
                   do rc <- c_ta_cdlkicking 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
                      out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
@@ -2349,13 +2342,13 @@ ta_cdlkickingbylength inOpen inHigh inLow inClose = do
     _inLow <- V.unsafeThaw inLow
     _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
-    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
-      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
-        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
-          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+    VM.unsafeWith _inOpen $ \c_inOpen ->
+      VM.unsafeWith _inHigh $ \c_inHigh ->
+        VM.unsafeWith _inLow $ \c_inLow ->
+          VM.unsafeWith _inClose $ \c_inClose ->
             alloca $ \cOutBegIdx ->
               alloca $ \cOutNbElement ->
-                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                VM.unsafeWith _outInteger $ \c_outInteger ->
                   do rc <- c_ta_cdlkickingbylength 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
                      out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
@@ -2391,13 +2384,13 @@ ta_cdlladderbottom inOpen inHigh inLow inClose = do
     _inLow <- V.unsafeThaw inLow
     _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
-    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
-      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
-        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
-          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+    VM.unsafeWith _inOpen $ \c_inOpen ->
+      VM.unsafeWith _inHigh $ \c_inHigh ->
+        VM.unsafeWith _inLow $ \c_inLow ->
+          VM.unsafeWith _inClose $ \c_inClose ->
             alloca $ \cOutBegIdx ->
               alloca $ \cOutNbElement ->
-                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                VM.unsafeWith _outInteger $ \c_outInteger ->
                   do rc <- c_ta_cdlladderbottom 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
                      out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
@@ -2433,13 +2426,13 @@ ta_cdllongleggeddoji inOpen inHigh inLow inClose = do
     _inLow <- V.unsafeThaw inLow
     _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
-    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
-      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
-        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
-          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+    VM.unsafeWith _inOpen $ \c_inOpen ->
+      VM.unsafeWith _inHigh $ \c_inHigh ->
+        VM.unsafeWith _inLow $ \c_inLow ->
+          VM.unsafeWith _inClose $ \c_inClose ->
             alloca $ \cOutBegIdx ->
               alloca $ \cOutNbElement ->
-                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                VM.unsafeWith _outInteger $ \c_outInteger ->
                   do rc <- c_ta_cdllongleggeddoji 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
                      out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
@@ -2475,13 +2468,13 @@ ta_cdllongline inOpen inHigh inLow inClose = do
     _inLow <- V.unsafeThaw inLow
     _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
-    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
-      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
-        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
-          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+    VM.unsafeWith _inOpen $ \c_inOpen ->
+      VM.unsafeWith _inHigh $ \c_inHigh ->
+        VM.unsafeWith _inLow $ \c_inLow ->
+          VM.unsafeWith _inClose $ \c_inClose ->
             alloca $ \cOutBegIdx ->
               alloca $ \cOutNbElement ->
-                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                VM.unsafeWith _outInteger $ \c_outInteger ->
                   do rc <- c_ta_cdllongline 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
                      out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
@@ -2517,13 +2510,13 @@ ta_cdlmarubozu inOpen inHigh inLow inClose = do
     _inLow <- V.unsafeThaw inLow
     _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
-    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
-      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
-        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
-          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+    VM.unsafeWith _inOpen $ \c_inOpen ->
+      VM.unsafeWith _inHigh $ \c_inHigh ->
+        VM.unsafeWith _inLow $ \c_inLow ->
+          VM.unsafeWith _inClose $ \c_inClose ->
             alloca $ \cOutBegIdx ->
               alloca $ \cOutNbElement ->
-                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                VM.unsafeWith _outInteger $ \c_outInteger ->
                   do rc <- c_ta_cdlmarubozu 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
                      out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
@@ -2559,13 +2552,13 @@ ta_cdlmatchinglow inOpen inHigh inLow inClose = do
     _inLow <- V.unsafeThaw inLow
     _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
-    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
-      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
-        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
-          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+    VM.unsafeWith _inOpen $ \c_inOpen ->
+      VM.unsafeWith _inHigh $ \c_inHigh ->
+        VM.unsafeWith _inLow $ \c_inLow ->
+          VM.unsafeWith _inClose $ \c_inClose ->
             alloca $ \cOutBegIdx ->
               alloca $ \cOutNbElement ->
-                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                VM.unsafeWith _outInteger $ \c_outInteger ->
                   do rc <- c_ta_cdlmatchinglow 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
                      out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
@@ -2590,6 +2583,7 @@ foreign import ccall unsafe "ta_func.h TA_CDLMATHOLD"
 --   inHigh
 --   inLow
 --   inClose
+
 -- arguments
 --   optInPenetration (double)
 -- outputs
@@ -2602,13 +2596,13 @@ ta_cdlmathold inOpen inHigh inLow inClose optInPenetration = do
     _inLow <- V.unsafeThaw inLow
     _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
-    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
-      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
-        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
-          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+    VM.unsafeWith _inOpen $ \c_inOpen ->
+      VM.unsafeWith _inHigh $ \c_inHigh ->
+        VM.unsafeWith _inLow $ \c_inLow ->
+          VM.unsafeWith _inClose $ \c_inClose ->
             alloca $ \cOutBegIdx ->
               alloca $ \cOutNbElement ->
-                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                VM.unsafeWith _outInteger $ \c_outInteger ->
                   do rc <- c_ta_cdlmathold 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose (realToFrac optInPenetration) cOutBegIdx cOutNbElement c_outInteger
                      out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
@@ -2645,13 +2639,13 @@ ta_cdlmorningdojistar inOpen inHigh inLow inClose optInPenetration = do
     _inLow <- V.unsafeThaw inLow
     _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
-    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
-      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
-        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
-          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+    VM.unsafeWith _inOpen $ \c_inOpen ->
+      VM.unsafeWith _inHigh $ \c_inHigh ->
+        VM.unsafeWith _inLow $ \c_inLow ->
+          VM.unsafeWith _inClose $ \c_inClose ->
             alloca $ \cOutBegIdx ->
               alloca $ \cOutNbElement ->
-                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                VM.unsafeWith _outInteger $ \c_outInteger ->
                   do rc <- c_ta_cdlmorningdojistar 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose (realToFrac optInPenetration) cOutBegIdx cOutNbElement c_outInteger
                      out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
@@ -2688,13 +2682,13 @@ ta_cdlmorningstar inOpen inHigh inLow inClose optInPenetration = do
     _inLow <- V.unsafeThaw inLow
     _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
-    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
-      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
-        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
-          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+    VM.unsafeWith _inOpen $ \c_inOpen ->
+      VM.unsafeWith _inHigh $ \c_inHigh ->
+        VM.unsafeWith _inLow $ \c_inLow ->
+          VM.unsafeWith _inClose $ \c_inClose ->
             alloca $ \cOutBegIdx ->
               alloca $ \cOutNbElement ->
-                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                VM.unsafeWith _outInteger $ \c_outInteger ->
                   do rc <- c_ta_cdlmorningstar 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose (realToFrac optInPenetration) cOutBegIdx cOutNbElement c_outInteger
                      out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
@@ -2730,13 +2724,13 @@ ta_cdlonneck inOpen inHigh inLow inClose = do
     _inLow <- V.unsafeThaw inLow
     _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
-    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
-      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
-        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
-          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+    VM.unsafeWith _inOpen $ \c_inOpen ->
+      VM.unsafeWith _inHigh $ \c_inHigh ->
+        VM.unsafeWith _inLow $ \c_inLow ->
+          VM.unsafeWith _inClose $ \c_inClose ->
             alloca $ \cOutBegIdx ->
               alloca $ \cOutNbElement ->
-                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                VM.unsafeWith _outInteger $ \c_outInteger ->
                   do rc <- c_ta_cdlonneck 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
                      out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
@@ -2772,13 +2766,13 @@ ta_cdlpiercing inOpen inHigh inLow inClose = do
     _inLow <- V.unsafeThaw inLow
     _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
-    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
-      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
-        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
-          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+    VM.unsafeWith _inOpen $ \c_inOpen ->
+      VM.unsafeWith _inHigh $ \c_inHigh ->
+        VM.unsafeWith _inLow $ \c_inLow ->
+          VM.unsafeWith _inClose $ \c_inClose ->
             alloca $ \cOutBegIdx ->
               alloca $ \cOutNbElement ->
-                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                VM.unsafeWith _outInteger $ \c_outInteger ->
                   do rc <- c_ta_cdlpiercing 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
                      out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
@@ -2814,13 +2808,13 @@ ta_cdlrickshawman inOpen inHigh inLow inClose = do
     _inLow <- V.unsafeThaw inLow
     _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
-    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
-      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
-        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
-          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+    VM.unsafeWith _inOpen $ \c_inOpen ->
+      VM.unsafeWith _inHigh $ \c_inHigh ->
+        VM.unsafeWith _inLow $ \c_inLow ->
+          VM.unsafeWith _inClose $ \c_inClose ->
             alloca $ \cOutBegIdx ->
               alloca $ \cOutNbElement ->
-                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                VM.unsafeWith _outInteger $ \c_outInteger ->
                   do rc <- c_ta_cdlrickshawman 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
                      out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
@@ -2856,13 +2850,13 @@ ta_cdlrisefall3methods inOpen inHigh inLow inClose = do
     _inLow <- V.unsafeThaw inLow
     _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
-    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
-      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
-        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
-          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+    VM.unsafeWith _inOpen $ \c_inOpen ->
+      VM.unsafeWith _inHigh $ \c_inHigh ->
+        VM.unsafeWith _inLow $ \c_inLow ->
+          VM.unsafeWith _inClose $ \c_inClose ->
             alloca $ \cOutBegIdx ->
               alloca $ \cOutNbElement ->
-                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                VM.unsafeWith _outInteger $ \c_outInteger ->
                   do rc <- c_ta_cdlrisefall3methods 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
                      out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
@@ -2898,13 +2892,13 @@ ta_cdlseparatinglines inOpen inHigh inLow inClose = do
     _inLow <- V.unsafeThaw inLow
     _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
-    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
-      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
-        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
-          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+    VM.unsafeWith _inOpen $ \c_inOpen ->
+      VM.unsafeWith _inHigh $ \c_inHigh ->
+        VM.unsafeWith _inLow $ \c_inLow ->
+          VM.unsafeWith _inClose $ \c_inClose ->
             alloca $ \cOutBegIdx ->
               alloca $ \cOutNbElement ->
-                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                VM.unsafeWith _outInteger $ \c_outInteger ->
                   do rc <- c_ta_cdlseparatinglines 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
                      out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
@@ -2940,13 +2934,13 @@ ta_cdlshootingstar inOpen inHigh inLow inClose = do
     _inLow <- V.unsafeThaw inLow
     _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
-    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
-      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
-        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
-          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+    VM.unsafeWith _inOpen $ \c_inOpen ->
+      VM.unsafeWith _inHigh $ \c_inHigh ->
+        VM.unsafeWith _inLow $ \c_inLow ->
+          VM.unsafeWith _inClose $ \c_inClose ->
             alloca $ \cOutBegIdx ->
               alloca $ \cOutNbElement ->
-                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                VM.unsafeWith _outInteger $ \c_outInteger ->
                   do rc <- c_ta_cdlshootingstar 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
                      out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
@@ -2982,13 +2976,13 @@ ta_cdlshortline inOpen inHigh inLow inClose = do
     _inLow <- V.unsafeThaw inLow
     _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
-    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
-      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
-        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
-          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+    VM.unsafeWith _inOpen $ \c_inOpen ->
+      VM.unsafeWith _inHigh $ \c_inHigh ->
+        VM.unsafeWith _inLow $ \c_inLow ->
+          VM.unsafeWith _inClose $ \c_inClose ->
             alloca $ \cOutBegIdx ->
               alloca $ \cOutNbElement ->
-                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                VM.unsafeWith _outInteger $ \c_outInteger ->
                   do rc <- c_ta_cdlshortline 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
                      out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
@@ -3024,13 +3018,13 @@ ta_cdlspinningtop inOpen inHigh inLow inClose = do
     _inLow <- V.unsafeThaw inLow
     _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
-    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
-      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
-        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
-          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+    VM.unsafeWith _inOpen $ \c_inOpen ->
+      VM.unsafeWith _inHigh $ \c_inHigh ->
+        VM.unsafeWith _inLow $ \c_inLow ->
+          VM.unsafeWith _inClose $ \c_inClose ->
             alloca $ \cOutBegIdx ->
               alloca $ \cOutNbElement ->
-                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                VM.unsafeWith _outInteger $ \c_outInteger ->
                   do rc <- c_ta_cdlspinningtop 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
                      out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
@@ -3066,13 +3060,13 @@ ta_cdlstalledpattern inOpen inHigh inLow inClose = do
     _inLow <- V.unsafeThaw inLow
     _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
-    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
-      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
-        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
-          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+    VM.unsafeWith _inOpen $ \c_inOpen ->
+      VM.unsafeWith _inHigh $ \c_inHigh ->
+        VM.unsafeWith _inLow $ \c_inLow ->
+          VM.unsafeWith _inClose $ \c_inClose ->
             alloca $ \cOutBegIdx ->
               alloca $ \cOutNbElement ->
-                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                VM.unsafeWith _outInteger $ \c_outInteger ->
                   do rc <- c_ta_cdlstalledpattern 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
                      out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
@@ -3108,13 +3102,13 @@ ta_cdlsticksandwich inOpen inHigh inLow inClose = do
     _inLow <- V.unsafeThaw inLow
     _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
-    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
-      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
-        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
-          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+    VM.unsafeWith _inOpen $ \c_inOpen ->
+      VM.unsafeWith _inHigh $ \c_inHigh ->
+        VM.unsafeWith _inLow $ \c_inLow ->
+          VM.unsafeWith _inClose $ \c_inClose ->
             alloca $ \cOutBegIdx ->
               alloca $ \cOutNbElement ->
-                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                VM.unsafeWith _outInteger $ \c_outInteger ->
                   do rc <- c_ta_cdlsticksandwich 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
                      out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
@@ -3150,13 +3144,13 @@ ta_cdltakuri inOpen inHigh inLow inClose = do
     _inLow <- V.unsafeThaw inLow
     _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
-    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
-      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
-        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
-          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+    VM.unsafeWith _inOpen $ \c_inOpen ->
+      VM.unsafeWith _inHigh $ \c_inHigh ->
+        VM.unsafeWith _inLow $ \c_inLow ->
+          VM.unsafeWith _inClose $ \c_inClose ->
             alloca $ \cOutBegIdx ->
               alloca $ \cOutNbElement ->
-                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                VM.unsafeWith _outInteger $ \c_outInteger ->
                   do rc <- c_ta_cdltakuri 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
                      out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
@@ -3192,13 +3186,13 @@ ta_cdltasukigap inOpen inHigh inLow inClose = do
     _inLow <- V.unsafeThaw inLow
     _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
-    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
-      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
-        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
-          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+    VM.unsafeWith _inOpen $ \c_inOpen ->
+      VM.unsafeWith _inHigh $ \c_inHigh ->
+        VM.unsafeWith _inLow $ \c_inLow ->
+          VM.unsafeWith _inClose $ \c_inClose ->
             alloca $ \cOutBegIdx ->
               alloca $ \cOutNbElement ->
-                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                VM.unsafeWith _outInteger $ \c_outInteger ->
                   do rc <- c_ta_cdltasukigap 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
                      out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
@@ -3234,13 +3228,13 @@ ta_cdlthrusting inOpen inHigh inLow inClose = do
     _inLow <- V.unsafeThaw inLow
     _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
-    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
-      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
-        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
-          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+    VM.unsafeWith _inOpen $ \c_inOpen ->
+      VM.unsafeWith _inHigh $ \c_inHigh ->
+        VM.unsafeWith _inLow $ \c_inLow ->
+          VM.unsafeWith _inClose $ \c_inClose ->
             alloca $ \cOutBegIdx ->
               alloca $ \cOutNbElement ->
-                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                VM.unsafeWith _outInteger $ \c_outInteger ->
                   do rc <- c_ta_cdlthrusting 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
                      out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
@@ -3276,13 +3270,13 @@ ta_cdltristar inOpen inHigh inLow inClose = do
     _inLow <- V.unsafeThaw inLow
     _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
-    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
-      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
-        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
-          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+    VM.unsafeWith _inOpen $ \c_inOpen ->
+      VM.unsafeWith _inHigh $ \c_inHigh ->
+        VM.unsafeWith _inLow $ \c_inLow ->
+          VM.unsafeWith _inClose $ \c_inClose ->
             alloca $ \cOutBegIdx ->
               alloca $ \cOutNbElement ->
-                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                VM.unsafeWith _outInteger $ \c_outInteger ->
                   do rc <- c_ta_cdltristar 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
                      out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
@@ -3318,13 +3312,13 @@ ta_cdlunique3river inOpen inHigh inLow inClose = do
     _inLow <- V.unsafeThaw inLow
     _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
-    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
-      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
-        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
-          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+    VM.unsafeWith _inOpen $ \c_inOpen ->
+      VM.unsafeWith _inHigh $ \c_inHigh ->
+        VM.unsafeWith _inLow $ \c_inLow ->
+          VM.unsafeWith _inClose $ \c_inClose ->
             alloca $ \cOutBegIdx ->
               alloca $ \cOutNbElement ->
-                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                VM.unsafeWith _outInteger $ \c_outInteger ->
                   do rc <- c_ta_cdlunique3river 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
                      out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
@@ -3360,13 +3354,13 @@ ta_cdlupsidegap2crows inOpen inHigh inLow inClose = do
     _inLow <- V.unsafeThaw inLow
     _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
-    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
-      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
-        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
-          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+    VM.unsafeWith _inOpen $ \c_inOpen ->
+      VM.unsafeWith _inHigh $ \c_inHigh ->
+        VM.unsafeWith _inLow $ \c_inLow ->
+          VM.unsafeWith _inClose $ \c_inClose ->
             alloca $ \cOutBegIdx ->
               alloca $ \cOutNbElement ->
-                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                VM.unsafeWith _outInteger $ \c_outInteger ->
                   do rc <- c_ta_cdlupsidegap2crows 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
                      out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
@@ -3402,13 +3396,13 @@ ta_cdlxsidegap3methods inOpen inHigh inLow inClose = do
     _inLow <- V.unsafeThaw inLow
     _inClose <- V.unsafeThaw inClose
     _outInteger <- VM.new len
-    withForeignPtr (vecPtr _inOpen) $ \c_inOpen ->
-      withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
-        withForeignPtr (vecPtr _inLow) $ \c_inLow ->
-          withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+    VM.unsafeWith _inOpen $ \c_inOpen ->
+      VM.unsafeWith _inHigh $ \c_inHigh ->
+        VM.unsafeWith _inLow $ \c_inLow ->
+          VM.unsafeWith _inClose $ \c_inClose ->
             alloca $ \cOutBegIdx ->
               alloca $ \cOutNbElement ->
-                withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+                VM.unsafeWith _outInteger $ \c_outInteger ->
                   do rc <- c_ta_cdlxsidegap3methods 0 (fromIntegral $ len - 1) c_inOpen c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outInteger
                      out_outInteger <- V.unsafeFreeze _outInteger
                      case rc of
@@ -3438,10 +3432,10 @@ ta_ceil :: V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CDouble))
 ta_ceil inReal = do
     _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
-    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+    VM.unsafeWith _inReal $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
-          withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+          VM.unsafeWith _outReal $ \c_outReal ->
             do rc <- c_ta_ceil 0 (fromIntegral $ len - 1) c_inReal cOutBegIdx cOutNbElement c_outReal
                out_outReal <- V.unsafeFreeze _outReal
                case rc of
@@ -3472,10 +3466,10 @@ ta_cmo :: V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble)
 ta_cmo inReal optInTimePeriod = do
     _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
-    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+    VM.unsafeWith _inReal $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
-          withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+          VM.unsafeWith _outReal $ \c_outReal ->
             do rc <- c_ta_cmo 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
                out_outReal <- V.unsafeFreeze _outReal
                case rc of
@@ -3508,11 +3502,11 @@ ta_correl inReal0 inReal1 optInTimePeriod = do
     _inReal0 <- V.unsafeThaw inReal0
     _inReal1 <- V.unsafeThaw inReal1
     _outReal <- VM.new len
-    withForeignPtr (vecPtr _inReal0) $ \c_inReal0 ->
-      withForeignPtr (vecPtr _inReal1) $ \c_inReal1 ->
+    VM.unsafeWith _inReal0 $ \c_inReal0 ->
+      VM.unsafeWith _inReal1 $ \c_inReal1 ->
         alloca $ \cOutBegIdx ->
           alloca $ \cOutNbElement ->
-            withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+            VM.unsafeWith _outReal $ \c_outReal ->
               do rc <- c_ta_correl 0 (fromIntegral $ len - 1) c_inReal0 c_inReal1 (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
                  out_outReal <- V.unsafeFreeze _outReal
                  case rc of
@@ -3542,10 +3536,10 @@ ta_cos :: V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CDouble))
 ta_cos inReal = do
     _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
-    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+    VM.unsafeWith _inReal $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
-          withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+          VM.unsafeWith _outReal $ \c_outReal ->
             do rc <- c_ta_cos 0 (fromIntegral $ len - 1) c_inReal cOutBegIdx cOutNbElement c_outReal
                out_outReal <- V.unsafeFreeze _outReal
                case rc of
@@ -3575,10 +3569,10 @@ ta_cosh :: V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CDouble))
 ta_cosh inReal = do
     _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
-    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+    VM.unsafeWith _inReal $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
-          withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+          VM.unsafeWith _outReal $ \c_outReal ->
             do rc <- c_ta_cosh 0 (fromIntegral $ len - 1) c_inReal cOutBegIdx cOutNbElement c_outReal
                out_outReal <- V.unsafeFreeze _outReal
                case rc of
@@ -3609,10 +3603,10 @@ ta_dema :: V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble
 ta_dema inReal optInTimePeriod = do
     _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
-    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+    VM.unsafeWith _inReal $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
-          withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+          VM.unsafeWith _outReal $ \c_outReal ->
             do rc <- c_ta_dema 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
                out_outReal <- V.unsafeFreeze _outReal
                case rc of
@@ -3644,11 +3638,11 @@ ta_div inReal0 inReal1 = do
     _inReal0 <- V.unsafeThaw inReal0
     _inReal1 <- V.unsafeThaw inReal1
     _outReal <- VM.new len
-    withForeignPtr (vecPtr _inReal0) $ \c_inReal0 ->
-      withForeignPtr (vecPtr _inReal1) $ \c_inReal1 ->
+    VM.unsafeWith _inReal0 $ \c_inReal0 ->
+      VM.unsafeWith _inReal1 $ \c_inReal1 ->
         alloca $ \cOutBegIdx ->
           alloca $ \cOutNbElement ->
-            withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+            VM.unsafeWith _outReal $ \c_outReal ->
               do rc <- c_ta_div 0 (fromIntegral $ len - 1) c_inReal0 c_inReal1 cOutBegIdx cOutNbElement c_outReal
                  out_outReal <- V.unsafeFreeze _outReal
                  case rc of
@@ -3683,12 +3677,12 @@ ta_dx inHigh inLow inClose optInTimePeriod = do
     _inLow <- V.unsafeThaw inLow
     _inClose <- V.unsafeThaw inClose
     _outReal <- VM.new len
-    withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
-      withForeignPtr (vecPtr _inLow) $ \c_inLow ->
-        withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+    VM.unsafeWith _inHigh $ \c_inHigh ->
+      VM.unsafeWith _inLow $ \c_inLow ->
+        VM.unsafeWith _inClose $ \c_inClose ->
           alloca $ \cOutBegIdx ->
             alloca $ \cOutNbElement ->
-              withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+              VM.unsafeWith _outReal $ \c_outReal ->
                 do rc <- c_ta_dx 0 (fromIntegral $ len - 1) c_inHigh c_inLow c_inClose (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
                    out_outReal <- V.unsafeFreeze _outReal
                    case rc of
@@ -3719,10 +3713,10 @@ ta_ema :: V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble)
 ta_ema inReal optInTimePeriod = do
     _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
-    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+    VM.unsafeWith _inReal $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
-          withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+          VM.unsafeWith _outReal $ \c_outReal ->
             do rc <- c_ta_ema 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
                out_outReal <- V.unsafeFreeze _outReal
                case rc of
@@ -3752,10 +3746,10 @@ ta_exp :: V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CDouble))
 ta_exp inReal = do
     _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
-    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+    VM.unsafeWith _inReal $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
-          withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+          VM.unsafeWith _outReal $ \c_outReal ->
             do rc <- c_ta_exp 0 (fromIntegral $ len - 1) c_inReal cOutBegIdx cOutNbElement c_outReal
                out_outReal <- V.unsafeFreeze _outReal
                case rc of
@@ -3785,10 +3779,10 @@ ta_floor :: V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CDouble))
 ta_floor inReal = do
     _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
-    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+    VM.unsafeWith _inReal $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
-          withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+          VM.unsafeWith _outReal $ \c_outReal ->
             do rc <- c_ta_floor 0 (fromIntegral $ len - 1) c_inReal cOutBegIdx cOutNbElement c_outReal
                out_outReal <- V.unsafeFreeze _outReal
                case rc of
@@ -3818,10 +3812,10 @@ ta_ht_dcperiod :: V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CDouble
 ta_ht_dcperiod inReal = do
     _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
-    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+    VM.unsafeWith _inReal $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
-          withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+          VM.unsafeWith _outReal $ \c_outReal ->
             do rc <- c_ta_ht_dcperiod 0 (fromIntegral $ len - 1) c_inReal cOutBegIdx cOutNbElement c_outReal
                out_outReal <- V.unsafeFreeze _outReal
                case rc of
@@ -3851,10 +3845,10 @@ ta_ht_dcphase :: V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CDouble)
 ta_ht_dcphase inReal = do
     _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
-    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+    VM.unsafeWith _inReal $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
-          withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+          VM.unsafeWith _outReal $ \c_outReal ->
             do rc <- c_ta_ht_dcphase 0 (fromIntegral $ len - 1) c_inReal cOutBegIdx cOutNbElement c_outReal
                out_outReal <- V.unsafeFreeze _outReal
                case rc of
@@ -3886,11 +3880,11 @@ ta_ht_phasor inReal = do
     _inReal <- V.unsafeThaw inReal
     _outInPhase <- VM.new len
     _outQuadrature <- VM.new len
-    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+    VM.unsafeWith _inReal $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
-          withForeignPtr (vecPtr _outInPhase) $ \c_outInPhase ->
-            withForeignPtr (vecPtr _outQuadrature) $ \c_outQuadrature ->
+          VM.unsafeWith _outInPhase $ \c_outInPhase ->
+            VM.unsafeWith _outQuadrature $ \c_outQuadrature ->
               do rc <- c_ta_ht_phasor 0 (fromIntegral $ len - 1) c_inReal cOutBegIdx cOutNbElement c_outInPhase c_outQuadrature
                  out_outInPhase <- V.unsafeFreeze _outInPhase
                  out_outQuadrature <- V.unsafeFreeze _outQuadrature
@@ -3924,11 +3918,11 @@ ta_ht_sine inReal = do
     _inReal <- V.unsafeThaw inReal
     _outSine <- VM.new len
     _outLeadSine <- VM.new len
-    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+    VM.unsafeWith _inReal $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
-          withForeignPtr (vecPtr _outSine) $ \c_outSine ->
-            withForeignPtr (vecPtr _outLeadSine) $ \c_outLeadSine ->
+          VM.unsafeWith _outSine $ \c_outSine ->
+            VM.unsafeWith _outLeadSine $ \c_outLeadSine ->
               do rc <- c_ta_ht_sine 0 (fromIntegral $ len - 1) c_inReal cOutBegIdx cOutNbElement c_outSine c_outLeadSine
                  out_outSine <- V.unsafeFreeze _outSine
                  out_outLeadSine <- V.unsafeFreeze _outLeadSine
@@ -3960,10 +3954,10 @@ ta_ht_trendline :: V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CDoubl
 ta_ht_trendline inReal = do
     _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
-    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+    VM.unsafeWith _inReal $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
-          withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+          VM.unsafeWith _outReal $ \c_outReal ->
             do rc <- c_ta_ht_trendline 0 (fromIntegral $ len - 1) c_inReal cOutBegIdx cOutNbElement c_outReal
                out_outReal <- V.unsafeFreeze _outReal
                case rc of
@@ -3993,10 +3987,10 @@ ta_ht_trendmode :: V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CInt))
 ta_ht_trendmode inReal = do
     _inReal <- V.unsafeThaw inReal
     _outInteger <- VM.new len
-    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+    VM.unsafeWith _inReal $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
-          withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+          VM.unsafeWith _outInteger $ \c_outInteger ->
             do rc <- c_ta_ht_trendmode 0 (fromIntegral $ len - 1) c_inReal cOutBegIdx cOutNbElement c_outInteger
                out_outInteger <- V.unsafeFreeze _outInteger
                case rc of
@@ -4027,10 +4021,10 @@ ta_kama :: V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble
 ta_kama inReal optInTimePeriod = do
     _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
-    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+    VM.unsafeWith _inReal $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
-          withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+          VM.unsafeWith _outReal $ \c_outReal ->
             do rc <- c_ta_kama 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
                out_outReal <- V.unsafeFreeze _outReal
                case rc of
@@ -4061,10 +4055,10 @@ ta_linearreg :: V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CD
 ta_linearreg inReal optInTimePeriod = do
     _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
-    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+    VM.unsafeWith _inReal $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
-          withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+          VM.unsafeWith _outReal $ \c_outReal ->
             do rc <- c_ta_linearreg 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
                out_outReal <- V.unsafeFreeze _outReal
                case rc of
@@ -4095,10 +4089,10 @@ ta_linearreg_angle :: V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vec
 ta_linearreg_angle inReal optInTimePeriod = do
     _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
-    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+    VM.unsafeWith _inReal $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
-          withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+          VM.unsafeWith _outReal $ \c_outReal ->
             do rc <- c_ta_linearreg_angle 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
                out_outReal <- V.unsafeFreeze _outReal
                case rc of
@@ -4129,10 +4123,10 @@ ta_linearreg_intercept :: V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V
 ta_linearreg_intercept inReal optInTimePeriod = do
     _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
-    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+    VM.unsafeWith _inReal $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
-          withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+          VM.unsafeWith _outReal $ \c_outReal ->
             do rc <- c_ta_linearreg_intercept 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
                out_outReal <- V.unsafeFreeze _outReal
                case rc of
@@ -4163,10 +4157,10 @@ ta_linearreg_slope :: V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vec
 ta_linearreg_slope inReal optInTimePeriod = do
     _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
-    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+    VM.unsafeWith _inReal $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
-          withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+          VM.unsafeWith _outReal $ \c_outReal ->
             do rc <- c_ta_linearreg_slope 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
                out_outReal <- V.unsafeFreeze _outReal
                case rc of
@@ -4196,10 +4190,10 @@ ta_ln :: V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CDouble))
 ta_ln inReal = do
     _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
-    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+    VM.unsafeWith _inReal $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
-          withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+          VM.unsafeWith _outReal $ \c_outReal ->
             do rc <- c_ta_ln 0 (fromIntegral $ len - 1) c_inReal cOutBegIdx cOutNbElement c_outReal
                out_outReal <- V.unsafeFreeze _outReal
                case rc of
@@ -4229,10 +4223,10 @@ ta_log10 :: V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CDouble))
 ta_log10 inReal = do
     _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
-    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+    VM.unsafeWith _inReal $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
-          withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+          VM.unsafeWith _outReal $ \c_outReal ->
             do rc <- c_ta_log10 0 (fromIntegral $ len - 1) c_inReal cOutBegIdx cOutNbElement c_outReal
                out_outReal <- V.unsafeFreeze _outReal
                case rc of
@@ -4264,10 +4258,10 @@ ta_ma :: V.Vector CDouble -> Int -> Int -> IO (Either Int (Int, Int, V.Vector CD
 ta_ma inReal optInTimePeriod optInMAType = do
     _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
-    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+    VM.unsafeWith _inReal $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
-          withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+          VM.unsafeWith _outReal $ \c_outReal ->
             do rc <- c_ta_ma 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) (fromIntegral optInMAType) cOutBegIdx cOutNbElement c_outReal
                out_outReal <- V.unsafeFreeze _outReal
                case rc of
@@ -4304,12 +4298,12 @@ ta_macd inReal optInFastPeriod optInSlowPeriod optInSignalPeriod = do
     _outMACD <- VM.new len
     _outMACDSignal <- VM.new len
     _outMACDHist <- VM.new len
-    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+    VM.unsafeWith _inReal $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
-          withForeignPtr (vecPtr _outMACD) $ \c_outMACD ->
-            withForeignPtr (vecPtr _outMACDSignal) $ \c_outMACDSignal ->
-              withForeignPtr (vecPtr _outMACDHist) $ \c_outMACDHist ->
+          VM.unsafeWith _outMACD $ \c_outMACD ->
+            VM.unsafeWith _outMACDSignal $ \c_outMACDSignal ->
+              VM.unsafeWith _outMACDHist $ \c_outMACDHist ->
                 do rc <- c_ta_macd 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInFastPeriod) (fromIntegral optInSlowPeriod) (fromIntegral optInSignalPeriod) cOutBegIdx cOutNbElement c_outMACD c_outMACDSignal c_outMACDHist
                    out_outMACD <- V.unsafeFreeze _outMACD
                    out_outMACDSignal <- V.unsafeFreeze _outMACDSignal
@@ -4353,12 +4347,12 @@ ta_macdext inReal optInFastPeriod optInFastMAType optInSlowPeriod optInSlowMATyp
     _outMACD <- VM.new len
     _outMACDSignal <- VM.new len
     _outMACDHist <- VM.new len
-    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+    VM.unsafeWith _inReal $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
-          withForeignPtr (vecPtr _outMACD) $ \c_outMACD ->
-            withForeignPtr (vecPtr _outMACDSignal) $ \c_outMACDSignal ->
-              withForeignPtr (vecPtr _outMACDHist) $ \c_outMACDHist ->
+          VM.unsafeWith _outMACD $ \c_outMACD ->
+            VM.unsafeWith _outMACDSignal $ \c_outMACDSignal ->
+              VM.unsafeWith _outMACDHist $ \c_outMACDHist ->
                 do rc <- c_ta_macdext 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInFastPeriod) (fromIntegral optInFastMAType) (fromIntegral optInSlowPeriod) (fromIntegral optInSlowMAType) (fromIntegral optInSignalPeriod) (fromIntegral optInSignalMAType) cOutBegIdx cOutNbElement c_outMACD c_outMACDSignal c_outMACDHist
                    out_outMACD <- V.unsafeFreeze _outMACD
                    out_outMACDSignal <- V.unsafeFreeze _outMACDSignal
@@ -4397,12 +4391,12 @@ ta_macdfix inReal optInSignalPeriod = do
     _outMACD <- VM.new len
     _outMACDSignal <- VM.new len
     _outMACDHist <- VM.new len
-    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+    VM.unsafeWith _inReal $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
-          withForeignPtr (vecPtr _outMACD) $ \c_outMACD ->
-            withForeignPtr (vecPtr _outMACDSignal) $ \c_outMACDSignal ->
-              withForeignPtr (vecPtr _outMACDHist) $ \c_outMACDHist ->
+          VM.unsafeWith _outMACD $ \c_outMACD ->
+            VM.unsafeWith _outMACDSignal $ \c_outMACDSignal ->
+              VM.unsafeWith _outMACDHist $ \c_outMACDHist ->
                 do rc <- c_ta_macdfix 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInSignalPeriod) cOutBegIdx cOutNbElement c_outMACD c_outMACDSignal c_outMACDHist
                    out_outMACD <- V.unsafeFreeze _outMACD
                    out_outMACDSignal <- V.unsafeFreeze _outMACDSignal
@@ -4440,11 +4434,11 @@ ta_mama inReal optInFastLimit optInSlowLimit = do
     _inReal <- V.unsafeThaw inReal
     _outMAMA <- VM.new len
     _outFAMA <- VM.new len
-    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+    VM.unsafeWith _inReal $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
-          withForeignPtr (vecPtr _outMAMA) $ \c_outMAMA ->
-            withForeignPtr (vecPtr _outFAMA) $ \c_outFAMA ->
+          VM.unsafeWith _outMAMA $ \c_outMAMA ->
+            VM.unsafeWith _outFAMA $ \c_outFAMA ->
               do rc <- c_ta_mama 0 (fromIntegral $ len - 1) c_inReal (realToFrac optInFastLimit) (realToFrac optInSlowLimit) cOutBegIdx cOutNbElement c_outMAMA c_outFAMA
                  out_outMAMA <- V.unsafeFreeze _outMAMA
                  out_outFAMA <- V.unsafeFreeze _outFAMA
@@ -4481,11 +4475,11 @@ ta_mavp inReal inPeriods optInMinPeriod optInMaxPeriod optInMAType = do
     _inReal <- V.unsafeThaw inReal
     _inPeriods <- V.unsafeThaw inPeriods
     _outReal <- VM.new len
-    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
-      withForeignPtr (vecPtr _inPeriods) $ \c_inPeriods ->
+    VM.unsafeWith _inReal $ \c_inReal ->
+      VM.unsafeWith _inPeriods $ \c_inPeriods ->
         alloca $ \cOutBegIdx ->
           alloca $ \cOutNbElement ->
-            withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+            VM.unsafeWith _outReal $ \c_outReal ->
               do rc <- c_ta_mavp 0 (fromIntegral $ len - 1) c_inReal c_inPeriods (fromIntegral optInMinPeriod) (fromIntegral optInMaxPeriod) (fromIntegral optInMAType) cOutBegIdx cOutNbElement c_outReal
                  out_outReal <- V.unsafeFreeze _outReal
                  case rc of
@@ -4516,10 +4510,10 @@ ta_max :: V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble)
 ta_max inReal optInTimePeriod = do
     _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
-    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+    VM.unsafeWith _inReal $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
-          withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+          VM.unsafeWith _outReal $ \c_outReal ->
             do rc <- c_ta_max 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
                out_outReal <- V.unsafeFreeze _outReal
                case rc of
@@ -4550,10 +4544,10 @@ ta_maxindex :: V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CIn
 ta_maxindex inReal optInTimePeriod = do
     _inReal <- V.unsafeThaw inReal
     _outInteger <- VM.new len
-    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+    VM.unsafeWith _inReal $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
-          withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+          VM.unsafeWith _outInteger $ \c_outInteger ->
             do rc <- c_ta_maxindex 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outInteger
                out_outInteger <- V.unsafeFreeze _outInteger
                case rc of
@@ -4585,11 +4579,11 @@ ta_medprice inHigh inLow = do
     _inHigh <- V.unsafeThaw inHigh
     _inLow <- V.unsafeThaw inLow
     _outReal <- VM.new len
-    withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
-      withForeignPtr (vecPtr _inLow) $ \c_inLow ->
+    VM.unsafeWith _inHigh $ \c_inHigh ->
+      VM.unsafeWith _inLow $ \c_inLow ->
         alloca $ \cOutBegIdx ->
           alloca $ \cOutNbElement ->
-            withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+            VM.unsafeWith _outReal $ \c_outReal ->
               do rc <- c_ta_medprice 0 (fromIntegral $ len - 1) c_inHigh c_inLow cOutBegIdx cOutNbElement c_outReal
                  out_outReal <- V.unsafeFreeze _outReal
                  case rc of
@@ -4626,13 +4620,13 @@ ta_mfi inHigh inLow inClose inVolume optInTimePeriod = do
     _inClose <- V.unsafeThaw inClose
     _inVolume <- V.unsafeThaw inVolume
     _outReal <- VM.new len
-    withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
-      withForeignPtr (vecPtr _inLow) $ \c_inLow ->
-        withForeignPtr (vecPtr _inClose) $ \c_inClose ->
-          withForeignPtr (vecPtr _inVolume) $ \c_inVolume ->
+    VM.unsafeWith _inHigh $ \c_inHigh ->
+      VM.unsafeWith _inLow $ \c_inLow ->
+        VM.unsafeWith _inClose $ \c_inClose ->
+          VM.unsafeWith _inVolume $ \c_inVolume ->
             alloca $ \cOutBegIdx ->
               alloca $ \cOutNbElement ->
-                withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+                VM.unsafeWith _outReal $ \c_outReal ->
                   do rc <- c_ta_mfi 0 (fromIntegral $ len - 1) c_inHigh c_inLow c_inClose c_inVolume (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
                      out_outReal <- V.unsafeFreeze _outReal
                      case rc of
@@ -4663,10 +4657,10 @@ ta_midpoint :: V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDo
 ta_midpoint inReal optInTimePeriod = do
     _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
-    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+    VM.unsafeWith _inReal $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
-          withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+          VM.unsafeWith _outReal $ \c_outReal ->
             do rc <- c_ta_midpoint 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
                out_outReal <- V.unsafeFreeze _outReal
                case rc of
@@ -4699,11 +4693,11 @@ ta_midprice inHigh inLow optInTimePeriod = do
     _inHigh <- V.unsafeThaw inHigh
     _inLow <- V.unsafeThaw inLow
     _outReal <- VM.new len
-    withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
-      withForeignPtr (vecPtr _inLow) $ \c_inLow ->
+    VM.unsafeWith _inHigh $ \c_inHigh ->
+      VM.unsafeWith _inLow $ \c_inLow ->
         alloca $ \cOutBegIdx ->
           alloca $ \cOutNbElement ->
-            withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+            VM.unsafeWith _outReal $ \c_outReal ->
               do rc <- c_ta_midprice 0 (fromIntegral $ len - 1) c_inHigh c_inLow (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
                  out_outReal <- V.unsafeFreeze _outReal
                  case rc of
@@ -4734,10 +4728,10 @@ ta_min :: V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble)
 ta_min inReal optInTimePeriod = do
     _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
-    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+    VM.unsafeWith _inReal $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
-          withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+          VM.unsafeWith _outReal $ \c_outReal ->
             do rc <- c_ta_min 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
                out_outReal <- V.unsafeFreeze _outReal
                case rc of
@@ -4759,7 +4753,6 @@ foreign import ccall unsafe "ta_func.h TA_MININDEX"
 
 -- inputs
 --   inReal
-
 -- arguments
 --   optInTimePeriod (int)
 -- outputs
@@ -4769,10 +4762,10 @@ ta_minindex :: V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CIn
 ta_minindex inReal optInTimePeriod = do
     _inReal <- V.unsafeThaw inReal
     _outInteger <- VM.new len
-    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+    VM.unsafeWith _inReal $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
-          withForeignPtr (vecPtr _outInteger) $ \c_outInteger ->
+          VM.unsafeWith _outInteger $ \c_outInteger ->
             do rc <- c_ta_minindex 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outInteger
                out_outInteger <- V.unsafeFreeze _outInteger
                case rc of
@@ -4805,11 +4798,11 @@ ta_minmax inReal optInTimePeriod = do
     _inReal <- V.unsafeThaw inReal
     _outMin <- VM.new len
     _outMax <- VM.new len
-    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+    VM.unsafeWith _inReal $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
-          withForeignPtr (vecPtr _outMin) $ \c_outMin ->
-            withForeignPtr (vecPtr _outMax) $ \c_outMax ->
+          VM.unsafeWith _outMin $ \c_outMin ->
+            VM.unsafeWith _outMax $ \c_outMax ->
               do rc <- c_ta_minmax 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outMin c_outMax
                  out_outMin <- V.unsafeFreeze _outMin
                  out_outMax <- V.unsafeFreeze _outMax
@@ -4844,11 +4837,11 @@ ta_minmaxindex inReal optInTimePeriod = do
     _inReal <- V.unsafeThaw inReal
     _outMinIdx <- VM.new len
     _outMaxIdx <- VM.new len
-    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+    VM.unsafeWith _inReal $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
-          withForeignPtr (vecPtr _outMinIdx) $ \c_outMinIdx ->
-            withForeignPtr (vecPtr _outMaxIdx) $ \c_outMaxIdx ->
+          VM.unsafeWith _outMinIdx $ \c_outMinIdx ->
+            VM.unsafeWith _outMaxIdx $ \c_outMaxIdx ->
               do rc <- c_ta_minmaxindex 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outMinIdx c_outMaxIdx
                  out_outMinIdx <- V.unsafeFreeze _outMinIdx
                  out_outMaxIdx <- V.unsafeFreeze _outMaxIdx
@@ -4885,12 +4878,12 @@ ta_minus_di inHigh inLow inClose optInTimePeriod = do
     _inLow <- V.unsafeThaw inLow
     _inClose <- V.unsafeThaw inClose
     _outReal <- VM.new len
-    withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
-      withForeignPtr (vecPtr _inLow) $ \c_inLow ->
-        withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+    VM.unsafeWith _inHigh $ \c_inHigh ->
+      VM.unsafeWith _inLow $ \c_inLow ->
+        VM.unsafeWith _inClose $ \c_inClose ->
           alloca $ \cOutBegIdx ->
             alloca $ \cOutNbElement ->
-              withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+              VM.unsafeWith _outReal $ \c_outReal ->
                 do rc <- c_ta_minus_di 0 (fromIntegral $ len - 1) c_inHigh c_inLow c_inClose (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
                    out_outReal <- V.unsafeFreeze _outReal
                    case rc of
@@ -4923,11 +4916,11 @@ ta_minus_dm inHigh inLow optInTimePeriod = do
     _inHigh <- V.unsafeThaw inHigh
     _inLow <- V.unsafeThaw inLow
     _outReal <- VM.new len
-    withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
-      withForeignPtr (vecPtr _inLow) $ \c_inLow ->
+    VM.unsafeWith _inHigh $ \c_inHigh ->
+      VM.unsafeWith _inLow $ \c_inLow ->
         alloca $ \cOutBegIdx ->
           alloca $ \cOutNbElement ->
-            withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+            VM.unsafeWith _outReal $ \c_outReal ->
               do rc <- c_ta_minus_dm 0 (fromIntegral $ len - 1) c_inHigh c_inLow (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
                  out_outReal <- V.unsafeFreeze _outReal
                  case rc of
@@ -4958,10 +4951,10 @@ ta_mom :: V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble)
 ta_mom inReal optInTimePeriod = do
     _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
-    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+    VM.unsafeWith _inReal $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
-          withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+          VM.unsafeWith _outReal $ \c_outReal ->
             do rc <- c_ta_mom 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
                out_outReal <- V.unsafeFreeze _outReal
                case rc of
@@ -4993,11 +4986,11 @@ ta_mult inReal0 inReal1 = do
     _inReal0 <- V.unsafeThaw inReal0
     _inReal1 <- V.unsafeThaw inReal1
     _outReal <- VM.new len
-    withForeignPtr (vecPtr _inReal0) $ \c_inReal0 ->
-      withForeignPtr (vecPtr _inReal1) $ \c_inReal1 ->
+    VM.unsafeWith _inReal0 $ \c_inReal0 ->
+      VM.unsafeWith _inReal1 $ \c_inReal1 ->
         alloca $ \cOutBegIdx ->
           alloca $ \cOutNbElement ->
-            withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+            VM.unsafeWith _outReal $ \c_outReal ->
               do rc <- c_ta_mult 0 (fromIntegral $ len - 1) c_inReal0 c_inReal1 cOutBegIdx cOutNbElement c_outReal
                  out_outReal <- V.unsafeFreeze _outReal
                  case rc of
@@ -5032,12 +5025,12 @@ ta_natr inHigh inLow inClose optInTimePeriod = do
     _inLow <- V.unsafeThaw inLow
     _inClose <- V.unsafeThaw inClose
     _outReal <- VM.new len
-    withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
-      withForeignPtr (vecPtr _inLow) $ \c_inLow ->
-        withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+    VM.unsafeWith _inHigh $ \c_inHigh ->
+      VM.unsafeWith _inLow $ \c_inLow ->
+        VM.unsafeWith _inClose $ \c_inClose ->
           alloca $ \cOutBegIdx ->
             alloca $ \cOutNbElement ->
-              withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+              VM.unsafeWith _outReal $ \c_outReal ->
                 do rc <- c_ta_natr 0 (fromIntegral $ len - 1) c_inHigh c_inLow c_inClose (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
                    out_outReal <- V.unsafeFreeze _outReal
                    case rc of
@@ -5069,11 +5062,11 @@ ta_obv inReal inVolume1 = do
     _inReal <- V.unsafeThaw inReal
     _inVolume1 <- V.unsafeThaw inVolume1
     _outReal <- VM.new len
-    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
-      withForeignPtr (vecPtr _inVolume1) $ \c_inVolume1 ->
+    VM.unsafeWith _inReal $ \c_inReal ->
+      VM.unsafeWith _inVolume1 $ \c_inVolume1 ->
         alloca $ \cOutBegIdx ->
           alloca $ \cOutNbElement ->
-            withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+            VM.unsafeWith _outReal $ \c_outReal ->
               do rc <- c_ta_obv 0 (fromIntegral $ len - 1) c_inReal c_inVolume1 cOutBegIdx cOutNbElement c_outReal
                  out_outReal <- V.unsafeFreeze _outReal
                  case rc of
@@ -5108,12 +5101,12 @@ ta_plus_di inHigh inLow inClose optInTimePeriod = do
     _inLow <- V.unsafeThaw inLow
     _inClose <- V.unsafeThaw inClose
     _outReal <- VM.new len
-    withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
-      withForeignPtr (vecPtr _inLow) $ \c_inLow ->
-        withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+    VM.unsafeWith _inHigh $ \c_inHigh ->
+      VM.unsafeWith _inLow $ \c_inLow ->
+        VM.unsafeWith _inClose $ \c_inClose ->
           alloca $ \cOutBegIdx ->
             alloca $ \cOutNbElement ->
-              withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+              VM.unsafeWith _outReal $ \c_outReal ->
                 do rc <- c_ta_plus_di 0 (fromIntegral $ len - 1) c_inHigh c_inLow c_inClose (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
                    out_outReal <- V.unsafeFreeze _outReal
                    case rc of
@@ -5146,11 +5139,11 @@ ta_plus_dm inHigh inLow optInTimePeriod = do
     _inHigh <- V.unsafeThaw inHigh
     _inLow <- V.unsafeThaw inLow
     _outReal <- VM.new len
-    withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
-      withForeignPtr (vecPtr _inLow) $ \c_inLow ->
+    VM.unsafeWith _inHigh $ \c_inHigh ->
+      VM.unsafeWith _inLow $ \c_inLow ->
         alloca $ \cOutBegIdx ->
           alloca $ \cOutNbElement ->
-            withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+            VM.unsafeWith _outReal $ \c_outReal ->
               do rc <- c_ta_plus_dm 0 (fromIntegral $ len - 1) c_inHigh c_inLow (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
                  out_outReal <- V.unsafeFreeze _outReal
                  case rc of
@@ -5183,10 +5176,10 @@ ta_ppo :: V.Vector CDouble -> Int -> Int -> Int -> IO (Either Int (Int, Int, V.V
 ta_ppo inReal optInFastPeriod optInSlowPeriod optInMAType = do
     _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
-    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+    VM.unsafeWith _inReal $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
-          withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+          VM.unsafeWith _outReal $ \c_outReal ->
             do rc <- c_ta_ppo 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInFastPeriod) (fromIntegral optInSlowPeriod) (fromIntegral optInMAType) cOutBegIdx cOutNbElement c_outReal
                out_outReal <- V.unsafeFreeze _outReal
                case rc of
@@ -5217,10 +5210,10 @@ ta_roc :: V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble)
 ta_roc inReal optInTimePeriod = do
     _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
-    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+    VM.unsafeWith _inReal $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
-          withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+          VM.unsafeWith _outReal $ \c_outReal ->
             do rc <- c_ta_roc 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
                out_outReal <- V.unsafeFreeze _outReal
                case rc of
@@ -5251,10 +5244,10 @@ ta_rocp :: V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble
 ta_rocp inReal optInTimePeriod = do
     _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
-    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+    VM.unsafeWith _inReal $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
-          withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+          VM.unsafeWith _outReal $ \c_outReal ->
             do rc <- c_ta_rocp 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
                out_outReal <- V.unsafeFreeze _outReal
                case rc of
@@ -5285,10 +5278,10 @@ ta_rocr :: V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble
 ta_rocr inReal optInTimePeriod = do
     _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
-    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+    VM.unsafeWith _inReal $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
-          withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+          VM.unsafeWith _outReal $ \c_outReal ->
             do rc <- c_ta_rocr 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
                out_outReal <- V.unsafeFreeze _outReal
                case rc of
@@ -5319,10 +5312,10 @@ ta_rocr100 :: V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDou
 ta_rocr100 inReal optInTimePeriod = do
     _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
-    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+    VM.unsafeWith _inReal $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
-          withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+          VM.unsafeWith _outReal $ \c_outReal ->
             do rc <- c_ta_rocr100 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
                out_outReal <- V.unsafeFreeze _outReal
                case rc of
@@ -5353,10 +5346,10 @@ ta_rsi :: V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble)
 ta_rsi inReal optInTimePeriod = do
     _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
-    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+    VM.unsafeWith _inReal $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
-          withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+          VM.unsafeWith _outReal $ \c_outReal ->
             do rc <- c_ta_rsi 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
                out_outReal <- V.unsafeFreeze _outReal
                case rc of
@@ -5390,11 +5383,11 @@ ta_sar inHigh inLow optInAcceleration optInMaximum = do
     _inHigh <- V.unsafeThaw inHigh
     _inLow <- V.unsafeThaw inLow
     _outReal <- VM.new len
-    withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
-      withForeignPtr (vecPtr _inLow) $ \c_inLow ->
+    VM.unsafeWith _inHigh $ \c_inHigh ->
+      VM.unsafeWith _inLow $ \c_inLow ->
         alloca $ \cOutBegIdx ->
           alloca $ \cOutNbElement ->
-            withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+            VM.unsafeWith _outReal $ \c_outReal ->
               do rc <- c_ta_sar 0 (fromIntegral $ len - 1) c_inHigh c_inLow (realToFrac optInAcceleration) (realToFrac optInMaximum) cOutBegIdx cOutNbElement c_outReal
                  out_outReal <- V.unsafeFreeze _outReal
                  case rc of
@@ -5434,11 +5427,11 @@ ta_sarext inHigh inLow optInStartValue optInOffsetOnReverse optInAccelerationIni
     _inHigh <- V.unsafeThaw inHigh
     _inLow <- V.unsafeThaw inLow
     _outReal <- VM.new len
-    withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
-      withForeignPtr (vecPtr _inLow) $ \c_inLow ->
+    VM.unsafeWith _inHigh $ \c_inHigh ->
+      VM.unsafeWith _inLow $ \c_inLow ->
         alloca $ \cOutBegIdx ->
           alloca $ \cOutNbElement ->
-            withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+            VM.unsafeWith _outReal $ \c_outReal ->
               do rc <- c_ta_sarext 0 (fromIntegral $ len - 1) c_inHigh c_inLow (realToFrac optInStartValue) (realToFrac optInOffsetOnReverse) (realToFrac optInAccelerationInitLong) (realToFrac optInAccelerationLong) (realToFrac optInAccelerationMaxLong) (realToFrac optInAccelerationInitShort) (realToFrac optInAccelerationShort) (realToFrac optInAccelerationMaxShort) cOutBegIdx cOutNbElement c_outReal
                  out_outReal <- V.unsafeFreeze _outReal
                  case rc of
@@ -5468,10 +5461,10 @@ ta_sin :: V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CDouble))
 ta_sin inReal = do
     _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
-    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+    VM.unsafeWith _inReal $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
-          withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+          VM.unsafeWith _outReal $ \c_outReal ->
             do rc <- c_ta_sin 0 (fromIntegral $ len - 1) c_inReal cOutBegIdx cOutNbElement c_outReal
                out_outReal <- V.unsafeFreeze _outReal
                case rc of
@@ -5501,10 +5494,10 @@ ta_sinh :: V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CDouble))
 ta_sinh inReal = do
     _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
-    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+    VM.unsafeWith _inReal $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
-          withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+          VM.unsafeWith _outReal $ \c_outReal ->
             do rc <- c_ta_sinh 0 (fromIntegral $ len - 1) c_inReal cOutBegIdx cOutNbElement c_outReal
                out_outReal <- V.unsafeFreeze _outReal
                case rc of
@@ -5535,10 +5528,10 @@ ta_sma :: V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble)
 ta_sma inReal optInTimePeriod = do
     _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
-    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+    VM.unsafeWith _inReal $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
-          withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+          VM.unsafeWith _outReal $ \c_outReal ->
             do rc <- c_ta_sma 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
                out_outReal <- V.unsafeFreeze _outReal
                case rc of
@@ -5568,10 +5561,10 @@ ta_sqrt :: V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CDouble))
 ta_sqrt inReal = do
     _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
-    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+    VM.unsafeWith _inReal $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
-          withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+          VM.unsafeWith _outReal $ \c_outReal ->
             do rc <- c_ta_sqrt 0 (fromIntegral $ len - 1) c_inReal cOutBegIdx cOutNbElement c_outReal
                out_outReal <- V.unsafeFreeze _outReal
                case rc of
@@ -5603,10 +5596,10 @@ ta_stddev :: V.Vector CDouble -> Int -> Double -> IO (Either Int (Int, Int, V.Ve
 ta_stddev inReal optInTimePeriod optInNbDev = do
     _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
-    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+    VM.unsafeWith _inReal $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
-          withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+          VM.unsafeWith _outReal $ \c_outReal ->
             do rc <- c_ta_stddev 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) (realToFrac optInNbDev) cOutBegIdx cOutNbElement c_outReal
                out_outReal <- V.unsafeFreeze _outReal
                case rc of
@@ -5647,13 +5640,13 @@ ta_stoch inHigh inLow inClose optInFastK_Period optInSlowK_Period optInSlowK_MAT
     _inClose <- V.unsafeThaw inClose
     _outSlowK <- VM.new len
     _outSlowD <- VM.new len
-    withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
-      withForeignPtr (vecPtr _inLow) $ \c_inLow ->
-        withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+    VM.unsafeWith _inHigh $ \c_inHigh ->
+      VM.unsafeWith _inLow $ \c_inLow ->
+        VM.unsafeWith _inClose $ \c_inClose ->
           alloca $ \cOutBegIdx ->
             alloca $ \cOutNbElement ->
-              withForeignPtr (vecPtr _outSlowK) $ \c_outSlowK ->
-                withForeignPtr (vecPtr _outSlowD) $ \c_outSlowD ->
+              VM.unsafeWith _outSlowK $ \c_outSlowK ->
+                VM.unsafeWith _outSlowD $ \c_outSlowD ->
                   do rc <- c_ta_stoch 0 (fromIntegral $ len - 1) c_inHigh c_inLow c_inClose (fromIntegral optInFastK_Period) (fromIntegral optInSlowK_Period) (fromIntegral optInSlowK_MAType) (fromIntegral optInSlowD_Period) (fromIntegral optInSlowD_MAType) cOutBegIdx cOutNbElement c_outSlowK c_outSlowD
                      out_outSlowK <- V.unsafeFreeze _outSlowK
                      out_outSlowD <- V.unsafeFreeze _outSlowD
@@ -5694,13 +5687,13 @@ ta_stochf inHigh inLow inClose optInFastK_Period optInFastD_Period optInFastD_MA
     _inClose <- V.unsafeThaw inClose
     _outFastK <- VM.new len
     _outFastD <- VM.new len
-    withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
-      withForeignPtr (vecPtr _inLow) $ \c_inLow ->
-        withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+    VM.unsafeWith _inHigh $ \c_inHigh ->
+      VM.unsafeWith _inLow $ \c_inLow ->
+        VM.unsafeWith _inClose $ \c_inClose ->
           alloca $ \cOutBegIdx ->
             alloca $ \cOutNbElement ->
-              withForeignPtr (vecPtr _outFastK) $ \c_outFastK ->
-                withForeignPtr (vecPtr _outFastD) $ \c_outFastD ->
+              VM.unsafeWith _outFastK $ \c_outFastK ->
+                VM.unsafeWith _outFastD $ \c_outFastD ->
                   do rc <- c_ta_stochf 0 (fromIntegral $ len - 1) c_inHigh c_inLow c_inClose (fromIntegral optInFastK_Period) (fromIntegral optInFastD_Period) (fromIntegral optInFastD_MAType) cOutBegIdx cOutNbElement c_outFastK c_outFastD
                      out_outFastK <- V.unsafeFreeze _outFastK
                      out_outFastD <- V.unsafeFreeze _outFastD
@@ -5738,11 +5731,11 @@ ta_stochrsi inReal optInTimePeriod optInFastK_Period optInFastD_Period optInFast
     _inReal <- V.unsafeThaw inReal
     _outFastK <- VM.new len
     _outFastD <- VM.new len
-    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+    VM.unsafeWith _inReal $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
-          withForeignPtr (vecPtr _outFastK) $ \c_outFastK ->
-            withForeignPtr (vecPtr _outFastD) $ \c_outFastD ->
+          VM.unsafeWith _outFastK $ \c_outFastK ->
+            VM.unsafeWith _outFastD $ \c_outFastD ->
               do rc <- c_ta_stochrsi 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) (fromIntegral optInFastK_Period) (fromIntegral optInFastD_Period) (fromIntegral optInFastD_MAType) cOutBegIdx cOutNbElement c_outFastK c_outFastD
                  out_outFastK <- V.unsafeFreeze _outFastK
                  out_outFastD <- V.unsafeFreeze _outFastD
@@ -5776,11 +5769,11 @@ ta_sub inReal0 inReal1 = do
     _inReal0 <- V.unsafeThaw inReal0
     _inReal1 <- V.unsafeThaw inReal1
     _outReal <- VM.new len
-    withForeignPtr (vecPtr _inReal0) $ \c_inReal0 ->
-      withForeignPtr (vecPtr _inReal1) $ \c_inReal1 ->
+    VM.unsafeWith _inReal0 $ \c_inReal0 ->
+      VM.unsafeWith _inReal1 $ \c_inReal1 ->
         alloca $ \cOutBegIdx ->
           alloca $ \cOutNbElement ->
-            withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+            VM.unsafeWith _outReal $ \c_outReal ->
               do rc <- c_ta_sub 0 (fromIntegral $ len - 1) c_inReal0 c_inReal1 cOutBegIdx cOutNbElement c_outReal
                  out_outReal <- V.unsafeFreeze _outReal
                  case rc of
@@ -5811,10 +5804,10 @@ ta_sum :: V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble)
 ta_sum inReal optInTimePeriod = do
     _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
-    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+    VM.unsafeWith _inReal $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
-          withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+          VM.unsafeWith _outReal $ \c_outReal ->
             do rc <- c_ta_sum 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
                out_outReal <- V.unsafeFreeze _outReal
                case rc of
@@ -5846,10 +5839,10 @@ ta_t3 :: V.Vector CDouble -> Int -> Double -> IO (Either Int (Int, Int, V.Vector
 ta_t3 inReal optInTimePeriod optInVFactor = do
     _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
-    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+    VM.unsafeWith _inReal $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
-          withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+          VM.unsafeWith _outReal $ \c_outReal ->
             do rc <- c_ta_t3 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) (realToFrac optInVFactor) cOutBegIdx cOutNbElement c_outReal
                out_outReal <- V.unsafeFreeze _outReal
                case rc of
@@ -5879,10 +5872,10 @@ ta_tan :: V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CDouble))
 ta_tan inReal = do
     _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
-    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+    VM.unsafeWith _inReal $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
-          withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+          VM.unsafeWith _outReal $ \c_outReal ->
             do rc <- c_ta_tan 0 (fromIntegral $ len - 1) c_inReal cOutBegIdx cOutNbElement c_outReal
                out_outReal <- V.unsafeFreeze _outReal
                case rc of
@@ -5912,10 +5905,10 @@ ta_tanh :: V.Vector CDouble -> IO (Either Int (Int, Int, V.Vector CDouble))
 ta_tanh inReal = do
     _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
-    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+    VM.unsafeWith _inReal $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
-          withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+          VM.unsafeWith _outReal $ \c_outReal ->
             do rc <- c_ta_tanh 0 (fromIntegral $ len - 1) c_inReal cOutBegIdx cOutNbElement c_outReal
                out_outReal <- V.unsafeFreeze _outReal
                case rc of
@@ -5946,10 +5939,10 @@ ta_tema :: V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble
 ta_tema inReal optInTimePeriod = do
     _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
-    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+    VM.unsafeWith _inReal $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
-          withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+          VM.unsafeWith _outReal $ \c_outReal ->
             do rc <- c_ta_tema 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
                out_outReal <- V.unsafeFreeze _outReal
                case rc of
@@ -5983,12 +5976,12 @@ ta_trange inHigh inLow inClose = do
     _inLow <- V.unsafeThaw inLow
     _inClose <- V.unsafeThaw inClose
     _outReal <- VM.new len
-    withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
-      withForeignPtr (vecPtr _inLow) $ \c_inLow ->
-        withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+    VM.unsafeWith _inHigh $ \c_inHigh ->
+      VM.unsafeWith _inLow $ \c_inLow ->
+        VM.unsafeWith _inClose $ \c_inClose ->
           alloca $ \cOutBegIdx ->
             alloca $ \cOutNbElement ->
-              withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+              VM.unsafeWith _outReal $ \c_outReal ->
                 do rc <- c_ta_trange 0 (fromIntegral $ len - 1) c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outReal
                    out_outReal <- V.unsafeFreeze _outReal
                    case rc of
@@ -6019,10 +6012,10 @@ ta_trima :: V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDoubl
 ta_trima inReal optInTimePeriod = do
     _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
-    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+    VM.unsafeWith _inReal $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
-          withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+          VM.unsafeWith _outReal $ \c_outReal ->
             do rc <- c_ta_trima 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
                out_outReal <- V.unsafeFreeze _outReal
                case rc of
@@ -6053,10 +6046,10 @@ ta_trix :: V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble
 ta_trix inReal optInTimePeriod = do
     _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
-    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+    VM.unsafeWith _inReal $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
-          withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+          VM.unsafeWith _outReal $ \c_outReal ->
             do rc <- c_ta_trix 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
                out_outReal <- V.unsafeFreeze _outReal
                case rc of
@@ -6087,10 +6080,10 @@ ta_tsf :: V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble)
 ta_tsf inReal optInTimePeriod = do
     _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
-    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+    VM.unsafeWith _inReal $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
-          withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+          VM.unsafeWith _outReal $ \c_outReal ->
             do rc <- c_ta_tsf 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
                out_outReal <- V.unsafeFreeze _outReal
                case rc of
@@ -6124,12 +6117,12 @@ ta_typprice inHigh inLow inClose = do
     _inLow <- V.unsafeThaw inLow
     _inClose <- V.unsafeThaw inClose
     _outReal <- VM.new len
-    withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
-      withForeignPtr (vecPtr _inLow) $ \c_inLow ->
-        withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+    VM.unsafeWith _inHigh $ \c_inHigh ->
+      VM.unsafeWith _inLow $ \c_inLow ->
+        VM.unsafeWith _inClose $ \c_inClose ->
           alloca $ \cOutBegIdx ->
             alloca $ \cOutNbElement ->
-              withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+              VM.unsafeWith _outReal $ \c_outReal ->
                 do rc <- c_ta_typprice 0 (fromIntegral $ len - 1) c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outReal
                    out_outReal <- V.unsafeFreeze _outReal
                    case rc of
@@ -6166,12 +6159,12 @@ ta_ultosc inHigh inLow inClose optInTimePeriod1 optInTimePeriod2 optInTimePeriod
     _inLow <- V.unsafeThaw inLow
     _inClose <- V.unsafeThaw inClose
     _outReal <- VM.new len
-    withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
-      withForeignPtr (vecPtr _inLow) $ \c_inLow ->
-        withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+    VM.unsafeWith _inHigh $ \c_inHigh ->
+      VM.unsafeWith _inLow $ \c_inLow ->
+        VM.unsafeWith _inClose $ \c_inClose ->
           alloca $ \cOutBegIdx ->
             alloca $ \cOutNbElement ->
-              withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+              VM.unsafeWith _outReal $ \c_outReal ->
                 do rc <- c_ta_ultosc 0 (fromIntegral $ len - 1) c_inHigh c_inLow c_inClose (fromIntegral optInTimePeriod1) (fromIntegral optInTimePeriod2) (fromIntegral optInTimePeriod3) cOutBegIdx cOutNbElement c_outReal
                    out_outReal <- V.unsafeFreeze _outReal
                    case rc of
@@ -6203,10 +6196,10 @@ ta_var :: V.Vector CDouble -> Int -> Double -> IO (Either Int (Int, Int, V.Vecto
 ta_var inReal optInTimePeriod optInNbDev = do
     _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
-    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+    VM.unsafeWith _inReal $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
-          withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+          VM.unsafeWith _outReal $ \c_outReal ->
             do rc <- c_ta_var 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) (realToFrac optInNbDev) cOutBegIdx cOutNbElement c_outReal
                out_outReal <- V.unsafeFreeze _outReal
                case rc of
@@ -6240,12 +6233,12 @@ ta_wclprice inHigh inLow inClose = do
     _inLow <- V.unsafeThaw inLow
     _inClose <- V.unsafeThaw inClose
     _outReal <- VM.new len
-    withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
-      withForeignPtr (vecPtr _inLow) $ \c_inLow ->
-        withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+    VM.unsafeWith _inHigh $ \c_inHigh ->
+      VM.unsafeWith _inLow $ \c_inLow ->
+        VM.unsafeWith _inClose $ \c_inClose ->
           alloca $ \cOutBegIdx ->
             alloca $ \cOutNbElement ->
-              withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+              VM.unsafeWith _outReal $ \c_outReal ->
                 do rc <- c_ta_wclprice 0 (fromIntegral $ len - 1) c_inHigh c_inLow c_inClose cOutBegIdx cOutNbElement c_outReal
                    out_outReal <- V.unsafeFreeze _outReal
                    case rc of
@@ -6280,12 +6273,12 @@ ta_willr inHigh inLow inClose optInTimePeriod = do
     _inLow <- V.unsafeThaw inLow
     _inClose <- V.unsafeThaw inClose
     _outReal <- VM.new len
-    withForeignPtr (vecPtr _inHigh) $ \c_inHigh ->
-      withForeignPtr (vecPtr _inLow) $ \c_inLow ->
-        withForeignPtr (vecPtr _inClose) $ \c_inClose ->
+    VM.unsafeWith _inHigh $ \c_inHigh ->
+      VM.unsafeWith _inLow $ \c_inLow ->
+        VM.unsafeWith _inClose $ \c_inClose ->
           alloca $ \cOutBegIdx ->
             alloca $ \cOutNbElement ->
-              withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+              VM.unsafeWith _outReal $ \c_outReal ->
                 do rc <- c_ta_willr 0 (fromIntegral $ len - 1) c_inHigh c_inLow c_inClose (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
                    out_outReal <- V.unsafeFreeze _outReal
                    case rc of
@@ -6316,10 +6309,10 @@ ta_wma :: V.Vector CDouble -> Int -> IO (Either Int (Int, Int, V.Vector CDouble)
 ta_wma inReal optInTimePeriod = do
     _inReal <- V.unsafeThaw inReal
     _outReal <- VM.new len
-    withForeignPtr (vecPtr _inReal) $ \c_inReal ->
+    VM.unsafeWith _inReal $ \c_inReal ->
       alloca $ \cOutBegIdx ->
         alloca $ \cOutNbElement ->
-          withForeignPtr (vecPtr _outReal) $ \c_outReal ->
+          VM.unsafeWith _outReal $ \c_outReal ->
             do rc <- c_ta_wma 0 (fromIntegral $ len - 1) c_inReal (fromIntegral optInTimePeriod) cOutBegIdx cOutNbElement c_outReal
                out_outReal <- V.unsafeFreeze _outReal
                case rc of
@@ -6338,7 +6331,6 @@ ta_wma inReal optInTimePeriod = do
 
 -- For now, comment out main so it doesn't clash with another main when this lib is imported
 -- Alternative: export specific symbols, excluding main
-{-
 
 terpri :: IO ()
 terpri = putStrLn ""
@@ -6460,8 +6452,4 @@ main = do
     result <- ta_sma vClose 8
     print result
     terpri
-        
--}    
-        
-        
     
