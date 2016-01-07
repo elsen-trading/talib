@@ -1,4 +1,5 @@
 # Using hvr's multi-ghc-travis template and ppa. Thanks hvr!!
+language: c
 
 env:
    - GHCVER=7.8.4
